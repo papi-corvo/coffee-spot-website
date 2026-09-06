@@ -1,0 +1,16 @@
+ == Github simple syntax ==
+    • git add file_name             - stage a file (ex: git add main.js)
+    • git add .                     - stage everything changed at once
+    • git commit -m "message"       - save staged changes with a description (ex: git commit -m "fix qty stepper going below 0")
+    • git push                      — upload commits to GitHub
+
+    • git push -u origin main       - use this ONLY ONCE the very first time this repo is ever pushed to Github
+    • git status                    - check whats changed/staged/not committed
+    • git log                       - see commit history
+    • git branch                    - see which branch youre on
+
+    -- Letter Suffix --
+    • U = untracked/new (Git has never seen it)
+    • A = added (staged)
+    • M = modified
+    • D = deleted
