@@ -1300,6 +1300,15 @@
     </div>
   </aside>
 
+  <!-- ===== CHECKOUT MODAL =====   created by: papi | September 7, 2026 10:28 AM   | last modified:  --> 
+  <div class="checkout-overlay" id="checkoutOverlay"></div>
+  <div class="checkout-modal" id="checkoutModal" role="dialog" aria-model="true" aria-labelledby="checkoutTitle" aria-hidden="true">
+      <div class="checkout-icon" aria-hidden="true">✓</div>
+      <h3 id="checkoutTitle">Order Placed!</h3>
+      <p>Thanks for your order. We'll start preparing it right away.</p>
+      <button type="button" class="btn-primary" id="checkoutModalClose">Done</button>
+  </div>
+
   
 <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
   <script>
@@ -1721,6 +1730,10 @@
       });
     });
 
+    // ===== Cart panel and checkout modal ===== created by: papi | September 7, 2026 10:34 AM   | last modified:
+    const checkoutModal = document.getElementById('checkoutModal');
+    const checkoutOverlay = document.getElementById('checkoutOverlay');
+
     // Cart panel open/close
     const cartBtn = document.getElementById('cartBtn');
     const cartPanel = document.getElementById('cartPanel');
@@ -1740,17 +1753,33 @@
       cartPanel.setAttribute('aria-hidden', 'true');
     }
 
+    // Checkout modal open/close | created by: papi | September 7, 2026 10:45 AM   | last modified:
+    function openCheckoutModal() {
+    checkoutModal.classList.add('open');
+    checkoutOverlay.classList.add('open');
+    checkoutModal.setAttribute('aria-hidden', 'false');
+    }
+    function closeCheckoutModal() {
+    checkoutModal.classList.remove('open');
+    checkoutOverlay.classList.remove('open');
+    checkoutModal.setAttribute('aria-hidden', 'true');
+    }
+
     cartBtn.addEventListener('click', openCart);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
+    // Checkout button: clear cart, close cart panel, and open checkout modal | created by: rob |    | last modified by papi: September 7, 2026 10:50 AM
     cartCheckout.addEventListener('click', () => {
-      if (cart.length === 0) return;
-      alert('Thanks for your order! (Hook this button up to your real checkout flow.)');
-      cart.length = 0;
-      renderCart();
-      closeCart();
+    if (cart.length === 0) return;
+    cart.length = 0;
+    renderCart();
+    closeCart();
+    openCheckoutModal();
     });
+
+    document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);
+    checkoutOverlay.addEventListener('click', closeCheckoutModal);
 
     renderCart();
   </script>

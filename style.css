@@ -969,6 +969,71 @@ main,
   width: 100%;
 }
 
+/* ===== CHECKOUT CONFIRMATION MODAL =====   created by: papi | September 7, 2026 10:28 AM   | last modified:  */ 
+.checkout-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(46, 20, 16, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+.checkout-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.checkout-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1600;
+  width: min(360px, 90vw);
+  padding: 2.5rem 2rem;
+  background: var(--linen);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.92);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.checkout-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.checkout-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--caramel);
+  color: var(--white);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.checkout-modal h3 {
+  color: var(--espresso);
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.checkout-modal p {
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
 /* ===== CATEGORY ACCORDION (press the icon to reveal that category's items) ===== */
 
 .item {
