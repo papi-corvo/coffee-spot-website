@@ -1268,7 +1268,96 @@
           <span class="menu-hint" id="pastries-hint">Tap the icon to view the menu</span>
  
           <ul class="item" id="food-menu-items">
-            <h3 class="Group-header">Pasta</h3>
+            <h3 class="group-header">Rice Meals</h3>
+            <li class="product-row" data-item-name="Chicken Wings">
+  <div class="product-icon-wrap">
+    <img src="#" alt="">
+    <span class="product-icon-badge" aria-hidden="true"></span>
+  </div>
+  <div class="product-details">
+    <button type="button" class="product-name">Chicken Wings</button>
+    <span class="item-note">Add ₱20.00 — Wings Sauce</span>
+
+    <div class="item-row-controls">
+      <select class="size-select" data-item="Chicken Wings">
+        <option value="w/rice-4pcs" data-price="200">w/ rice (4pcs) — ₱200</option>
+        <option value="w/rice-6pcs" data-price="250">w/ rice (6pcs) — ₱250</option>
+        <option value="wo/rice-4pcs" data-price="180">w/o rice (4pcs) — ₱180</option>
+        <option value="wo/rice-6pcs" data-price="230">w/o rice (6pcs) — ₱230</option>
+      </select>
+      <div class="qty-stepper">
+        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+
+    <div class="serving-options">
+      <label>
+        <input type="radio" name="wings-flavor" value="Garlic Parmesan" checked>
+        Garlic Parmesan Wings
+      </label>
+      <label>
+        <input type="radio" name="wings-flavor" value="Sweet Chilli">
+        Sweet Chilli Wings
+      </label>
+      <label>
+        <input type="radio" name="wings-flavor" value="Buffalo">
+        Buffalo Wings
+      </label>
+    </div>
+
+    <fieldset class="addon-options">
+      <legend>Add-on</legend>
+      <label>
+        <input type="checkbox" name="wings-sauce-addon" value="Wings Sauce" data-price="20">
+        Wings Sauce <span class="addon-price">₱20</span>
+      </label>
+    </fieldset>
+  </div>
+</li>
+
+<li class="product-row" data-item-name="Chicken Tonkatsu">
+  <div class="product-icon-wrap">
+    <img src="#" alt="">
+    <span class="product-icon-badge" aria-hidden="true"></span>
+  </div>
+  <div class="product-details">
+    <button type="button" class="product-name">Chicken Tonkatsu</button>
+    <div class="item-row-controls">
+      <select class="size-select" data-item="Chicken Tonkatsu">
+        <option value="w/rice" data-price="230">w/ rice — ₱230</option>
+        <option value="wo/rice" data-price="200">w/o rice — ₱200</option>
+      </select>
+      <div class="qty-stepper">
+        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+  </div>
+</li>
+
+<li class="product-row" data-item-name="Loaded Burger Steak">
+  <div class="product-icon-wrap">
+    <img src="#" alt="">
+    <span class="product-icon-badge" aria-hidden="true"></span>
+  </div>
+  <div class="product-details">
+    <button type="button" class="product-name">Loaded Burger Steak</button>
+    <div class="item-row-controls">
+      <select class="size-select" data-item="Loaded Burger Steak">
+        <option data-price="250">₱250</option>
+      </select>
+      <div class="qty-stepper">
+        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+  </div>
+</li>
+            <h3 class="group-header">Pasta</h3>
             <h4><span>Served w/ Garlic Bread</span></h4>
             <li class="product-row" data-item-name="Chicken Alfredo">
               <div class="product-icon-wrap">
@@ -1382,7 +1471,7 @@
                 <button type="button" class="product-name">Beef Burger</button>
                 <div class="item-row-controls">
                   <select class="size-select" data-item="Beef Burger">
-                  <option data-price="208">₱208/option>
+                  <option data-price="208">₱208</option>
                   </select>
                   <div class="qty-stepper">
                   <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
@@ -1472,86 +1561,97 @@
                 </div>
               </div>
             </li>
-                <fieldset class="Add-On">
-              <legend>Add-on</legend>
-              <label>
-                <input type="radio" name="Fries" checked><span>₱45</span>Fries
-              </label>
-              <label>
-                <input type="radio" name="Bacon"><span>₱35</span>Bacon
-              </label>
-              <label>
-                <input type="radio" name="Onion &amp; Tomato"><span>₱30</span>Onion &amp; Tomato
-              </label>
-              <label>
-                <input type="radio" name="Pickles / Jalapeno"><span>₱20</span>Pickles / Jalapeno
-              </label>
-            </fieldset>
+<fieldset class="addon-options">
+  <legend>Add-on</legend>
+  <label>
+    <input type="checkbox" name="katsu-burger-addon" value="Fries" checked>
+    <span class="addon-price">₱45</span> Fries
+  </label>
+  <label>
+    <input type="checkbox" name="katsu-burger-addon" value="Bacon">
+    <span class="addon-price">₱35</span> Bacon
+  </label>
+  <label>
+    <input type="checkbox" name="katsu-burger-addon" value="Onion & Tomato">
+    <span class="addon-price">₱30</span> Onion & Tomato
+  </label>
+  <label>
+    <input type="checkbox" name="katsu-burger-addon" value="Pickles / Jalapeno">
+    <span class="addon-price">₱20</span> Pickles / Jalapeno
+  </label>
+</fieldset>
 
             <h3 class="group-header">Appetizers</h3>
 
-            <li class="product-row" data-item-name="French Fries">
-              <div class="product-icon-wrap">
-                <img src="#" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">French Fries</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="French Fries">
-                  <option value="Solo" data-price="85">₱85</option>
-                  <option value="Sharing" data-price="130">₱130</option>
-              <fieldset>
-                <legend>Flavor Options</legend>
-                <label>
-                  <input type="radio" name="Cheese">Cheese
-                </label>
-                <label>
-                  <input type="radio" name="BBQ">BBQ
-                </label>
-                <label>
-                  <input type="radio" name="Sour Cream">Sour Cream
-                </label>
-              </fieldset>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
+<li class="product-row" data-item-name="French Fries">
+  <div class="product-icon-wrap">
+    <img src="#" alt="">
+    <span class="product-icon-badge" aria-hidden="true"></span>
+  </div>
+  <div class="product-details">
+    <button type="button" class="product-name">French Fries</button>
+    <div class="item-row-controls">
+      <select class="size-select" data-item="French Fries">
+        <option value="Solo" data-price="85">₱85</option>
+        <option value="Sharing" data-price="130">₱130</option>
+      </select>
+      <div class="qty-stepper">
+        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
 
-            <li class="product-row" data-item-name="Cheese Nachos">
-              <div class="product-icon-wrap">
-                <img src="#" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Cheesy Nachos</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Cheesy Nachos">
-                  <option value="Solo" data-price="120">₱120</option>
-                  <option value="Sharing" data-price="180">₱180</option>
-                <fieldset>
-                  <legend>Add-on</legend>
-                  <label>
-                    <input type="radio" name="Jalapeno"><span>₱20</span>Jalapeno
-                  </label>
-                  <label>
-                    <input type="radio" name="Beef | Veggies"><span>₱50</span>Beef | Veggies
-                  </label>
-                </fieldset>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
+    <fieldset class="addon-options">
+      <legend>Flavor (choose one)</legend>
+      <label>
+        <input type="radio" name="fries-flavor" value="Cheese" checked>
+        <span>Cheese</span>
+      </label>
+      <label>
+        <input type="radio" name="fries-flavor" value="BBQ">
+        <span>BBQ</span>
+      </label>
+      <label>
+        <input type="radio" name="fries-flavor" value="Sour Cream">
+        <span>Sour Cream</span>
+      </label>
+    </fieldset>
+  </div>
+</li>
+
+<li class="product-row" data-item-name="Cheese Nachos">
+  <div class="product-icon-wrap">
+    <img src="#" alt="">
+    <span class="product-icon-badge" aria-hidden="true"></span>
+  </div>
+  <div class="product-details">
+    <button type="button" class="product-name">Cheesy Nachos</button>
+    <div class="item-row-controls">
+      <select class="size-select" data-item="Cheesy Nachos">
+        <option value="Solo" data-price="120">₱120</option>
+        <option value="Sharing" data-price="180">₱180</option>
+      </select>
+      <div class="qty-stepper">
+        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+
+    <fieldset class="addon-options">
+      <legend>Add-on</legend>
+      <label>
+        <input type="checkbox" name="nachos-addon" value="Jalapeno" data-price="20">
+        Jalapeño <span class="addon-price">₱20</span>
+      </label>
+      <label>
+        <input type="checkbox" name="nachos-addon" value="Beef | Veggies" data-price="50">
+        Beef | Veggies <span class="addon-price">₱50</span>
+      </label>
+    </fieldset>
+  </div>
+</li>
 
             <li class="product-row" data-item-name="Quesadilla">
               <div class="product-icon-wrap">
@@ -1593,6 +1693,8 @@
                 </div>
               </div>
             </li>
+
+             <button type="button" class="category-add-btn" data-target="pastries-items">Add to Cart</button>
           </ul>
       </div>
 

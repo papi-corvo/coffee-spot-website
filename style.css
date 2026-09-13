@@ -1155,6 +1155,69 @@ main,
   color: var(--espresso);
 }
 
+/* ===== ADD-ON / FLAVOR OPTIONS (radio groups nested under a product) ===== */
+
+.addon-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 1.25rem 1.25rem;
+  padding: 0.75rem 0.9rem 0.65rem;
+  border: 1px dashed rgba(46, 20, 16, 0.18);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+}
+
+.addon-options legend {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coffee-brown);
+}
+
+.addon-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(46, 20, 16, 0.15);
+  border-radius: var(--radius-pill);
+  background: var(--linen);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.addon-options input[type="radio"] {
+  accent-color: var(--caramel);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.addon-options label:has(input:checked) {
+  border-color: var(--caramel);
+  background: linear-gradient(135deg, var(--caramel-light), var(--caramel));
+  color: var(--espresso);
+}
+
+.addon-options .addon-price {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--coffee-brown);
+}
+
+.addon-options label:has(input:checked) .addon-price {
+  color: var(--espresso);
+}
+
 /* ===== PRODUCT DETAILS PANEL (tap a product's name to reveal it) ===== */
 
 .product-info-panel {
