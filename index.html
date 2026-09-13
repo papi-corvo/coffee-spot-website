@@ -3,458 +3,446 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coffee Spot | Website</title>
+  <title>Coffee Spot | Menu</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav class="site-nav">
-    <div class="logo">Coffee Spot</div>
-    <ul>
-      <li><a href="#Home">Home</a></li>
-      <li><a href="#Menu">Menu</a></li>
-    </ul>
-  </nav>
 
-  <div class="web-content">
-    <section class="home-content" id="Home">
-      <img src="#" alt="Coffee Spot Logo">
-      <div class="home-details">
-        <h1>Welcome to Coffee Spot</h1>
-        <p>Great Coffee, Great Days</p>
-        <a href="#Menu" class="btn-primary">View Menu</a>
+  <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Open menu">☰</button>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <div class="app">
+    <!-- ===== SIDEBAR: primary navigation lives here, front and center ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="mark">CS</span>
+        <span>
+          <span class="brand-name">Coffee Spot</span>
+          <span class="brand-tag">Lucena City</span>
+        </span>
       </div>
-    </section>
-  </div>
 
-  <div class="web-content">
-    <section class="menu-content" id="Menu">
-      <h1>Our Menu</h1>
-      <p>Tap a category's icon to see what's inside</p>
-      <button class="cart-btn" id="cartBtn" aria-label="View cart">🛒
+      <ul class="side-nav" id="sideNav">
+        <li><a href="#home" class="nav-link"><span class="dot"></span>Home</a></li>
+        <li><a href="#coffee" class="nav-link"><span class="dot"></span>Coffee Selection</a></li>
+        <li><a href="#soda" class="nav-link"><span class="dot"></span>Italian Soda</a></li>
+        <li><a href="#tea" class="nav-link"><span class="dot"></span>Tea</a></li>
+        <li><a href="#pastries" class="nav-link"><span class="dot"></span>Pastries</a></li>
+        <li><a href="#location" class="nav-link"><span class="dot"></span>Location</a></li>
+      </ul>
+
+      <button type="button" class="sidebar-cart" id="cartBtn" aria-label="View cart">
+        <span>🛒 Your cart</span>
         <span class="cart-count">0</span>
       </button>
+    </aside>
 
-      <div class="shop-menu">
+    <!-- ===== CONTENT: each section is a distinct panel the sidebar points to ===== -->
+    <main class="content">
 
-        <!-- ===== Coffee Selection (main) — includes Special Drinks + Frappe Selection as sub-groups ===== -->
-        <div class="menu-item">
-          <span class="category-tag">Beverages</span>
-          <button
-            type="button"
-            class="menu-icon-btn"
-            aria-expanded="false"
-            aria-controls="coffee-items"
-          >
-            <img src="Image\Coffee Selection.jpg" alt="Coffee Selection icon">
-            <span class="icon-badge" aria-hidden="true">+</span>
-          </button>
+      <section class="panel hero" id="home">
+        <div class="hero-copy">
+          <h1>Great coffee, great days</h1>
+          <p class="lede">Small-batch roasts, hand-pulled espresso, and pastries baked every morning — brewed for Lucena, one cup at a time.</p>
+          <a href="#coffee" class="btn-primary">Browse the menu</a>
+        </div>
+        <div class="hero-mark">
+          <img src="#" alt="Coffee Spot Logo">
+        </div>
+      </section>
+
+      <!-- ===== Coffee Selection (main) — includes Special Drinks as a sub-group ===== -->
+      <section class="panel" id="coffee">
+        <div class="section-head">
+          <span class="section-tag">Beverages</span>
           <h2>Coffee Selection</h2>
-          <p>Rich and bold espresso shot</p>
-          <span class="menu-hint" id="coffee-hint">Tap the icon to view the menu</span>
+          <p>Rich and bold espresso shot, made fresh to order.</p>
+        </div>
 
-          <ul class="item" id="coffee-items"> <!--Coffee Selection Items-->
+        <ul class="product-grid" id="coffee-items">
 
-            <li class="product-row" data-item-name="Cafe Americano">
-              <div class="product-icon-wrap">
-                <img src="Image/americano-1024x576.jpeg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Cafe Americano</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Americano">
-                  <option value="medium" data-price="110">Medium — ₱110</option>
-                  <option value="large" data-price="120">Large — ₱120</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Cafe Americano">
+            <div class="product-icon-wrap">
+              <img src="Image/americano-1024x576.jpeg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Cafe Americano</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Americano">
+                <option value="medium" data-price="110">Medium — ₱110</option>
+                <option value="large" data-price="120">Large — ₱120</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Espresso">
-              <div class="product-icon-wrap">
-                <img src="Image/Espresooimg.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Espresso</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Espresso">
-                  <option value="medium" data-price="110">Medium — ₱110</option>
-                  <option value="large" data-price="">Large — ₱——</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Espresso">
+            <div class="product-icon-wrap">
+              <img src="Image/Espresooimg.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Espresso</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Espresso">
+                <option value="medium" data-price="110">Medium — ₱110</option>
+                <option value="large" data-price="">Large — ₱——</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Double Espresso">
-              <div class="product-icon-wrap">
-                <img src="Image/01-Double-Espresso.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Double Espresso</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Double-Espresso">
-                  <option value="medium" data-price="85">Medium — ₱85</option>
-                  <option value="large" data-price="">Large — ₱——</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Double Espresso">
+            <div class="product-icon-wrap">
+              <img src="Image/01-Double-Espresso.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Double Espresso</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Double-Espresso">
+                <option value="medium" data-price="85">Medium — ₱85</option>
+                <option value="large" data-price="">Large — ₱——</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Cafe Latte">
-              <div class="product-icon-wrap">
-                <img src="Image/Cafe Latte.jpg.jpeg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Cafe Latte</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="cafe-Latte">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Cafe Latte">
+            <div class="product-icon-wrap">
+              <img src="Image/Cafe Latte.jpg.jpeg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Cafe Latte</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="cafe-Latte">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Mocha Latte">
-              <div class="product-icon-wrap">
-                <img src="Image/WO7ZFQHYNS2FISSKD76GW2UC.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Mocha Latte</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="mocha-latte">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Mocha Latte">
+            <div class="product-icon-wrap">
+              <img src="Image/WO7ZFQHYNS2FISSKD76GW2UC.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Mocha Latte</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="mocha-latte">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Cappucino">
-              <div class="product-icon-wrap">
-                <img src="Image/how-to-make-cappuccino-005.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Cappucino</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Cappucino">
-                  <option value="medium" data-price="90">Medium — ₱90</option>
-                  <option value="large" data-price="150">Large — ₱150</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Cappucino">
+            <div class="product-icon-wrap">
+              <img src="Image/how-to-make-cappuccino-005.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Cappucino</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Cappucino">
+                <option value="medium" data-price="90">Medium — ₱90</option>
+                <option value="large" data-price="150">Large — ₱150</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Caramel Machiatto">
-              <div class="product-icon-wrap">
-                <img src="Image/better-than-starbucks-caramel-macchiato-image.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Caramel Machiatto</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="caramel-machiatto">
-                  <option value="medium" data-price="95">Medium — ₱95</option>
-                  <option value="large" data-price="180">Large — ₱180</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Caramel Machiatto">
+            <div class="product-icon-wrap">
+              <img src="Image/better-than-starbucks-caramel-macchiato-image.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Caramel Machiatto</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="caramel-machiatto">
+                <option value="medium" data-price="95">Medium — ₱95</option>
+                <option value="large" data-price="180">Large — ₱180</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="English Toffee">
-              <div class="product-icon-wrap">
-                <img src="Image/1330-2.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">English Toffee</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="english-toffee">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="English Toffee">
+            <div class="product-icon-wrap">
+              <img src="Image/1330-2.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">English Toffee</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="english-toffee">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Matcha Latte">
-              <div class="product-icon-wrap">
-                <img src="Image/Matcha-Latte-4589-III-1365x2048.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Matcha Latte</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="matcha-latte">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Matcha Latte">
+            <div class="product-icon-wrap">
+              <img src="Image/Matcha-Latte-4589-III-1365x2048.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Matcha Latte</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="matcha-latte">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Matcha Caramel">
-              <div class="product-icon-wrap">
-                <img src="Image/Recipes_for_Pinterest_8.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Matcha Caramel</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="matcha-caramel">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Matcha Caramel">
+            <div class="product-icon-wrap">
+              <img src="Image/Recipes_for_Pinterest_8.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Matcha Caramel</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="matcha-caramel">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Hazelnut">
-              <div class="product-icon-wrap">
-                <img src="Image/blog-hazelnut-cappuccino-recipe-cover_1aad1fc3-361c-48b5-8db4-5784db32e44f.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Hazelnut</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Hazelnut">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Hazelnut">
+            <div class="product-icon-wrap">
+              <img src="Image/blog-hazelnut-cappuccino-recipe-cover_1aad1fc3-361c-48b5-8db4-5784db32e44f.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Hazelnut</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Hazelnut">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Macadamia">
-              <div class="product-icon-wrap">
-                <img src="Image/2411-Macadamia-milk-iced-coffee-27-scaled-qztodveb7ikotxi1guohx4hb3xgxiygjjdurxdx7wg.jpeg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Macadamia</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="macadamia">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Macadamia">
+            <div class="product-icon-wrap">
+              <img src="Image/2411-Macadamia-milk-iced-coffee-27-scaled-qztodveb7ikotxi1guohx4hb3xgxiygjjdurxdx7wg.jpeg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Macadamia</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="macadamia">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Roasted Almond">
-              <div class="product-icon-wrap">
-                <img src="Image/Roasted Almond_NoJar_Recipe_Grid View Desktop 468x468.png" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Roasted Almond</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="roasted-almond">
-                  <option value="medium" data-price="120">Medium — ₱120</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Roasted Almond">
+            <div class="product-icon-wrap">
+              <img src="Image/Roasted Almond_NoJar_Recipe_Grid View Desktop 468x468.png" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Roasted Almond</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="roasted-almond">
+                <option value="medium" data-price="120">Medium — ₱120</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Hot Bellagio Chocolate">
-              <div class="product-icon-wrap">
-                <img src="Image/20180313163609_201803131636091879895442.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Hot Bellagio Chocolate</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="chocolate">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="130">Large — ₱130</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Hot Bellagio Chocolate">
+            <div class="product-icon-wrap">
+              <img src="Image/20180313163609_201803131636091879895442.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Hot Bellagio Chocolate</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="chocolate">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="130">Large — ₱130</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <h3 class="group-header">Special Drinks</h3>
-            <p class="group-desc">Special drinks for special occasions</p>
+          <h3 class="group-header">Special Drinks</h3>
+          <p class="group-desc">Special drinks for special occasions</p>
 
-            <li class="product-row" data-item-name="Barista Drink">
-              <div class="product-icon-wrap">
-                <img src="Image/104907_PR_Barista_Noblesse_Coffee_Mug_Dinzler_29.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Barista Drink</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Barista Drink">
-                  <option value="medium" data-price="150">Medium — ₱150</option>
-                  <option value="large" data-price="180">Large — ₱180</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Barista Drink">
+            <div class="product-icon-wrap">
+              <img src="Image/104907_PR_Barista_Noblesse_Coffee_Mug_Dinzler_29.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Barista Drink</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Barista Drink">
+                <option value="medium" data-price="150">Medium — ₱150</option>
+                <option value="large" data-price="180">Large — ₱180</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Dirty Matcha">
-              <div class="product-icon-wrap">
-                <img src="Image/DirtyMatcha1-978x1300.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Dirty Matcha</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Dirty Matcha">
-                  <option value="medium" data-price="150">Medium — ₱150</option>
-                  <option value="large" data-price="180">Large — ₱180</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Dirty Matcha">
+            <div class="product-icon-wrap">
+              <img src="Image/DirtyMatcha1-978x1300.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Dirty Matcha</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Dirty Matcha">
+                <option value="medium" data-price="150">Medium — ₱150</option>
+                <option value="large" data-price="180">Large — ₱180</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Salted Caramel">
-              <div class="product-icon-wrap">
-                <img src="Image/images2.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Salted Caramel</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Salted Caramel">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="160">Large — ₱160</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Salted Caramel">
+            <div class="product-icon-wrap">
+              <img src="Image/images2.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Salted Caramel</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Salted Caramel">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="160">Large — ₱160</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Dark Chocolate">
-              <div class="product-icon-wrap">
-                <img src="Image/88316599.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Dark Chocolate</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Dark Chocolate">
-                  <option value="medium" data-price="180">Medium — ₱180</option>
-                  <option value="large" data-price="200">Large — ₱200</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Dark Chocolate">
+            <div class="product-icon-wrap">
+              <img src="Image/88316599.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Dark Chocolate</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Dark Chocolate">
+                <option value="medium" data-price="180">Medium — ₱180</option>
+                <option value="large" data-price="200">Large — ₱200</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Biscoff Latte">
-              <div class="product-icon-wrap">
-                <img src="Image/images3.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Biscoff Latte</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Biscoff Latte">
-                  <option value="medium" data-price="150">Medium — ₱150</option>
-                  <option value="large" data-price="180">Large — ₱180</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Biscoff Latte">
+            <div class="product-icon-wrap">
+              <img src="Image/images3.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Biscoff Latte</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Biscoff Latte">
+                <option value="medium" data-price="150">Medium — ₱150</option>
+                <option value="large" data-price="180">Large — ₱180</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
               <fieldset class="temp-options">
               <legend>Temperature</legend>
@@ -466,431 +454,389 @@
               </label>
             </fieldset>
 
+          <h3 class="group-header">Frappe Selection</h3>
+          <p class="group-desc">Creamy and delicious</p>
 
-            <h3 class="group-header">Frappe Selection</h3>
-            <p class="group-desc">Creamy and delicious</p>
+          <h4>Milk-Based Frappe</h4>
 
-            <h4>Milk-Based Frappe</h4>
-            <li class="product-row" data-item-name="Cookies & Cream">
-              <div class="product-icon-wrap">
-                <img src="Image/1745700481890-pr6fy2pw.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Cookies & Cream</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Cookies & Cream">
-                  <option value="medium" data-price="125">Medium — ₱125</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Cookies & Cream">
+            <div class="product-icon-wrap">
+              <img src="Image/1745700481890-pr6fy2pw.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Cookies & Cream</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Cookies & Cream">
+                <option value="medium" data-price="125">Medium — ₱125</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Matcha">
-              <div class="product-icon-wrap">
-                <img src="Image/0010418_matcha-frappe_460.jpeg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Matcha</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Matcha">
-                  <option value="medium" data-price="125">Medium — ₱125</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Matcha">
+            <div class="product-icon-wrap">
+              <img src="Image/0010418_matcha-frappe_460.jpeg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Matcha</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Matcha">
+                <option value="medium" data-price="125">Medium — ₱125</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Double Chocolate">
-              <div class="product-icon-wrap">
-                <img src="Image/Chocolate-Chip-Frappe-2-1.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Double Chocolate</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Double Chocolate">
-                  <option value="medium" data-price="125">Medium — ₱125</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Double Chocolate">
+            <div class="product-icon-wrap">
+              <img src="Image/Chocolate-Chip-Frappe-2-1.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Double Chocolate</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Double Chocolate">
+                <option value="medium" data-price="125">Medium — ₱125</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Vanilla Bean Hazelnut">
-              <div class="product-icon-wrap">
-                <img src="Image/White-Choc-Macadamia-Frappe-recipe-thumb-350x350.png" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Vanilla Bean Hazelnut</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Vanilla Bean Hazelnut">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="140">Large — ₱140</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Vanilla Bean Hazelnut">
+            <div class="product-icon-wrap">
+              <img src="Image/White-Choc-Macadamia-Frappe-recipe-thumb-350x350.png" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Vanilla Bean Hazelnut</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Vanilla Bean Hazelnut">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="140">Large — ₱140</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Strawberry">
-              <div class="product-icon-wrap">
-                <img src="Image/how-to-make-a-strawberry-frappuccino-05-1356x2048.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Strawberry</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Strawberry">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="145">Large — ₱145</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Strawberry">
+            <div class="product-icon-wrap">
+              <img src="Image/how-to-make-a-strawberry-frappuccino-05-1356x2048.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Strawberry</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Strawberry">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="145">Large — ₱145</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <h4>Coffee-Based Frappe</h4>
-            <li class="product-row" data-item-name="Mocha Crumble">
-              <div class="product-icon-wrap">
-                <img src="Image/Mocha-Cookie-Crumble-Frappuccino-1.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Mocha Crumble</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Mocha Crumble">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="145">Large — ₱145</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <h4>Coffee-Based Frappe</h4>
+
+          <li class="product-row" data-item-name="Mocha Crumble">
+            <div class="product-icon-wrap">
+              <img src="Image/Mocha-Cookie-Crumble-Frappuccino-1.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Mocha Crumble</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Mocha Crumble">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="145">Large — ₱145</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Salted Caramel">
-              <div class="product-icon-wrap">
-                <img src="Image/nescafe-gold-salted-caramel-recipe-banner_1066x1066.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Salted Caramel</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Salted Caramel">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="145">Large — ₱145</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Salted Caramel">
+            <div class="product-icon-wrap">
+              <img src="Image/nescafe-gold-salted-caramel-recipe-banner_1066x1066.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Salted Caramel</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Salted Caramel">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="145">Large — ₱145</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Mocha Frappe">
-              <div class="product-icon-wrap">
-                <img src="Image/486866910_1077960434350462_8756293626221428536_n.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Mocha Frappe</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Mocha Frappe">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="145">Large — ₱145</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Mocha Frappe">
+            <div class="product-icon-wrap">
+              <img src="Image/486866910_1077960434350462_8756293626221428536_n.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Mocha Frappe</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Mocha Frappe">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="145">Large — ₱145</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <li class="product-row" data-item-name="Butterscotch">
-              <div class="product-icon-wrap">
-                <img src="Image/september-e1549972742960-1300x700.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Butterscotch</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="Butterscotch">
-                  <option value="medium" data-price="130">Medium — ₱130</option>
-                  <option value="large" data-price="145">Large — ₱145</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
+          <li class="product-row" data-item-name="Butterscotch">
+            <div class="product-icon-wrap">
+              <img src="Image/september-e1549972742960-1300x700.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Butterscotch</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="Butterscotch">
+                <option value="medium" data-price="130">Medium — ₱130</option>
+                <option value="large" data-price="145">Large — ₱145</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
                 </div>
               </div>
-            </li>
+            </div>
+          </li>
 
-            <button type="button" class="category-add-btn" data-target="coffee-items">Add to Cart</button>
-          </ul>
-        </div>
+          <button type="button" class="category-add-btn" data-target="coffee-items">Add to Cart</button>
+        </ul>
+      </section>
 
-        <!-- ===== Italian Soda (main) — Tea now lives in its own separate container below ===== -->
-        <div class="menu-item">
-          <span class="category-tag">Beverages</span>
-          <button
-            type="button"
-            class="menu-icon-btn"
-            aria-expanded="false"
-            aria-controls="soda-items"
-          >
-            <img src="Image/italian-sodas-1.jpg" alt="Italian Soda icon">
-            <span class="icon-badge" aria-hidden="true">+</span>
-          </button>
+      <!-- ===== Italian Soda ===== -->
+      <section class="panel" id="soda">
+        <div class="section-head">
+          <span class="section-tag">Beverages</span>
           <h2>Italian Soda Selection</h2>
-          <p>Refreshing drinks good for summer</p>
-          <span class="menu-hint" id="soda-hint">Tap the icon to view the menu</span>
-
-          <ul class="item" id="soda-items">
-
-            <li class="product-row" data-item-name="Passion Fruit">
-              <div class="product-icon-wrap">
-                <img src="Image/juicing-passion-fruit-2-1122x1536.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Passion Fruit</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="passion-fruit">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="Green Apple">
-              <div class="product-icon-wrap">
-                <img src="Image/Sours_-_GREEN-8_520x500_f1f5fa66-a34c-4772-b410-c7d62401d3cf_1024x1024.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Green Apple</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="green-apple">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="Minty Peach">
-              <div class="product-icon-wrap">
-                <img src="Image/Peachy-Mint-Iced-Green-Tea-600x902.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Minty Peach</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="minty-peach">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="Scarlet Berry">
-              <div class="product-icon-wrap">
-                <img src="Image/512x.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Scarlet Berry</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="scarlet-berry">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="Lychee">
-              <div class="product-icon-wrap">
-                <img src="Image/images.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Lychee</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="lychee">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <button type="button" class="category-add-btn" data-target="soda-items">Add to Cart</button>
-          </ul>
+          <p>Refreshing drinks good for summer.</p>
         </div>
 
-        <!-- ===== Tea (now its own standalone category, separated from Italian Soda) ===== -->
-        <div class="menu-item">
-          <span class="category-tag">Beverages</span>
-          <button
-            type="button"
-            class="menu-icon-btn"
-            aria-expanded="false"
-            aria-controls="tea-items"
-          >
-            <img src="Image/top-view-cup-tea-with-various-spices-herbs-glass-jars-rustic.jpg" alt="Tea icon">
-            <span class="icon-badge" aria-hidden="true">+</span>
-          </button>
+        <ul class="product-grid" id="soda-items">
+
+          <li class="product-row" data-item-name="Passion Fruit">
+            <div class="product-icon-wrap">
+              <img src="Image/juicing-passion-fruit-2-1122x1536.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Passion Fruit</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="passion-fruit">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="Green Apple">
+            <div class="product-icon-wrap">
+              <img src="Image/Sours_-_GREEN-8_520x500_f1f5fa66-a34c-4772-b410-c7d62401d3cf_1024x1024.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Green Apple</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="green-apple">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="Minty Peach">
+            <div class="product-icon-wrap">
+              <img src="Image/Peachy-Mint-Iced-Green-Tea-600x902.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Minty Peach</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="minty-peach">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="Scarlet Berry">
+            <div class="product-icon-wrap">
+              <img src="Image/512x.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Scarlet Berry</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="scarlet-berry">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="Lychee">
+            <div class="product-icon-wrap">
+              <img src="Image/images.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Lychee</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="lychee">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <button type="button" class="category-add-btn" data-target="soda-items">Add to Cart</button>
+        </ul>
+      </section>
+
+      <!-- ===== Tea ===== -->
+      <section class="panel" id="tea">
+        <div class="section-head">
+          <span class="section-tag">Beverages</span>
           <h2>Tea Selection</h2>
-          <p>Light, warm, and comforting</p>
-          <span class="menu-hint" id="tea-hint">Tap the icon to view the menu</span>
-
-          <ul class="item" id="tea-items">
-
-            <li class="product-row" data-item-name="Green Tea">
-              <div class="product-icon-wrap">
-                <img src="Image/green-tea-superfoods-royalty-free-image-1772220722.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Green Tea</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="green-tea">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="Black Tea">
-              <div class="product-icon-wrap">
-                <img src="Image/Black-Tea-GettyImages-1471979246-Thumb.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">Black Tea</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="black-tea">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <li class="product-row" data-item-name="White Tea">
-              <div class="product-icon-wrap">
-                <img src="Image/feature_what-is-white-tea_48236143-565f-4907-9e6f-7dfe8c502c27.jpg" alt="">
-                <span class="product-icon-badge" aria-hidden="true"></span>
-              </div>
-              <div class="product-details">
-                <button type="button" class="product-name">White Tea</button>
-                <div class="item-row-controls">
-                  <select class="size-select" data-item="white-tea">
-                  <option value="medium" data-price="100">Medium — ₱100</option>
-                  <option value="large" data-price="110">Large — ₱110</option>
-                  </select>
-                  <div class="qty-stepper">
-                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            <button type="button" class="category-add-btn" data-target="tea-items">Add to Cart</button>
-          </ul>
+          <p>Light, warm, and comforting.</p>
         </div>
 
-      </div>
+        <ul class="product-grid" id="tea-items">
+
+          <li class="product-row" data-item-name="Green Tea">
+            <div class="product-icon-wrap">
+              <img src="Image/green-tea-superfoods-royalty-free-image-1772220722.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Green Tea</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="green-tea">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="Black Tea">
+            <div class="product-icon-wrap">
+              <img src="Image/Black-Tea-GettyImages-1471979246-Thumb.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">Black Tea</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="black-tea">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="product-row" data-item-name="White Tea">
+            <div class="product-icon-wrap">
+              <img src="Image/feature_what-is-white-tea_48236143-565f-4907-9e6f-7dfe8c502c27.jpg" alt="">
+            </div>
+            <div class="product-details">
+              <button type="button" class="product-name">White Tea</button>
+              <div class="item-row-controls">
+                <select class="size-select" data-item="white-tea">
+                <option value="medium" data-price="100">Medium — ₱100</option>
+                <option value="large" data-price="110">Large — ₱110</option>
+                </select>
+                <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <button type="button" class="category-add-btn" data-target="tea-items">Add to Cart</button>
+        </ul>
+      </section>
 
       <!-- ===== Pastries ===== -->
-        <div class="menu-item">
-          <span class="category-tag">Pastries</span>
-          <button
-            type="button"
-            class="menu-icon-btn"
-            aria-expanded="false"
-            aria-controls="pastries-items"
-          >
-            <img src="#" alt="Pastries Menu icon">
-            <span class="icon-badge" aria-hidden="true">+</span>
-          </button>
+      <section class="panel" id="pastries">
+        <div class="section-head">
+          <span class="section-tag">Pastries</span>
           <h2>Pastries Menu</h2>
           <p>Fresh baked goods made daily</p>
           <span class="menu-hint" id="pastries-hint">Tap the icon to view the menu</span>
@@ -1247,7 +1193,7 @@
                 </div>
               </div>
             </li>
-            
+ 
             <button type="button" class="category-add-btn" data-target="pastries-items">Add to Cart</button>
           </ul>
         </div>
@@ -1268,96 +1214,7 @@
           <span class="menu-hint" id="pastries-hint">Tap the icon to view the menu</span>
  
           <ul class="item" id="food-menu-items">
-            <h3 class="group-header">Rice Meals</h3>
-            <li class="product-row" data-item-name="Chicken Wings">
-  <div class="product-icon-wrap">
-    <img src="#" alt="">
-    <span class="product-icon-badge" aria-hidden="true"></span>
-  </div>
-  <div class="product-details">
-    <button type="button" class="product-name">Chicken Wings</button>
-    <span class="item-note">Add ₱20.00 — Wings Sauce</span>
-
-    <div class="item-row-controls">
-      <select class="size-select" data-item="Chicken Wings">
-        <option value="w/rice-4pcs" data-price="200">w/ rice (4pcs) — ₱200</option>
-        <option value="w/rice-6pcs" data-price="250">w/ rice (6pcs) — ₱250</option>
-        <option value="wo/rice-4pcs" data-price="180">w/o rice (4pcs) — ₱180</option>
-        <option value="wo/rice-6pcs" data-price="230">w/o rice (6pcs) — ₱230</option>
-      </select>
-      <div class="qty-stepper">
-        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-      </div>
-    </div>
-
-    <div class="serving-options">
-      <label>
-        <input type="radio" name="wings-flavor" value="Garlic Parmesan" checked>
-        Garlic Parmesan Wings
-      </label>
-      <label>
-        <input type="radio" name="wings-flavor" value="Sweet Chilli">
-        Sweet Chilli Wings
-      </label>
-      <label>
-        <input type="radio" name="wings-flavor" value="Buffalo">
-        Buffalo Wings
-      </label>
-    </div>
-
-    <fieldset class="addon-options">
-      <legend>Add-on</legend>
-      <label>
-        <input type="checkbox" name="wings-sauce-addon" value="Wings Sauce" data-price="20">
-        Wings Sauce <span class="addon-price">₱20</span>
-      </label>
-    </fieldset>
-  </div>
-</li>
-
-<li class="product-row" data-item-name="Chicken Tonkatsu">
-  <div class="product-icon-wrap">
-    <img src="#" alt="">
-    <span class="product-icon-badge" aria-hidden="true"></span>
-  </div>
-  <div class="product-details">
-    <button type="button" class="product-name">Chicken Tonkatsu</button>
-    <div class="item-row-controls">
-      <select class="size-select" data-item="Chicken Tonkatsu">
-        <option value="w/rice" data-price="230">w/ rice — ₱230</option>
-        <option value="wo/rice" data-price="200">w/o rice — ₱200</option>
-      </select>
-      <div class="qty-stepper">
-        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-      </div>
-    </div>
-  </div>
-</li>
-
-<li class="product-row" data-item-name="Loaded Burger Steak">
-  <div class="product-icon-wrap">
-    <img src="#" alt="">
-    <span class="product-icon-badge" aria-hidden="true"></span>
-  </div>
-  <div class="product-details">
-    <button type="button" class="product-name">Loaded Burger Steak</button>
-    <div class="item-row-controls">
-      <select class="size-select" data-item="Loaded Burger Steak">
-        <option data-price="250">₱250</option>
-      </select>
-      <div class="qty-stepper">
-        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-      </div>
-    </div>
-  </div>
-</li>
-            <h3 class="group-header">Pasta</h3>
+            <h3 class="Group-header">Pasta</h3>
             <h4><span>Served w/ Garlic Bread</span></h4>
             <li class="product-row" data-item-name="Chicken Alfredo">
               <div class="product-icon-wrap">
@@ -1471,7 +1328,7 @@
                 <button type="button" class="product-name">Beef Burger</button>
                 <div class="item-row-controls">
                   <select class="size-select" data-item="Beef Burger">
-                  <option data-price="208">₱208</option>
+                  <option data-price="208">₱208/option>
                   </select>
                   <div class="qty-stepper">
                   <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
@@ -1561,97 +1418,86 @@
                 </div>
               </div>
             </li>
-<fieldset class="addon-options">
-  <legend>Add-on</legend>
-  <label>
-    <input type="checkbox" name="katsu-burger-addon" value="Fries" checked>
-    <span class="addon-price">₱45</span> Fries
-  </label>
-  <label>
-    <input type="checkbox" name="katsu-burger-addon" value="Bacon">
-    <span class="addon-price">₱35</span> Bacon
-  </label>
-  <label>
-    <input type="checkbox" name="katsu-burger-addon" value="Onion & Tomato">
-    <span class="addon-price">₱30</span> Onion & Tomato
-  </label>
-  <label>
-    <input type="checkbox" name="katsu-burger-addon" value="Pickles / Jalapeno">
-    <span class="addon-price">₱20</span> Pickles / Jalapeno
-  </label>
-</fieldset>
+                <fieldset class="Add-On">
+              <legend>Add-on</legend>
+              <label>
+                <input type="radio" name="Fries" checked><span>₱45</span>Fries
+              </label>
+              <label>
+                <input type="radio" name="Bacon"><span>₱35</span>Bacon
+              </label>
+              <label>
+                <input type="radio" name="Onion &amp; Tomato"><span>₱30</span>Onion &amp; Tomato
+              </label>
+              <label>
+                <input type="radio" name="Pickles / Jalapeno"><span>₱20</span>Pickles / Jalapeno
+              </label>
+            </fieldset>
 
             <h3 class="group-header">Appetizers</h3>
 
-<li class="product-row" data-item-name="French Fries">
-  <div class="product-icon-wrap">
-    <img src="#" alt="">
-    <span class="product-icon-badge" aria-hidden="true"></span>
-  </div>
-  <div class="product-details">
-    <button type="button" class="product-name">French Fries</button>
-    <div class="item-row-controls">
-      <select class="size-select" data-item="French Fries">
-        <option value="Solo" data-price="85">₱85</option>
-        <option value="Sharing" data-price="130">₱130</option>
-      </select>
-      <div class="qty-stepper">
-        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-      </div>
-    </div>
+            <li class="product-row" data-item-name="French Fries">
+              <div class="product-icon-wrap">
+                <img src="#" alt="">
+                <span class="product-icon-badge" aria-hidden="true"></span>
+              </div>
+              <div class="product-details">
+                <button type="button" class="product-name">French Fries</button>
+                <div class="item-row-controls">
+                  <select class="size-select" data-item="French Fries">
+                  <option value="Solo" data-price="85">₱85</option>
+                  <option value="Sharing" data-price="130">₱130</option>
+              <fieldset>
+                <legend>Flavor Options</legend>
+                <label>
+                  <input type="radio" name="Cheese">Cheese
+                </label>
+                <label>
+                  <input type="radio" name="BBQ">BBQ
+                </label>
+                <label>
+                  <input type="radio" name="Sour Cream">Sour Cream
+                </label>
+              </fieldset>
+                  </select>
+                  <div class="qty-stepper">
+                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                  </div>
+                </div>
+              </div>
+            </li>
 
-    <fieldset class="addon-options">
-      <legend>Flavor (choose one)</legend>
-      <label>
-        <input type="radio" name="fries-flavor" value="Cheese" checked>
-        <span>Cheese</span>
-      </label>
-      <label>
-        <input type="radio" name="fries-flavor" value="BBQ">
-        <span>BBQ</span>
-      </label>
-      <label>
-        <input type="radio" name="fries-flavor" value="Sour Cream">
-        <span>Sour Cream</span>
-      </label>
-    </fieldset>
-  </div>
-</li>
-
-<li class="product-row" data-item-name="Cheese Nachos">
-  <div class="product-icon-wrap">
-    <img src="#" alt="">
-    <span class="product-icon-badge" aria-hidden="true"></span>
-  </div>
-  <div class="product-details">
-    <button type="button" class="product-name">Cheesy Nachos</button>
-    <div class="item-row-controls">
-      <select class="size-select" data-item="Cheesy Nachos">
-        <option value="Solo" data-price="120">₱120</option>
-        <option value="Sharing" data-price="180">₱180</option>
-      </select>
-      <div class="qty-stepper">
-        <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
-        <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
-        <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
-      </div>
-    </div>
-
-    <fieldset class="addon-options">
-      <legend>Add-on</legend>
-      <label>
-        <input type="checkbox" name="nachos-addon" value="Jalapeno" data-price="20">
-        Jalapeño <span class="addon-price">₱20</span>
-      </label>
-      <label>
-        <input type="checkbox" name="nachos-addon" value="Beef | Veggies" data-price="50">
-        Beef | Veggies <span class="addon-price">₱50</span>
-      </label>
-    </fieldset>
-  </div>
-</li>
+            <li class="product-row" data-item-name="Cheese Nachos">
+              <div class="product-icon-wrap">
+                <img src="#" alt="">
+                <span class="product-icon-badge" aria-hidden="true"></span>
+              </div>
+              <div class="product-details">
+                <button type="button" class="product-name">Cheesy Nachos</button>
+                <div class="item-row-controls">
+                  <select class="size-select" data-item="Cheesy Nachos">
+                  <option value="Solo" data-price="120">₱120</option>
+                  <option value="Sharing" data-price="180">₱180</option>
+                <fieldset>
+                  <legend>Add-on</legend>
+                  <label>
+                    <input type="radio" name="Jalapeno"><span>₱20</span>Jalapeno
+                  </label>
+                  <label>
+                    <input type="radio" name="Beef | Veggies"><span>₱50</span>Beef | Veggies
+                  </label>
+                </fieldset>
+                  </select>
+                  <div class="qty-stepper">
+                  <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                  <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                  <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+                  </div>
+                </div>
+              </div>
+            </li>
 
             <li class="product-row" data-item-name="Quesadilla">
               <div class="product-icon-wrap">
@@ -1693,8 +1539,6 @@
                 </div>
               </div>
             </li>
-
-             <button type="button" class="category-add-btn" data-target="pastries-items">Add to Cart</button>
           </ul>
       </div>
 
@@ -1710,21 +1554,20 @@
         <div class="hours">
           <h3>Business Hours</h3>
           <ul>
-            <li><span>Monday – Friday:</span> 9:00 AM – 6:00 PM</li>
-            <li><span>Saturday:</span> 9:00 AM – 4:00 PM</li>
-            <li><span>Sunday:</span> Closed</li>
+            <li><span>Monday – Friday</span> 9:00 AM – 6:00 PM</li>
+            <li><span>Saturday</span> 9:00 AM – 4:00 PM</li>
+            <li><span>Sunday</span> Closed</li>
           </ul>
         </div>
 
         <div class="contact">
-          <p><strong>Phone:</strong> (042) 000-0000</p>
-          <p><strong>Email:</strong> info@example.com</p>
-
+          <p><strong>Phone:</strong> (042) 000-0000<br><strong>Email:</strong> info@example.com</p>
           <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
           <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
         </div>
-      </div>
-    </section>
+      </section>
+
+    </main>
   </div>
 
   <!-- ===== CART PANEL ===== -->
@@ -1746,7 +1589,7 @@
     </div>
   </aside>
 
-  <!-- ===== CHECKOUT MODAL =====   created by: papi | September 7, 2026 10:28 AM   | last modified:  --> 
+  <!-- ===== CHECKOUT MODAL ===== -->
   <div class="checkout-overlay" id="checkoutOverlay"></div>
   <div class="checkout-modal" id="checkoutModal" role="dialog" aria-model="true" aria-labelledby="checkoutTitle" aria-hidden="true">
       <div class="checkout-icon" aria-hidden="true">✓</div>
@@ -1755,30 +1598,46 @@
       <button type="button" class="btn-primary" id="checkoutModalClose">Done</button>
   </div>
 
-  
-<script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
   <script>
-    // ===== Category accordion: pressing a category's icon reveals/hides its items =====
-    document.querySelectorAll('.menu-icon-btn').forEach((btn) => {
-      const list = document.getElementById(btn.getAttribute('aria-controls'));
-      const badge = btn.querySelector('.icon-badge');
-      const hint = btn.closest('.menu-item').querySelector('.menu-hint');
+    // ===== Sidebar: mobile open/close =====
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarScrim = document.getElementById('sidebarScrim');
 
-      btn.addEventListener('click', () => {
-        const isOpen = list.classList.toggle('open');
+    function openSidebar() {
+      sidebar.classList.add('open');
+      sidebarScrim.classList.add('open');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarScrim.classList.remove('open');
+    }
+    sidebarToggle.addEventListener('click', openSidebar);
+    sidebarScrim.addEventListener('click', closeSidebar);
+    document.querySelectorAll('.side-nav a').forEach((a) => a.addEventListener('click', closeSidebar));
 
-        btn.setAttribute('aria-expanded', String(isOpen));
-        btn.closest('.menu-item').classList.toggle('is-open', isOpen);
-        badge.textContent = isOpen ? '–' : '+';
-        hint.textContent = isOpen
-          ? 'Tap the icon to hide the menu'
-          : 'Tap the icon to view the menu';
+    // ===== Sidebar scrollspy: highlight the section currently in view =====
+    const navLinks = Array.from(document.querySelectorAll('.side-nav a'));
+    const sections = navLinks
+      .map((a) => document.querySelector(a.getAttribute('href')))
+      .filter(Boolean);
+
+    const spyObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const link = navLinks.find((a) => a.getAttribute('href') === '#' + entry.target.id);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          navLinks.forEach((a) => a.classList.remove('active'));
+          link.classList.add('active');
+        }
       });
-    });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
 
-    // ===== Product info: tap an item's name to expand its own details container =====
-    // Each entry has a short description plus the ingredients used, so every
-    // product's details container can show both.
+    sections.forEach((section) => spyObserver.observe(section));
+    navLinks[0].classList.add('active');
+
+    // ===== Product info: tap an item's name to expand its own details =====
     const PRODUCT_INFO = {
       'Cafe Americano': {
         desc: 'Smooth espresso shots layered over hot water for a clean, bold coffee flavor.',
@@ -1982,10 +1841,6 @@
       },
     };
 
-    // Every product now lives in one <li class="product-row"> that already
-    // holds its icon, size select, and quantity stepper — the details panel
-    // is appended into that same container so the whole card (icon, name,
-    // size, quantity, details) stays together as one unit.
     document.querySelectorAll('li.product-row[data-item-name]').forEach((row) => {
       const name = row.dataset.itemName;
       const nameBtn = row.querySelector('.product-name');
@@ -2075,7 +1930,6 @@
       });
     }
 
-    // Each item's own quantity stepper (0 = not selected)
     function clampQty(value) {
       let val = parseInt(value, 10);
       if (isNaN(val) || val < 0) val = 0;
@@ -2101,11 +1955,6 @@
       });
     });
 
-    // One "Add to Cart" button per category: sweeps every product row in
-    // that category's list and adds any item whose quantity was set above 0.
-    // Each row is now a single self-contained container, so its icon, name,
-    // size select, and quantity stepper are read straight from that row's
-    // own descendants instead of being pieced together from loose siblings.
     document.querySelectorAll('.category-add-btn').forEach((catBtn) => {
       catBtn.addEventListener('click', () => {
         const list = document.getElementById(catBtn.dataset.target);
@@ -2156,7 +2005,7 @@
           }
 
           addedCount += qty;
-          qtyInput.value = 0; // reset after adding
+          qtyInput.value = 0;
         });
 
         if (addedCount > 0) {
@@ -2176,11 +2025,10 @@
       });
     });
 
-    // ===== Cart panel and checkout modal ===== created by: papi | September 7, 2026 10:34 AM   | last modified:
+    // ===== Cart panel and checkout modal =====
     const checkoutModal = document.getElementById('checkoutModal');
     const checkoutOverlay = document.getElementById('checkoutOverlay');
 
-    // Cart panel open/close
     const cartBtn = document.getElementById('cartBtn');
     const cartPanel = document.getElementById('cartPanel');
     const cartOverlay = document.getElementById('cartOverlay');
@@ -2199,29 +2047,27 @@
       cartPanel.setAttribute('aria-hidden', 'true');
     }
 
-    // Checkout modal open/close | created by: papi | September 7, 2026 10:45 AM   | last modified:
     function openCheckoutModal() {
-    checkoutModal.classList.add('open');
-    checkoutOverlay.classList.add('open');
-    checkoutModal.setAttribute('aria-hidden', 'false');
+      checkoutModal.classList.add('open');
+      checkoutOverlay.classList.add('open');
+      checkoutModal.setAttribute('aria-hidden', 'false');
     }
     function closeCheckoutModal() {
-    checkoutModal.classList.remove('open');
-    checkoutOverlay.classList.remove('open');
-    checkoutModal.setAttribute('aria-hidden', 'true');
+      checkoutModal.classList.remove('open');
+      checkoutOverlay.classList.remove('open');
+      checkoutModal.setAttribute('aria-hidden', 'true');
     }
 
     cartBtn.addEventListener('click', openCart);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-    // Checkout button: clear cart, close cart panel, and open checkout modal | created by: rob |    | last modified by papi: September 7, 2026 10:50 AM
     cartCheckout.addEventListener('click', () => {
-    if (cart.length === 0) return;
-    cart.length = 0;
-    renderCart();
-    closeCart();
-    openCheckoutModal();
+      if (cart.length === 0) return;
+      cart.length = 0;
+      renderCart();
+      closeCart();
+      openCheckoutModal();
     });
 
     document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);
