@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Coffee Spot drink placeholder">
+<defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff3df"/><stop offset="1" stop-color="#d9b28c"/></linearGradient></defs>
+<rect width="800" height="600" rx="36" fill="url(#bg)"/>
+<circle cx="620" cy="120" r="150" fill="#ffffff" opacity=".28"/>
+<path d="M270 210h260l-22 230H292z" fill="#fffdf9" stroke="#3a1710" stroke-width="12"/>
+<path d="M530 260h42c58 0 80 76 28 106-18 10-40 13-61 13" fill="none" stroke="#3a1710" stroke-width="12"/>
+<ellipse cx="400" cy="210" rx="130" ry="34" fill="#6d3d2b"/>
+<ellipse cx="400" cy="202" rx="82" ry="18" fill="#b8784f" opacity=".7"/>
+<text x="400" y="515" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#3a1710">COFFEE SPOT</text>
+</svg>

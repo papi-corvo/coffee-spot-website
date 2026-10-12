@@ -1,3 +1,3 @@
-import {initAccordion} from './accordion.js';
+import { initAccordion } from './accordion.js';
 
 initAccordion();
