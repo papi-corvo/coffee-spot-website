@@ -109,6 +109,7 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
 
   function setOrderMethod(method) {
     orderMethod = method;
+    orderStartOverlay.dataset.method = method;
     const isDelivery = method === 'delivery';
 
     deliveryMethodBtn.classList.toggle('selected', isDelivery);
@@ -1172,25 +1173,26 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-    cartCheckout.addEventListener('click', () => {
-      if (cart.length === 0) return;
-      
-      const receiverName = sessionStorage.getItem('cs_receiver_name');
-      if (!receiverName) {                          // setup was skipped: ask again
-       closeCart();
-      orderStartOverlay.classList.remove('is-hidden');
+cartCheckout.addEventListener('click', () => {
+  if (cart.length === 0) return;
+
+  const receiverName = sessionStorage.getItem('cs_receiver_name');
+  if (!receiverName) {                 // name was never entered: go back and ask
+    closeCart();
+    orderStartOverlay.classList.remove('is-hidden');
     document.body.classList.add('order-setup-active');
     return;
   }
-    const order = {
+
+  const order = {
     id: 'A-' + Date.now().toString().slice(-6),
     receiverName,
     type: orderMethod === 'delivery' ? 'Delivery' : 'Pick-up',
-    payPref: 'Cash',                            // change when you add the payment step
+    payPref: 'Cash',
     time: new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' }),
     status: 'new',
     note: deliveryAddress?.notes || '',
-    address: deliveryAddress,                   // null for pick-up
+    address: deliveryAddress,
     items: cart.map(({ name, size, price, qty }) => ({ name, size, price, qty })),
   };
 
@@ -1198,7 +1200,9 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     const all = JSON.parse(localStorage.getItem('cs_orders')) || [];
     all.push(order);
     localStorage.setItem('cs_orders', JSON.stringify(all));
-  } catch { /* storage blocked: order is not saved */ }
+  } catch (err) {
+    console.error('Could not save the order for the cashier:', err);
+  }
 
   cart.length = 0;
   renderCart();

@@ -3510,8 +3510,6 @@ body.order-setup-active { overflow: hidden; }
 }
 
 
-
-
 /* ===== ADD-ON: Coffee Spot Pick-up Location ===== */
 .pickup-location-addon {
   display: none;
@@ -3521,7 +3519,10 @@ body.order-setup-active { overflow: hidden; }
   border-radius: 18px;
   background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(250,244,235,.98));
   box-shadow: 0 12px 28px rgba(53, 27, 20, .08);
+  display: none !important;
 }
+
+
 .pickup-location-addon.is-visible {
   display: block;
   animation: pickupLocationIn .35s cubic-bezier(.22,1,.36,1) both;

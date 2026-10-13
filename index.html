@@ -22,21 +22,21 @@
         </span>
       </div>
 
-      <div class="address-field receiver-field" id="receiverField">
-  <label for="orderReceiverName">
-    Name for the order <span class="field-required">Required</span>
-  </label>
-  <input type="text" id="orderReceiverName" name="receiverName"
-         placeholder="Name of the person receiving the order"
-         autocomplete="name" maxlength="60" required
-         aria-describedby="orderReceiverHelp">
-  <small class="field-help" id="orderReceiverHelp">
-    We'll call this name when your order is ready or arrives.
-  </small>
-</div>
-
       <h1 id="orderStartTitle">How would you like to receive your order?</h1>
       <p>Choose your order method first. After that, you can browse the full menu.</p>
+
+      <div class="address-field receiver-field" id="receiverField">
+        <label for="orderReceiverName">
+          Name for the order <span class="field-required">Required</span>
+        </label>
+        <input type="text" id="orderReceiverName" name="receiverName"
+               placeholder="Name of the person receiving the order"
+               autocomplete="name" maxlength="60" required
+               aria-describedby="orderReceiverHelp">
+        <small class="field-help" id="orderReceiverHelp">
+          We'll call this name when your order is ready or arrives.
+        </small>
+      </div>
 
       <div class="order-methods">
         <button type="button" class="order-method-card" id="deliveryMethodBtn" aria-pressed="false">
@@ -97,9 +97,9 @@
           </div>
 
           <div class="address-field">
-            <label for="addressPhone">Phone Number <span class="field-optional">Optional</span></label>
-            <input type="tel" id="addressPhone" name="phone" placeholder="09XXXXXXXXX" autocomplete="tel" inputmode="numeric" maxlength="11" pattern="09[0-9]{9}">
-            <small class="field-help" id="addressPhoneHelp">Numbers only. Example: 09171234567</small>
+            <label for="addressPhone">Phone Number <span class="field-optional">(Optional)</span></label>
+            <input type="tel" id="addressPhone" name="phone" placeholder="09XXXXXXXXX" autocomplete="tel" inputmode="numeric" maxlength="11" pattern="09[0-9]{9}" required>
+            <small class="field-help" id="addressPhoneHelp">Numeric only</small>
           </div>
 
           <div class="address-field full">
@@ -2057,7 +2057,7 @@
         </div>
 
         <fieldset class="cx-block cx-payment">
-          <legend class="cx-legend">Payment</legend>
+          <legend class="cx-legend">Mode of Payment</legend>
           <div class="cx-choices">
             <label class="cx-choice"><input type="radio" name="cxPayment" value="cash" checked>Cash</label>
             <label class="cx-choice"><input type="radio" name="cxPayment" value="gcash">GCash</label>
