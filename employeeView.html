@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Spot | Cashier</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="employeeView.css">
+</head>
+<body>
+    <!-- =====================================================================
+       CASHIER VIEW (isolated)
+       - Every class starts with "cx-" and every id with "cx" so nothing
+         collides with the customer view (.panel, .hero, #cartPanel ...).
+       - Use ids for JavaScript, classes for CSS.
+       - Best placed on its own page (cashier.html). If it must stay in the
+         same file, keep it wrapped in #cxApp and load cashier.css/js only here.
+       ===================================================================== -->
+  <div class="cx" id="cxApp">
+
+    <header class="cx-topbar">
+      <strong class="cx-brand">Coffee Spot · Cashier</strong>
+      <span class="cx-shift" id="cxShiftInfo">
+        Cashier: Maria S. · Shift opened 8:00 AM ·
+        <span class="cx-live" id="cxLiveStatus">Live</span>
+      </span>
+    </header>
+
+    <!-- Use <main> instead of <div> if this is its own page -->
+    <div class="cx-pos">
+
+      <!-- ===== LEFT: order queue ===== -->
+      <aside class="cx-panel cx-queue" aria-label="Order queue">
+        <header class="cx-panel-head">
+          <h2 class="cx-title">Orders</h2>
+          <button type="button" class="cx-btn" id="cxRefreshQueue">Refresh</button>
+        </header>
+
+        <div class="cx-tabs" role="tablist" aria-label="Order status">
+          <button type="button" class="cx-tab" role="tab" aria-selected="true"  data-status="new">New</button>
+          <button type="button" class="cx-tab" role="tab" aria-selected="false" data-status="accepted">Accepted</button>
+          <button type="button" class="cx-tab" role="tab" aria-selected="false" data-status="done">Done</button>
+        </div>
+
+        <div class="cx-scroll" id="cxQueueList"></div>
+      </aside>
+
+      <!-- ===== CENTER: current order ===== -->
+      <section class="cx-panel cx-order" aria-label="Current order">
+        <header class="cx-panel-head">
+          <h2 class="cx-title" id="cxOrderTitle">No order selected</h2>
+          <span class="cx-badge" id="cxOrderStatus" hidden>New</span>
+        </header>
+
+        <dl class="cx-meta" id="cxOrderMeta" hidden>
+          <div><dt>Receiver</dt><dd id="cxCustomer"></dd></div>
+          <div><dt>Order type</dt><dd id="cxOrderType"></dd></div>
+          <div><dt>Customer chose to pay</dt><dd id="cxPayPref"></dd></div>
+          <div><dt>Received</dt><dd id="cxReceived"></dd></div>
+        </dl>
+
+        <div class="cx-scroll">
+          <p class="cx-empty" id="cxEmptyState">Pick an order from the queue to review it.</p>
+
+          <table class="cx-table" id="cxItemsTable" hidden>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th class="cx-num">Price</th>
+                <th class="cx-num">Total</th>
+                <th><span class="cx-sr-only">Remove</span></th>
+              </tr>
+            </thead>
+            <tbody id="cxItemsBody"></tbody>
+          </table>
+        </div>
+
+        <div class="cx-addbar" id="cxAddBar" hidden>
+          <button type="button" class="cx-btn" id="cxAddItemBtn">+ Add item</button>
+        </div>
+
+        <div class="cx-note" id="cxNoteBox" hidden>
+          <label class="cx-field-label" for="cxOrderNote">Order note (visible to kitchen)</label>
+          <textarea class="cx-textarea" id="cxOrderNote" rows="3" placeholder="e.g. less ice, no sugar"></textarea>
+        </div>
+      </section>
+
+      <!-- ===== RIGHT: discount, totals, payment (sibling of the order panel, not inside it) ===== -->
+      <aside class="cx-panel cx-checkout" aria-label="Checkout">
+        <header class="cx-panel-head">
+          <h2 class="cx-title">Checkout</h2>
+        </header>
+
+        <fieldset class="cx-block cx-discount">
+          <legend class="cx-legend">Discount</legend>
+          <div class="cx-choices">
+            <label class="cx-choice"><input type="radio" name="cxDiscount" value="regular" checked>Regular</label>
+            <label class="cx-choice"><input type="radio" name="cxDiscount" value="pwd">PWD</label>
+            <label class="cx-choice"><input type="radio" name="cxDiscount" value="senior">Senior</label>
+          </div>
+
+          <div class="cx-id-fields" id="cxIdFields" hidden>
+            <label class="cx-field">ID number
+              <input class="cx-input" type="text" id="cxDiscountId" autocomplete="off">
+            </label>
+            <label class="cx-field">Name on ID
+              <input class="cx-input" type="text" id="cxDiscountName" autocomplete="off">
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="cx-block cx-totals" aria-live="polite">
+          <div class="cx-total-row"><span>Subtotal</span><span id="cxSubtotal">₱0.00</span></div>
+          <div class="cx-total-row"><span id="cxDiscountLabel">Discount</span><span id="cxDiscountAmount">−₱0.00</span></div>
+          <div class="cx-total-row cx-grand"><span>Total</span><span id="cxTotal">₱0.00</span></div>
+        </div>
+
+        <fieldset class="cx-block cx-payment">
+          <legend class="cx-legend">Mode of Payment</legend>
+          <div class="cx-choices">
+            <label class="cx-choice"><input type="radio" name="cxPayment" value="cash" checked>Cash</label>
+            <label class="cx-choice"><input type="radio" name="cxPayment" value="gcash">GCash</label>
+            <label class="cx-choice"><input type="radio" name="cxPayment" value="maya">Maya</label>
+          </div>
+
+          <div class="cx-cash-fields" id="cxCashFields">
+            <label class="cx-field">Cash received
+              <input class="cx-input" type="number" id="cxCashIn" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <div class="cx-quick" id="cxQuickCash"></div>
+            <div class="cx-total-row cx-change"><span>Change</span><strong id="cxChange">₱0.00</strong></div>
+          </div>
+
+          <label class="cx-field" id="cxRefField" hidden>Reference no.
+            <input class="cx-input" type="text" id="cxRefNo" autocomplete="off">
+          </label>
+        </fieldset>
+
+        <div class="cx-actions">
+          <div class="cx-row" id="cxAcceptRow" hidden>
+            <button type="button" class="cx-btn cx-btn--danger" id="cxRejectBtn">Reject</button>
+            <button type="button" class="cx-btn cx-btn--primary" id="cxAcceptBtn">Accept order</button>
+          </div>
+
+          <button type="button" class="cx-btn cx-btn--primary" id="cxPayBtn" disabled>Take payment &amp; complete</button>
+
+          <div class="cx-row">
+            <button type="button" class="cx-btn" id="cxPrintBtn" disabled>Print receipt</button>
+            <button type="button" class="cx-btn cx-btn--danger" id="cxVoidBtn" disabled>Void order</button>
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /.cx-pos -->
+
+    <!-- ===== Dialog: add item ===== -->
+    <dialog class="cx-dialog" id="cxAddDialog">
+      <form method="dialog" id="cxAddForm">
+        <h2 class="cx-title">Add item</h2>
+        <label class="cx-field">Item <select class="cx-input" id="cxAddItem"></select></label>
+        <label class="cx-field">Size <select class="cx-input" id="cxAddSize"></select></label>
+        <label class="cx-field">Quantity <input class="cx-input" type="number" id="cxAddQty" value="1" min="1" max="20"></label>
+        <div class="cx-dialog-actions">
+          <button type="submit" class="cx-btn" value="cancel">Cancel</button>
+          <button type="submit" class="cx-btn cx-btn--primary" value="add">Add item</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===== Dialog: void / reject ===== -->
+    <dialog class="cx-dialog" id="cxVoidDialog">
+      <form method="dialog" id="cxVoidForm">
+        <h2 class="cx-title" id="cxVoidTitle">Void order</h2>
+        <label class="cx-field">Reason
+          <select class="cx-input" id="cxVoidReason">
+            <option>Customer cancelled</option>
+            <option>Out of stock</option>
+            <option>Wrong order</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <div class="cx-dialog-actions">
+          <button type="submit" class="cx-btn" value="cancel">Keep order</button>
+          <button type="submit" class="cx-btn cx-btn--danger" value="confirm">Confirm</button>
+        </div>
+      </form>
+    </dialog>
+
+  </div><!-- /#cxApp -->
+
+  <script src="Javascript/cashier.js" defer></script>
+</body>
+</html>
