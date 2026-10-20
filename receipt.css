@@ -1,0 +1,40 @@
+/* =====================================================================
+   COFFEE SPOT RECEIPT — receipt.css
+   Add to cashier.html <head>, after employeeView.css:
+     <link rel="stylesheet" href="receipt.css">
+   Every class starts with "csr-" so it can't collide with .cx-* or the
+   customer view. The receipt is invisible on screen and is the ONLY
+   thing that prints.
+   ===================================================================== */
+
+#csReceipt { display: none; }
+
+@page { size: 80mm auto; margin: 0; }   /* use 58mm for a small printer */
+
+@media print {
+  body > *:not(#csReceipt) { display: none !important; }
+
+  html, body { background: #fff !important; margin: 0; padding: 0; }
+
+  #csReceipt {
+    display: block;
+    width: 80mm;
+    padding: 4mm;
+    color: #000;
+    background: #fff;
+    font: 12px/1.4 "Courier New", Courier, monospace;
+  }
+}
+
+.csr-center { text-align: center; }
+.csr-muted  { color: #555; }
+.csr-small  { font-size: 11px; }
+.csr-biz    { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+.csr-title  { margin-top: 6px; font-weight: bold; letter-spacing: .5px; }
+
+#csReceipt hr { border: 0; border-top: 1px dashed #000; margin: 8px 0; }
+
+.csr-row { display: flex; justify-content: space-between; gap: 8px; }
+.csr-row span:last-child { text-align: right; }
+.csr-item { margin-bottom: 6px; }
+.csr-total { font-size: 15px; font-weight: bold; margin-top: 4px; }

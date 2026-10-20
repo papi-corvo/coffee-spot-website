@@ -2,6 +2,10 @@
 
 :root {
 
+  --topbar-h: 0px;     /* desktop has no top bar */
+  --catnav-h: 0px;
+  --search-h: 96px;    /* about the height of the sticky search block */
+
   --espresso: #3a1710;
   --espresso-2: #522219;
   --coffee-brown: #8c7864;
@@ -31,6 +35,45 @@
   --container: 1200px;
   --section-pad: clamp(3.5rem, 7vw, 7rem);
   --gutter: clamp(1.25rem, 5vw, 4rem);
+}
+
+.menu-zone { position: relative; }   /* the search bar sticks inside this wrapper only */
+
+.menu-search-section {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--catnav-h));
+  z-index: 50;
+  padding: .7rem var(--gutter) .6rem;
+  background: rgba(250, 243, 231, .94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(46, 20, 16, .08);
+  box-shadow: 0 6px 18px rgba(46, 20, 16, .06);
+}
+.menu-search-meta { margin-top: .4rem; }
+
+/* Menu headings should not hide behind the sticky bars when a nav link is tapped */
+.menu-zone .panel[id] {
+  scroll-margin-top: calc(var(--topbar-h) + var(--catnav-h) + var(--search-h) + 12px);
+}
+
+@media (max-width: 991px) {
+  :root { --topbar-h: 68px; --catnav-h: 46px; --search-h: 70px; }
+
+  .menu-search-section { padding: .5rem 1rem; }
+  .menu-search-shell { padding: .4rem .5rem .4rem .7rem; }
+  .menu-search-icon { flex-basis: 32px; width: 32px; height: 32px; font-size: 1.15rem; }
+
+  /* keep the label for screen readers, but don't spend screen space on it */
+  .menu-search-field label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap;
+  }
+  /* the item counter only appears once the customer starts typing */
+  .menu-search-section:has(#menuSearch:placeholder-shown) .menu-search-meta { display: none; }
+}
+@media (max-width: 380px) {
+  :root { --topbar-h: 62px; }
 }
 
 *,
@@ -2454,7 +2497,7 @@ body.order-setup-active { overflow: hidden; }
 
 .menu-search-section {
   scroll-margin-top: 130px;
-  position: relative;
+  position: sticky;
   z-index: 30;
   padding: 1.1rem var(--gutter) 0;
   background: var(--cream);
@@ -4030,3 +4073,4 @@ body.order-setup-active { overflow: hidden; }
   .cx-scroll { max-height: 60vh; }
   .cx-topbar { flex-direction: column; align-items: flex-start; }
 }
+

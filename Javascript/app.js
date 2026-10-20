@@ -636,6 +636,23 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
       updateMenuSearch();
       menuSearch.focus();
     });
+    
+        // Keep the sticky search bar aligned under the mobile top bar and category chips
+    (function () {
+      const root = document.documentElement.style;
+      const measure = () => {
+        const mobile = window.matchMedia('(max-width: 991px)').matches;
+        const bar = document.getElementById('mobileTopbar');
+        const nav = document.querySelector('.mobile-category-nav');
+        const search = document.querySelector('.menu-search-section');
+        root.setProperty('--topbar-h', mobile && bar ? bar.offsetHeight + 'px' : '0px');
+        root.setProperty('--catnav-h', mobile && nav ? nav.offsetHeight + 'px' : '0px');
+        root.setProperty('--search-h', search ? search.offsetHeight + 'px' : '96px');
+      };
+      window.addEventListener('resize', measure);
+      window.addEventListener('load', measure);
+      measure();
+    })();
 
     // Reveal product cards smoothly as the customer scrolls through the menu.
     if ('IntersectionObserver' in window) {
