@@ -1288,19 +1288,19 @@ cartCheckout.addEventListener('click', async () => {
       {
         name:'Cafe Latte',
         kicker:'Coffee favorite',
-        image:'Image/Cafe Latte.jpg.jpeg',
+        image:'image/Cafe Latte.jpg.jpeg',
         desc:'Espresso balanced with steamed milk for a creamy, comforting sip.'
       },
       {
         name:'Mocha Latte',
         kicker:'Coffee favorite',
-        image:'Image/WO7ZFQHYNS2FISSKD76GW2UC.jpg',
+        image:'image/WO7ZFQHYNS2FISSKD76GW2UC.jpg',
         desc:'Espresso and chocolate blended with steamed milk for a sweet coffee treat.'
       },
       {
         name:'Cappuccino',
         kicker:'Coffee favorite',
-        image:'Image/how-to-make-cappuccino-005.jpg',
+        image:'image/how-to-make-cappuccino-005.jpg',
         desc:'Equal parts espresso, steamed milk, and velvety foam.'
       }
     ];
