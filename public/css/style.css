@@ -3455,7 +3455,7 @@ body.order-setup-active { overflow: hidden; }
 .hero {
   background-image:
     linear-gradient(rgba(35, 12, 7, 0.58), rgba(35, 12, 7, 0.58)),
-    url("Image/hero-background.png");
+    url("../image/hero-background.png");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -3680,9 +3680,9 @@ body.order-setup-active { overflow: hidden; }
   line-height: 1;
 }
 
-.product-icon-wrap img[src="Image/pastry-placeholder.svg"],
-.product-icon-wrap img[src="Image/food-placeholder.svg"],
-.product-icon-wrap img[src="Image/drink-placeholder.svg"] {
+.product-icon-wrap img[src="image/pastry-placeholder.svg"],
+.product-icon-wrap img[src="image/food-placeholder.svg"],
+.product-icon-wrap img[src="image/drink-placeholder.svg"] {
   object-fit: cover;
 }
 
