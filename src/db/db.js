@@ -9,7 +9,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const Database = require('better-sqlite3');
 
-const DB_FILE = process.env.COFFEESPOT_DB || path.join(__dirname, '..', 'data', 'coffeespot.db');
+const DB_FILE = process.env.COFFEESPOT_DB || path.join(__dirname, '..', '..', 'data', 'coffeespot.db');
 if (DB_FILE !== ':memory:') fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 
 const db = new Database(DB_FILE);
