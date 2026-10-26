@@ -1190,41 +1190,63 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-cartCheckout.addEventListener('click', () => {
+cartCheckout.addEventListener('click', async () => {
   if (cart.length === 0) return;
 
   const receiverName = sessionStorage.getItem('cs_receiver_name');
-  if (!receiverName) {                 // name was never entered: go back and ask
+  if (!receiverName) {
     closeCart();
     orderStartOverlay.classList.remove('is-hidden');
     document.body.classList.add('order-setup-active');
     return;
   }
 
-  const order = {
-    id: 'A-' + Date.now().toString().slice(-6),
-    receiverName,
-    type: orderMethod === 'delivery' ? 'Delivery' : 'Pick-up',
-    payPref: 'Cash',
-    time: new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' }),
-    status: 'new',
+  // 1. Build the payload using YOUR actual user inputs
+  const orderPayload = {
+    receiverName: receiverName,
+    type: orderMethod === 'delivery' ? 'delivery' : 'pickup', 
+    payPref: 'cash', 
     note: deliveryAddress?.notes || '',
-    address: deliveryAddress,
-    items: cart.map(({ name, size, price, qty }) => ({ name, size, price, qty })),
+    address: orderMethod === 'delivery' ? deliveryAddress : null,
+    
+    // 2. Map the cart (WITH THE TEMPORARY HARDCODED ID)
+    items: cart.map((entry) => {
+      return {
+        menuItemId: 1, // TEMPORARY: Faking the ID so the backend doesn't crash
+        name: entry.name.split(' — ')[0].trim(),
+        size: entry.size || 'Regular', 
+        qty: entry.qty,
+        options: [] 
+      };
+    })
   };
 
   try {
-    const all = JSON.parse(localStorage.getItem('cs_orders')) || [];
-    all.push(order);
-    localStorage.setItem('cs_orders', JSON.stringify(all));
-  } catch (err) {
-    console.error('Could not save the order for the cashier:', err);
-  }
+    // 3. Send to the Express server
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderPayload)
+    });
 
-  cart.length = 0;
-  renderCart();
-  closeCart();
-  openCheckoutModal();
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to place order');
+    }
+    
+    // 4. Success!
+    console.log("Order saved to SQLite:", data);
+    
+    cart.length = 0;
+    renderCart();
+    closeCart();
+    openCheckoutModal(); 
+
+  } catch (err) {
+    alert("Order Failed: " + err.message);
+    console.error(err);
+  }
 });
 
     document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);
