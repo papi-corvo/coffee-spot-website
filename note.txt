@@ -9,6 +9,16 @@
     • git log                       - see commit history
     • git branch                    - see which branch youre on
 
+    Step by Step of git in someone's repository:
+      1. git clone [repo link] - first you must clone the repo you want to contribute with if this is your first time.
+      2. you must be inside of the actual folder of the project.
+      3. git switch -c [branch name] - this is for making a branch in the repo for your own designated features.
+      4. git status - you can use this to check the changes in the folder structure and to also check the branch you're in.
+      5. git add . or [file(s) name] - staging files for commit.
+      6. git commit -m "[description]" - save stage in the local device and ready for pushing.
+      7. git push -u origin [branch name you're in] - this is the crucial part for pushing in someone's repo to out main github.
+      8. git switch main or [another branch] - for switching either to main or preffered branch.
+
     -- Letter Suffix --
     • U = untracked/new (Git has never seen it)
     • A = added (staged)
