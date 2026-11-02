@@ -12,26 +12,31 @@
   <main class="lg-card">
     <div class="lg-brand">
       <span class="lg-mark">CS</span>
-      <div><strong>Coffee Spot</strong><small>Staff sign-in</small></div>
+      <div><strong>Coffee Spot</strong><small id="lgBrandSub">Staff sign-in</small></div>
     </div>
 
-    <h1>Start your shift</h1>
-    <p class="lg-sub">Enter your employee ID and PIN to open the cashier.</p>
+    <!-- SIGN IN -->
+    <section id="viewLogin">
+      <h1>Start your shift</h1>
+      <p class="lg-sub">Enter your employee ID and PIN to open the cashier.</p>
 
-    <form id="lgForm" novalidate>
-      <label class="lg-field">Employee ID
-        <input id="lgCode" type="text" autocomplete="username" autocapitalize="characters" required>
-      </label>
+      <form id="lgForm" novalidate>
+        <label class="lg-field">Employee ID
+          <input id="lgCode" type="text" autocomplete="username" autocapitalize="characters" required>
+        </label>
 
-      <label class="lg-field">PIN
-        <input id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required>
-      </label>
+        <label class="lg-field">PIN
+          <input id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required>
+        </label>
 
-      <p class="lg-error" id="lgError" role="alert" hidden></p>
+        <p class="lg-error" id="lgError" role="alert" hidden></p>
+        <p class="lg-success" id="lgSuccess" role="status" hidden></p>
 
-      <button class="lg-submit" id="lgSubmit" type="submit">Start shift</button>
-    </form>
-  </main>
+        <button class="lg-submit" id="lgSubmit" type="submit">Start shift</button>
+      </form>
+
+      <p class="lg-switch">New here? <a href="#register" class="lg-link" data-view="register">Create an account</a></p>
+    </section>
 
   <script src="js/loginform.js" defer></script>
 </body>

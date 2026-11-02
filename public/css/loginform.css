@@ -1,105 +1,316 @@
+/* ============================================================
+   Coffee Spot | loginform.css
+   Covers BOTH the staff sign-in card and the staff registration card.
+   Colors and fonts come from css/style.css; the fallback values after
+   each comma only apply if a variable is missing.
+   All rules are scoped to .lg-* classes so .cx (cashier) and the
+   customer menu are never touched.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. Page shell — shared by login and registration
+   ------------------------------------------------------------ */
+body.lg-body,
 .lg-body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 1.25rem;
+  padding: 1.5rem;
   background:
-    radial-gradient(circle at 20% 20%, rgba(227,90,31,.18), transparent 40%),
-    linear-gradient(135deg, var(--espresso), var(--espresso-2));
+    radial-gradient(circle at 20% 20%, rgba(227, 90, 31, 0.12), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(255, 180, 120, 0.06), transparent 40%),
+    linear-gradient(135deg, #3a1710 0%, #4a1b10 55%, #2e1410 100%);
 }
+
+/* ------------------------------------------------------------
+   2. Card — shared
+   ------------------------------------------------------------ */
 .lg-card {
-  width: min(400px, 100%);
-  padding: 2rem;
-  border-radius: var(--radius-lg);
-  background: var(--linen);
-  box-shadow: var(--shadow-lg);
-}
-.lg-card section[hidden] { display: none; }
-
-.lg-card section[hidden] { display: none; }
- 
-.lg-success {
-  margin-bottom: 1rem; padding: .7rem .9rem; border-radius: 10px;
-  background: #eaf6ee; color: #1f6b3a; font-size: .82rem; font-weight: 700;
-}
-.lg-success[hidden] { display: none; }
- 
-.lg-card .lg-switch {
-  margin-top: 1.2rem; text-align: center;
-  color: var(--ink-muted, #6b5a52); font-size: .9rem;
-}
-.lg-card .lg-switch .lg-link {
-  display: inline;
-  color: var(--espresso, #2e1410);
-  font-weight: 800;
-  text-decoration: underline; text-underline-offset: 3px;
-  cursor: pointer;
-}
-.lg-card .lg-switch .lg-link:hover { color: var(--caramel, #e35a1f); }
-.lg-card .lg-switch .lg-link:focus-visible {
-  outline: none; border-radius: 4px;
-  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+  width: min(410px, 100%);
+  padding: 2.4rem 2.2rem 2.2rem;
+  border-radius: 24px;
+  background: #fffdf9;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 2px 0 rgba(255, 255, 255, 0.04) inset;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.lg-brand { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.4rem; }
-.lg-brand strong { display: block; color: var(--espresso); font-family: var(--font-display); }
-.lg-brand small { color: var(--ink-muted); }
+.lg-card section[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   3. Brand row
+   ------------------------------------------------------------ */
+.lg-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.6rem;
+}
+
 .lg-mark {
-  display: grid; place-items: center;
-  width: 44px; height: 44px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--caramel), var(--espresso-2));
-  color: var(--white); font-family: var(--font-display); font-weight: 700;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #e35a1f, #4a2218);
+  color: #ffffff;
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(227, 90, 31, 0.35);
+  flex-shrink: 0;
 }
-.lg-card h1 { color: var(--espresso); font-size: 1.9rem; margin-bottom: .3rem; }
-.lg-sub { margin-bottom: 1.4rem; color: var(--ink-muted); font-size: .9rem; }
 
+.lg-brand strong {
+  display: block;
+  color: #3a1710;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.lg-brand small {
+  display: block;
+  margin-top: 0.1rem;
+  color: #8c7568;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   4. Heading
+   ------------------------------------------------------------ */
+.lg-card h1 {
+  margin: 0 0 0.4rem;
+  color: #3a1710;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.lg-sub {
+  margin: 0 0 1.6rem;
+  color: #8c7568;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------
+   5. Fields
+   ------------------------------------------------------------ */
 .lg-field {
-  display: grid; gap: .35rem; margin-bottom: 1rem;
-  color: var(--espresso); font-size: .75rem; font-weight: 800;
-  letter-spacing: .06em; text-transform: uppercase;
-}
-.lg-field input {
-  padding: .8rem .9rem;
-  border: 1px solid rgba(46,20,16,.15);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  font: 600 1rem var(--font-body);
-  letter-spacing: normal; text-transform: none;
-}
-.lg-field input:focus-visible {
-  outline: none; border-color: var(--caramel);
-  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1.05rem;
+  color: #3a1710;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
+.lg-field input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid rgba(46, 20, 16, 0.15);
+  border-radius: 10px;
+  background: #ffffff;
+  color: #2e1410;
+  font: 600 0.95rem var(--font-body, 'Manrope', sans-serif);
+  letter-spacing: normal;
+  text-transform: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-sizing: border-box;
+}
+
+.lg-field input::placeholder {
+  color: #b3a49b;
+  font-weight: 500;
+}
+
+.lg-field input:hover {
+  border-color: rgba(46, 20, 16, 0.28);
+}
+
+.lg-field input:focus-visible {
+  outline: none;
+  border-color: #e35a1f;
+  box-shadow: 0 0 0 3px rgba(227, 90, 31, 0.18);
+}
+
+/* ------------------------------------------------------------
+   6. Messages
+   ------------------------------------------------------------ */
 .lg-error,
 .lg-success {
-  margin-bottom: 1rem; padding: .7rem .9rem; border-radius: 10px;
-  font-size: .82rem; font-weight: 700;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
 }
-.lg-error   { background: #fff0ed; color: #a6371d; }
-.lg-success { background: #eaf6ee; color: #1f6b3a; }
+
+.lg-error {
+  background: #fff0ed;
+  color: #a6371d;
+  border: 1px solid rgba(166, 55, 29, 0.15);
+}
+
+.lg-success {
+  background: #eaf6ee;
+  color: #1f6b3a;
+  border: 1px solid rgba(31, 107, 58, 0.15);
+}
+
 .lg-error[hidden],
-.lg-success[hidden] { display: none; }
+.lg-success[hidden] {
+  display: none !important;
+}
 
+/* ------------------------------------------------------------
+   7. Submit button
+   ------------------------------------------------------------ */
 .lg-submit {
-  width: 100%; padding: 1rem; border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--caramel), var(--espresso-2));
-  color: var(--white); font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
-  box-shadow: var(--shadow-md);
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e35a1f 0%, #c4421a 55%, #4a2218 100%);
+  color: #ffffff;
+  font-family: var(--font-body, 'Manrope', sans-serif);
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(227, 90, 31, 0.32);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
 }
-.lg-submit:disabled { opacity: .6; cursor: wait; }
 
-.lg-switch {
-  margin-top: 1.2rem; text-align: center;
-  color: var(--ink-muted); font-size: .88rem;
+.lg-submit:hover:not(:disabled),
+.lg-submit:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(227, 90, 31, 0.4);
+  filter: brightness(1.05);
 }
-.lg-link {
-  padding: 0; border: 0; background: none; cursor: pointer;
-  font: inherit; font-weight: 800; color: var(--espresso);
-  text-decoration: underline; text-underline-offset: 3px;
+
+.lg-submit:active:not(:disabled) {
+  transform: translateY(0);
 }
-.lg-link:hover { color: var(--caramel); }
-.lg-link:focus-visible {
-  outline: none; border-radius: 4px;
-  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+
+.lg-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   8. Bottom switch link
+   ------------------------------------------------------------ */
+.lg-card .lg-switch {
+  margin: 1.4rem 0 0;
+  text-align: center;
+  color: #8c7568;
+  font-size: 0.88rem;
+}
+
+.lg-card .lg-switch .lg-link {
+  display: inline;
+  color: #3a1710;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.lg-card .lg-switch .lg-link:hover,
+.lg-card .lg-switch .lg-link:focus-visible {
+  color: #e35a1f;
+}
+
+.lg-card .lg-switch .lg-link:focus-visible {
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(227, 90, 31, 0.25);
+}
+
+/* ------------------------------------------------------------
+   9. Registration-only tweaks
+   (tiny adjustments so 4 fields still fit comfortably)
+   ------------------------------------------------------------ */
+#rgForm .lg-field:last-of-type {
+  margin-bottom: 0.9rem;
+}
+
+#rgForm .lg-error,
+#rgForm .lg-success {
+  margin-top: -0.1rem;
+}
+
+/* ------------------------------------------------------------
+   10. Cashier logout pill (kept for the cashier page)
+   ------------------------------------------------------------ */
+.cx-logout {
+  margin-left: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  background: rgba(250, 243, 231, 0.1);
+  border-color: rgba(244, 218, 179, 0.3);
+  color: var(--caramel-light, #f4dab3);
+  font-size: 0.75rem;
+}
+
+.cx-logout:hover {
+  background: rgba(250, 243, 231, 0.2);
+}
+
+/* ------------------------------------------------------------
+   11. Small screens
+   ------------------------------------------------------------ */
+@media (max-width: 480px) {
+  body.lg-body,
+  .lg-body {
+    padding: 1rem;
+  }
+
+  .lg-card {
+    padding: 1.9rem 1.4rem 1.6rem;
+    border-radius: 20px;
+  }
+
+  .lg-card h1 {
+    font-size: 1.7rem;
+  }
+
+  .lg-mark {
+    width: 42px;
+    height: 42px;
+    font-size: 0.92rem;
+  }
+
+  .lg-submit {
+    padding: 0.9rem;
+    font-size: 0.86rem;
+  }
+}
+
+/* ------------------------------------------------------------
+   12. Reduced motion
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .lg-field input,
+  .lg-submit,
+  .lg-link {
+    transition: none !important;
+  }
 }

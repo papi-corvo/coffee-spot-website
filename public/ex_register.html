@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coffee Spot | Staff Login</title>
+  <title>Coffee Spot | Staff Registration</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/loginform.css">
 </head>
 
+<body class="lg-body">
+  <main class="lg-card">
+    <div class="lg-brand">
+      <span class="lg-mark">CS</span>
+      <div>
+        <strong>Coffee Spot</strong>
+        <small>Staff registration</small>
+      </div>
+    </div>
+
     <!-- REGISTER -->
-<body>
-    <section id="viewRegister" hidden>
+    <section id="viewRegister">
       <h1>Create your account</h1>
       <p class="lg-sub">Set up your employee ID and a PIN to sign in to the cashier.</p>
 
@@ -38,10 +46,13 @@
         <button class="lg-submit" id="rgSubmit" type="submit">Create account</button>
       </form>
 
-      <p class="lg-switch">Already registered? <a href="#login" class="lg-link" data-view="login">Back to sign in</a></p>
+      <p class="lg-switch">
+        Already registered?
+        <a href="loginform.html" class="lg-link">Back to sign in</a>
+      </p>
     </section>
   </main>
-  </body>
 
-    <script src="js/loginform.js" defer></script>
-
+  <script src="js/registerform.js" defer></script>
+</body>
+</html>
