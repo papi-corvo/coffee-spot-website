@@ -14,6 +14,33 @@
   background: var(--linen);
   box-shadow: var(--shadow-lg);
 }
+.lg-card section[hidden] { display: none; }
+
+.lg-card section[hidden] { display: none; }
+ 
+.lg-success {
+  margin-bottom: 1rem; padding: .7rem .9rem; border-radius: 10px;
+  background: #eaf6ee; color: #1f6b3a; font-size: .82rem; font-weight: 700;
+}
+.lg-success[hidden] { display: none; }
+ 
+.lg-card .lg-switch {
+  margin-top: 1.2rem; text-align: center;
+  color: var(--ink-muted, #6b5a52); font-size: .9rem;
+}
+.lg-card .lg-switch .lg-link {
+  display: inline;
+  color: var(--espresso, #2e1410);
+  font-weight: 800;
+  text-decoration: underline; text-underline-offset: 3px;
+  cursor: pointer;
+}
+.lg-card .lg-switch .lg-link:hover { color: var(--caramel, #e35a1f); }
+.lg-card .lg-switch .lg-link:focus-visible {
+  outline: none; border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+}
+
 .lg-brand { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.4rem; }
 .lg-brand strong { display: block; color: var(--espresso); font-family: var(--font-display); }
 .lg-brand small { color: var(--ink-muted); }
@@ -43,11 +70,17 @@
   outline: none; border-color: var(--caramel);
   box-shadow: 0 0 0 3px rgba(227,90,31,.25);
 }
-.lg-error {
+
+.lg-error,
+.lg-success {
   margin-bottom: 1rem; padding: .7rem .9rem; border-radius: 10px;
-  background: #fff0ed; color: #a6371d; font-size: .82rem; font-weight: 700;
+  font-size: .82rem; font-weight: 700;
 }
-.lg-error[hidden] { display: none; }
+.lg-error   { background: #fff0ed; color: #a6371d; }
+.lg-success { background: #eaf6ee; color: #1f6b3a; }
+.lg-error[hidden],
+.lg-success[hidden] { display: none; }
+
 .lg-submit {
   width: 100%; padding: 1rem; border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--caramel), var(--espresso-2));
@@ -55,3 +88,18 @@
   box-shadow: var(--shadow-md);
 }
 .lg-submit:disabled { opacity: .6; cursor: wait; }
+
+.lg-switch {
+  margin-top: 1.2rem; text-align: center;
+  color: var(--ink-muted); font-size: .88rem;
+}
+.lg-link {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; font-weight: 800; color: var(--espresso);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.lg-link:hover { color: var(--caramel); }
+.lg-link:focus-visible {
+  outline: none; border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+}
