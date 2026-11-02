@@ -21,6 +21,12 @@
   async function fetchOrders() {
     try {
       const res = await fetch('/api/orders');
+
+      if (res.status === 401) {
+        window.location.href = '/loginform.html'; // Redirect to login if unauthorized
+        return;
+      }
+
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
       
