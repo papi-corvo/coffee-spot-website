@@ -1,0 +1,57 @@
+.lg-body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(227,90,31,.18), transparent 40%),
+    linear-gradient(135deg, var(--espresso), var(--espresso-2));
+}
+.lg-card {
+  width: min(400px, 100%);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--linen);
+  box-shadow: var(--shadow-lg);
+}
+.lg-brand { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.4rem; }
+.lg-brand strong { display: block; color: var(--espresso); font-family: var(--font-display); }
+.lg-brand small { color: var(--ink-muted); }
+.lg-mark {
+  display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--caramel), var(--espresso-2));
+  color: var(--white); font-family: var(--font-display); font-weight: 700;
+}
+.lg-card h1 { color: var(--espresso); font-size: 1.9rem; margin-bottom: .3rem; }
+.lg-sub { margin-bottom: 1.4rem; color: var(--ink-muted); font-size: .9rem; }
+
+.lg-field {
+  display: grid; gap: .35rem; margin-bottom: 1rem;
+  color: var(--espresso); font-size: .75rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.lg-field input {
+  padding: .8rem .9rem;
+  border: 1px solid rgba(46,20,16,.15);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font: 600 1rem var(--font-body);
+  letter-spacing: normal; text-transform: none;
+}
+.lg-field input:focus-visible {
+  outline: none; border-color: var(--caramel);
+  box-shadow: 0 0 0 3px rgba(227,90,31,.25);
+}
+.lg-error {
+  margin-bottom: 1rem; padding: .7rem .9rem; border-radius: 10px;
+  background: #fff0ed; color: #a6371d; font-size: .82rem; font-weight: 700;
+}
+.lg-error[hidden] { display: none; }
+.lg-submit {
+  width: 100%; padding: 1rem; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--caramel), var(--espresso-2));
+  color: var(--white); font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+  box-shadow: var(--shadow-md);
+}
+.lg-submit:disabled { opacity: .6; cursor: wait; }

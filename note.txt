@@ -28,10 +28,12 @@
 == PROJECT SETUP & INSTALLATION GUIDE (FOR TEAM MEMBERS) TO MAKE THE PROJECT RUN IN YOUR LOCAL MACHINE ==
    STEP 1: INSTALL PREREQUISITES
       Before running any terminal commands, ensure you have installed:
-      1. Node.js (Download the LTS version from nodejs.org). *This also installs `npm`.
-      2. Git (Download from git-scm.com)
+      1. Node.js (Download the LTS version from https://nodejs.org/dist/v26.13.0/node-v26.13.0-x64.msi) you must check the auto download components inside of installation. This also installs `npm`.
+      2. Git (Download from https://github.com/git-for-windows/git/releases/download/v2.56.0.windows.4/Git-2.56.0.4-64-bit.exe)
+      3. Run in terminal to download 'winget install Python.Python.3.12' in your terminal.
+      4. Run in terminal to download 'winget install Microsoft.VisualStudio.2022.BuildTools --force --override "--wait --passive --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041"'.
 
-      To verify they are installed, run these commands in your terminal:
+      To verify if they are installed, run these commands in your terminal:
       - node -v
       - npm -v
       - git --version

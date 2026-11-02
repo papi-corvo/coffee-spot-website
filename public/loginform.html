@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Spot | Staff Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/loginform.css">
+</head>
+
+<body class="lg-body">
+  <main class="lg-card">
+    <div class="lg-brand">
+      <span class="lg-mark">CS</span>
+      <div><strong>Coffee Spot</strong><small>Staff sign-in</small></div>
+    </div>
+
+    <h1>Start your shift</h1>
+    <p class="lg-sub">Enter your employee ID and PIN to open the cashier.</p>
+
+    <form id="lgForm" novalidate>
+      <label class="lg-field">Employee ID
+        <input id="lgCode" type="text" autocomplete="username" autocapitalize="characters" required>
+      </label>
+
+      <label class="lg-field">PIN
+        <input id="lgPin" type="password" inputmode="numeric" autocomplete="current-password" required>
+      </label>
+
+      <p class="lg-error" id="lgError" role="alert" hidden></p>
+
+      <button class="lg-submit" id="lgSubmit" type="submit">Start shift</button>
+    </form>
+  </main>
+
+  <script src="js/loginform.js" defer></script>
+</body>
+</html>

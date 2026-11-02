@@ -10,7 +10,7 @@ const path = require('path');
 const { db } = require('../src/db/db');
 
 const DEFINITION = /(?:(?:const|let|var)\s+|window\.)PRODUCT_INFO\s*=\s*\{/;
-const jsDir = path.join(__dirname, '..', 'Javascript');
+const jsDir = path.join(__dirname, '..', 'public/js/');
 
 let file = process.argv[2];
 if (!file) {

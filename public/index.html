@@ -11,7 +11,7 @@
 <body class="order-setup-active">
 
   <!-- ===== ORDER START: choose delivery or pickup before entering the menu ===== -->
-  <div class="order-start-overlay" id="orderStartOverlay" role="dialog" aria-modal="true" aria-labelledby="orderStartTitle">
+  <div class="order-start-overlay is-hidden" id="orderStartOverlay" role="dialog" aria-modal="true" aria-labelledby="orderStartTitle">
     <div class="order-start-card">
 
       <div class="order-start-brand">
@@ -141,7 +141,7 @@
 
 
   <!-- ===== FEATURED TASTE SCREEN: appears after delivery or pickup setup ===== -->
-  <section class="featured-taste-screen" id="featuredTasteScreen" aria-hidden="true">
+  <section class="featured-taste-screen is-visible" id="featuredTasteScreen" aria-hidden="true">
     <div class="featured-taste-inner">
 
       <div class="featured-taste-copy">
@@ -268,6 +268,7 @@
           <span id="menuSearchHint">Find any product instantly.</span>
           <strong id="menuSearchCount">70 items</strong>
         </div>
+        
       </section>
 
       <!-- ===== Coffee Selection (includes Special Drinks and Frappe) ===== -->
@@ -279,7 +280,7 @@
         </div>
 
         <ul class="product-grid" id="coffee-items">
-          <li class="product-row" data-item-name="Cafe Americano">
+          <li class="product-row" data-item-name="Cafe Americano" data-item-id="1">
             <div class="product-icon-wrap">
               <img src="image/americano-1024x576.jpeg" alt="Cafe Americano">
             </div>
@@ -299,7 +300,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Espresso">
+          <li class="product-row" data-item-name="Espresso" data-item-id="2">
             <div class="product-icon-wrap">
               <img src="image/Espresooimg.jpg" alt="Espresso">
             </div>
@@ -319,7 +320,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Double Espresso">
+          <li class="product-row" data-item-name="Double Espresso" data-item-id="3">
             <div class="product-icon-wrap">
               <img src="image/01-Double-Espresso.jpg" alt="Double Espresso">
             </div>
@@ -339,7 +340,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Cafe Latte">
+          <li class="product-row" data-item-name="Cafe Latte" data-item-id="4">
             <div class="product-icon-wrap">
               <img src="image/Cafe Latte.jpg.jpeg" alt="Cafe Latte">
             </div>
@@ -359,7 +360,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Mocha Latte">
+          <li class="product-row" data-item-name="Mocha Latte" data-item-id="5">
             <div class="product-icon-wrap">
               <img src="image/WO7ZFQHYNS2FISSKD76GW2UC.jpg" alt="Mocha Latte">
             </div>
@@ -379,7 +380,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Cappuccino">
+          <li class="product-row" data-item-name="Cappuccino" data-item-id="6">
             <div class="product-icon-wrap">
               <img src="image/how-to-make-cappuccino-005.jpg" alt="Cappuccino">
             </div>
@@ -408,7 +409,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Caramel Macchiato">
+          <li class="product-row" data-item-name="Caramel Macchiato" data-item-id="7">
             <div class="product-icon-wrap">
               <img src="image/better-than-starbucks-caramel-macchiato-image.jpg" alt="Caramel Macchiato">
             </div>
@@ -428,7 +429,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="English Toffee">
+          <li class="product-row" data-item-name="English Toffee" data-item-id="8">
             <div class="product-icon-wrap">
               <img src="image/1330-2.jpg" alt="English Toffee">
             </div>
@@ -448,7 +449,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Matcha Latte">
+          <li class="product-row" data-item-name="Matcha Latte" data-item-id="9">
             <div class="product-icon-wrap">
               <img src="image/Matcha-Latte-4589-III-1365x2048.jpg" alt="Matcha Latte">
             </div>
@@ -468,7 +469,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Matcha Caramel">
+          <li class="product-row" data-item-name="Matcha Caramel" data-item-id="10">
             <div class="product-icon-wrap">
               <img src="image/Recipes_for_Pinterest_8.jpg" alt="Matcha Caramel">
             </div>
@@ -488,7 +489,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Hazelnut">
+          <li class="product-row" data-item-name="Hazelnut" data-item-id="11">
             <div class="product-icon-wrap">
               <img src="image/blog-hazelnut-cappuccino-recipe-cover_1aad1fc3-361c-48b5-8db4-5784db32e44f.jpg" alt="Hazelnut">
             </div>
@@ -508,7 +509,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Macadamia">
+          <li class="product-row" data-item-name="Macadamia" data-item-id="12">
             <div class="product-icon-wrap">
               <img src="image/2411-Macadamia-milk-iced-coffee-27-scaled-qztodveb7ikotxi1guohx4hb3xgxiygjjdurxdx7wg.jpeg" alt="Macadamia">
             </div>
@@ -528,7 +529,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Roasted Almond">
+          <li class="product-row" data-item-name="Roasted Almond" data-item-id="13">
             <div class="product-icon-wrap">
               <img src="image/Roasted Almond_NoJar_Recipe_Grid View Desktop 468x468.png" alt="Roasted Almond">
             </div>
@@ -548,7 +549,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Hot Bellagio Chocolate">
+          <li class="product-row" data-item-name="Hot Bellagio Chocolate" data-item-id="14">
             <div class="product-icon-wrap">
               <img src="image/20180313163609_201803131636091879895442.jpg" alt="Hot Bellagio Chocolate">
             </div>
@@ -571,7 +572,7 @@
           <h3 class="group-header">Special Drinks</h3>
           <p class="group-desc">Special drinks for special occasions</p>
 
-          <li class="product-row" data-item-name="Barista Drink">
+          <li class="product-row" data-item-name="Barista Drink" data-item-id="15">
             <div class="product-icon-wrap">
               <img src="image/104907_PR_Barista_Noblesse_Coffee_Mug_Dinzler_29.jpg" alt="Barista Drink">
             </div>
@@ -591,7 +592,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Dirty Matcha">
+          <li class="product-row" data-item-name="Dirty Matcha" data-item-id="16">
             <div class="product-icon-wrap">
               <img src="image/DirtyMatcha1-978x1300.jpg" alt="Dirty Matcha">
             </div>
@@ -611,7 +612,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Salted Caramel">
+          <li class="product-row" data-item-name="Salted Caramel" data-item-id="17">
             <div class="product-icon-wrap">
               <img src="image/images2.jpg" alt="Salted Caramel">
             </div>
@@ -631,7 +632,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Dark Chocolate">
+          <li class="product-row" data-item-name="Dark Chocolate" data-item-id="18">
             <div class="product-icon-wrap">
               <img src="image/88316599.jpg" alt="Dark Chocolate">
             </div>
@@ -651,7 +652,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Biscoff Latte">
+          <li class="product-row" data-item-name="Biscoff Latte" data-item-id="19">
             <div class="product-icon-wrap">
               <img src="image/images3.jpg" alt="Biscoff Latte">
             </div>
@@ -676,7 +677,7 @@
 
           <h4>Milk-Based Frappe</h4>
 
-          <li class="product-row" data-item-name="Cookies &amp; Cream">
+          <li class="product-row" data-item-name="Cookies &amp; Cream" data-item-id="20">
             <div class="product-icon-wrap">
               <img src="image/1745700481890-pr6fy2pw.jpg" alt="Cookies &amp; Cream">
             </div>
@@ -696,7 +697,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Matcha">
+          <li class="product-row" data-item-name="Matcha" data-item-id="21">
             <div class="product-icon-wrap">
               <img src="image/0010418_matcha-frappe_460.jpeg" alt="Matcha">
             </div>
@@ -716,7 +717,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Double Chocolate">
+          <li class="product-row" data-item-name="Double Chocolate" data-item-id="22">
             <div class="product-icon-wrap">
               <img src="image/Chocolate-Chip-Frappe-2-1.jpg" alt="Double Chocolate">
             </div>
@@ -736,7 +737,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Vanilla Bean Hazelnut">
+          <li class="product-row" data-item-name="Vanilla Bean Hazelnut" data-item-id="23">
             <div class="product-icon-wrap">
               <img src="image/White-Choc-Macadamia-Frappe-recipe-thumb-350x350.png" alt="Vanilla Bean Hazelnut">
             </div>
@@ -756,7 +757,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Strawberry">
+          <li class="product-row" data-item-name="Strawberry" data-item-id="24">
             <div class="product-icon-wrap">
               <img src="image/how-to-make-a-strawberry-frappuccino-05-1356x2048.jpg" alt="Strawberry">
             </div>
@@ -778,7 +779,7 @@
 
           <h4>Coffee-Based Frappe</h4>
 
-          <li class="product-row" data-item-name="Mocha Crumble">
+          <li class="product-row" data-item-name="Mocha Crumble" data-item-id="25">
             <div class="product-icon-wrap">
               <img src="image/Mocha-Cookie-Crumble-Frappuccino-1.jpg" alt="Mocha Crumble">
             </div>
@@ -798,7 +799,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Salted Caramel Frappe">
+          <li class="product-row" data-item-name="Salted Caramel Frappe" data-item-id="26">
             <div class="product-icon-wrap">
               <img src="image/nescafe-gold-salted-caramel-recipe-banner_1066x1066.jpg" alt="Salted Caramel Frappe">
             </div>
@@ -818,7 +819,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Mocha Frappe">
+          <li class="product-row" data-item-name="Mocha Frappe" data-item-id="27">
             <div class="product-icon-wrap">
               <img src="image/486866910_1077960434350462_8756293626221428536_n.jpg" alt="Mocha Frappe">
             </div>
@@ -838,7 +839,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Butterscotch">
+          <li class="product-row" data-item-name="Butterscotch" data-item-id="28">
             <div class="product-icon-wrap">
               <img src="image/september-e1549972742960-1300x700.jpg" alt="Butterscotch">
             </div>
@@ -869,7 +870,7 @@
         </div>
 
         <ul class="product-grid" id="soda-items">
-          <li class="product-row" data-item-name="Passion Fruit">
+          <li class="product-row" data-item-name="Passion Fruit" data-item-id="29">
             <div class="product-icon-wrap">
               <img src="image/juicing-passion-fruit-2-1122x1536.jpg" alt="Passion Fruit">
             </div>
@@ -889,7 +890,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Green Apple">
+          <li class="product-row" data-item-name="Green Apple" data-item-id="30">
             <div class="product-icon-wrap">
               <img src="image/Sours_-_GREEN-8_520x500_f1f5fa66-a34c-4772-b410-c7d62401d3cf_1024x1024.jpg" alt="Green Apple">
             </div>
@@ -909,7 +910,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Minty Peach">
+          <li class="product-row" data-item-name="Minty Peach" data-item-id="31">
             <div class="product-icon-wrap">
               <img src="image/Peachy-Mint-Iced-Green-Tea-600x902.jpg" alt="Minty Peach">
             </div>
@@ -929,7 +930,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Scarlet Berry">
+          <li class="product-row" data-item-name="Scarlet Berry" data-item-id="32">
             <div class="product-icon-wrap">
               <img src="image/512x.jpg" alt="Scarlet Berry">
             </div>
@@ -949,7 +950,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Lychee">
+          <li class="product-row" data-item-name="Lychee" data-item-id="33">
             <div class="product-icon-wrap">
               <img src="image/images.jpg" alt="Lychee">
             </div>
@@ -980,7 +981,7 @@
         </div>
 
         <ul class="product-grid" id="tea-items">
-          <li class="product-row" data-item-name="Green Tea">
+          <li class="product-row" data-item-name="Green Tea" data-item-id="34">
             <div class="product-icon-wrap">
               <img src="image/green-tea-superfoods-royalty-free-image-1772220722.jpg" alt="Green Tea">
             </div>
@@ -1000,7 +1001,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Black Tea">
+          <li class="product-row" data-item-name="Black Tea" data-item-id="35">
             <div class="product-icon-wrap">
               <img src="image/Black-Tea-Gettyimages-1471979246-Thumb.jpg" alt="Black Tea">
             </div>
@@ -1020,7 +1021,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="White Tea">
+          <li class="product-row" data-item-name="White Tea" data-item-id="36">
             <div class="product-icon-wrap">
               <img src="image/feature_what-is-white-tea_48236143-565f-4907-9e6f-7dfe8c502c27.jpg" alt="White Tea">
             </div>
@@ -1053,7 +1054,7 @@
         <ul class="product-grid" id="pastries-items">
           <h3 class="group-header">Cheesecake</h3>
 
-          <li class="product-row" data-item-name="Blueberry Cheesecake">
+          <li class="product-row" data-item-name="Blueberry Cheesecake" data-item-id="37">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Blueberry Cheesecake">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1073,7 +1074,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Biscoff Cheesecake">
+          <li class="product-row" data-item-name="Biscoff Cheesecake" data-item-id="38">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Biscoff Cheesecake">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1095,7 +1096,7 @@
 
           <h3 class="group-header">Brownies</h3>
 
-          <li class="product-row" data-item-name="Brownie Cheesecake">
+          <li class="product-row" data-item-name="Brownie Cheesecake" data-item-id="39">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Brownie Cheesecake">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1115,7 +1116,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Smores Brownie">
+          <li class="product-row" data-item-name="Smores Brownie" data-item-id="40">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Smores Brownie">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1135,7 +1136,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Biscoff Brownie">
+          <li class="product-row" data-item-name="Biscoff Brownie" data-item-id="41">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Biscoff Brownie">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1158,7 +1159,7 @@
           <h3 class="group-header">Ala Mode</h3>
           <p class="group-desc">Served hot with vanilla ice cream</p>
 
-          <li class="product-row" data-item-name="Chocolate Chip Ala Mode">
+          <li class="product-row" data-item-name="Chocolate Chip Ala Mode" data-item-id="42">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Chocolate Chip Ala Mode">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1178,7 +1179,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Brownie Ala Mode">
+          <li class="product-row" data-item-name="Brownie Ala Mode" data-item-id="43">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Brownie Ala Mode">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1198,7 +1199,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Apple Turnover">
+          <li class="product-row" data-item-name="Apple Turnover" data-item-id="44">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Apple Turnover">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1220,7 +1221,7 @@
 
           <h3 class="group-header">Cookies</h3>
 
-          <li class="product-row" data-item-name="Chocolate Chip Cookie">
+          <li class="product-row" data-item-name="Chocolate Chip Cookie" data-item-id="45">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Chocolate Chip Cookie">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1240,7 +1241,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Matcha Cookie">
+          <li class="product-row" data-item-name="Matcha Cookie" data-item-id="46">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Matcha Cookie">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1260,7 +1261,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Red Velvet">
+          <li class="product-row" data-item-name="Red Velvet" data-item-id="47">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Red Velvet">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1280,7 +1281,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Double Chocolate Walnut">
+          <li class="product-row" data-item-name="Double Chocolate Walnut" data-item-id="48">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Double Chocolate Walnut">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1302,7 +1303,7 @@
 
           <h3 class="group-header">Others</h3>
 
-          <li class="product-row" data-item-name="Churros">
+          <li class="product-row" data-item-name="Churros" data-item-id="49">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Churros">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1322,7 +1323,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Cheese Roll">
+          <li class="product-row" data-item-name="Cheese Roll" data-item-id="50">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Cheese Roll">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1342,7 +1343,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Pain Au Chocolat">
+          <li class="product-row" data-item-name="Pain Au Chocolat" data-item-id="51">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Pain Au Chocolat">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1362,7 +1363,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Cinnamon Roll">
+          <li class="product-row" data-item-name="Cinnamon Roll" data-item-id="52">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Cinnamon Roll">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1382,7 +1383,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Choco Crinkles">
+          <li class="product-row" data-item-name="Choco Crinkles" data-item-id="53">
             <div class="product-icon-wrap">
               <img src="image/pastry-placeholder.svg" alt="Choco Crinkles">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1415,7 +1416,7 @@
         <ul class="product-grid" id="food-menu-items">
           <h3 class="group-header">Rice Meals</h3>
 
-          <li class="product-row" data-item-name="Chicken Wings">
+          <li class="product-row" data-item-name="Chicken Wings" data-item-id="54">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Chicken Wings">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1460,7 +1461,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Chicken Tonkatsu">
+          <li class="product-row" data-item-name="Chicken Tonkatsu" data-item-id="55">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Chicken Tonkatsu">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1481,7 +1482,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Loaded Burger Steak">
+          <li class="product-row" data-item-name="Loaded Burger Steak" data-item-id="56">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Loaded Burger Steak">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1504,7 +1505,7 @@
           <h3 class="group-header">Pasta</h3>
           <p class="group-desc">Served w/ Garlic Bread</p>
 
-          <li class="product-row" data-item-name="Chicken Alfredo">
+          <li class="product-row" data-item-name="Chicken Alfredo" data-item-id="57">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Chicken Alfredo">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1524,7 +1525,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Shrimp Scampi">
+          <li class="product-row" data-item-name="Shrimp Scampi" data-item-id="58">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Shrimp Scampi">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1544,7 +1545,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Tuna Pasta">
+          <li class="product-row" data-item-name="Tuna Pasta" data-item-id="59">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Tuna Pasta">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1564,7 +1565,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Penne Marinara">
+          <li class="product-row" data-item-name="Penne Marinara" data-item-id="60">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Penne Marinara">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1587,7 +1588,7 @@
           <h3 class="group-header">Sandwich</h3>
           <p class="group-desc">A La Carte</p>
 
-          <li class="product-row" data-item-name="Katsu Burger">
+          <li class="product-row" data-item-name="Katsu Burger" data-item-id="61">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Katsu Burger">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1626,7 +1627,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Beef Burger">
+          <li class="product-row" data-item-name="Beef Burger" data-item-id="62">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Beef Burger">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1646,7 +1647,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Egg Hashbrown">
+          <li class="product-row" data-item-name="Egg Hashbrown" data-item-id="63">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Egg Hashbrown">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1666,7 +1667,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Grilled Cheese">
+          <li class="product-row" data-item-name="Grilled Cheese" data-item-id="64">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Grilled Cheese">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1686,7 +1687,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Tuna Melt">
+          <li class="product-row" data-item-name="Tuna Melt" data-item-id="65">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Tuna Melt">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1706,7 +1707,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Parker Rolls">
+          <li class="product-row" data-item-name="Parker Rolls" data-item-id="66">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Parker Rolls">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1728,7 +1729,7 @@
 
           <h3 class="group-header">Appetizers</h3>
 
-          <li class="product-row" data-item-name="French Fries">
+          <li class="product-row" data-item-name="French Fries" data-item-id="67">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="French Fries">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1764,7 +1765,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Cheesy Nachos">
+          <li class="product-row" data-item-name="Cheesy Nachos" data-item-id="68">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Cheesy Nachos">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1796,7 +1797,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Quesadilla">
+          <li class="product-row" data-item-name="Quesadilla" data-item-id="69">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Quesadilla">
               <span class="product-icon-badge" aria-hidden="true"></span>
@@ -1816,7 +1817,7 @@
             </div>
           </li>
 
-          <li class="product-row" data-item-name="Bacon Cheese Fries">
+          <li class="product-row" data-item-name="Bacon Cheese Fries" data-item-id="70">
             <div class="product-icon-wrap">
               <img src="image/food-placeholder.svg" alt="Bacon Cheese Fries">
               <span class="product-icon-badge" aria-hidden="true"></span>
