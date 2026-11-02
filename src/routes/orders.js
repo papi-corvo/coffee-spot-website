@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const orderService = require('../db/orders');
+const {verifyToken} = require('../middleware/authMiddleware');
 
 // POST: Customer places an order
 router.post('/', (req, res) => {
@@ -14,7 +15,7 @@ router.post('/', (req, res) => {
 });
 
 // GET: Cashier fetches orders
-router.get('/', (req, res) => {
+router.get('/', verifyToken, (req, res) => {
   try {
     const orders = orderService.listOrders({ status: req.query.status });
     res.json(orders);
@@ -24,7 +25,7 @@ router.get('/', (req, res) => {
 });
 
 // GET a single order by code
-router.get('/:code', (req, res) => {
+router.get('/:code', verifyToken, (req, res) => {
   try {
     const order = orderService.getOrder(req.params.code);
     if (!order) return res.status(404).json({ error: 'Order not found' });
@@ -35,7 +36,7 @@ router.get('/:code', (req, res) => {
 });
 
 // POST a payment for an order
-router.post('/:code/pay', (req, res) => {
+router.post('/:code/pay', verifyToken, (req, res) => {
   try {
     const paidOrder = orderService.payOrder(req.params.code, req.body);
     res.json(paidOrder);
@@ -45,7 +46,7 @@ router.post('/:code/pay', (req, res) => {
 });
 
 // POST: Update order status (Accept, Reject, Void)
-router.post('/:code/status', (req, res) => {
+router.post('/:code/status', verifyToken, (req, res) => {
   try {
     const { status, reason, staffId } = req.body;
     const updatedOrder = orderService.setStatus(req.params.code, status, { reason, staffId });
