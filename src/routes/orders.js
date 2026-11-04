@@ -38,7 +38,8 @@ router.get('/:code', verifyToken, (req, res) => {
 // POST a payment for an order
 router.post('/:code/pay', verifyToken, (req, res) => {
   try {
-    const paidOrder = orderService.payOrder(req.params.code, req.body);
+    const staffId = req.staff.id; // Assuming the staff ID is available in the token payload
+    const paidOrder = orderService.payOrder(req.params.code, { ...req.body, staffId });
     res.json(paidOrder);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -48,7 +49,8 @@ router.post('/:code/pay', verifyToken, (req, res) => {
 // POST: Update order status (Accept, Reject, Void)
 router.post('/:code/status', verifyToken, (req, res) => {
   try {
-    const { status, reason, staffId } = req.body;
+    const { status, reason} = req.body;
+    const staffId = req.staff.id; // Assuming the staff ID is available in the token payload
     const updatedOrder = orderService.setStatus(req.params.code, status, { reason, staffId });
     res.json(updatedOrder);
   } catch (error) {

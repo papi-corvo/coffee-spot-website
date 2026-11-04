@@ -1,14 +1,3 @@
-/* =====================================================================
-   db/orders.js — everything about orders EXCEPT payment and receipts (Step 4).
-     createOrder(input)             customer places an order
-     getOrder(code) / listOrders()  read orders
-     replaceItems(code, items)      cashier edits the items
-     setNote(code, note)
-     setStatus(code, to, {reason})  accept / reject / void / ready
-     quoteTotals(code, discountType) subtotal, discount, total
-   Every function returns orders in the same shape cashier.js and receipt.js already
-   read (prices in pesos, type 'Pick-up'/'Delivery', id = the order code).
-   ===================================================================== */
 const crypto = require('crypto');
 const { db } = require('./db');
 const { AppError } = require('./errors');
@@ -217,7 +206,7 @@ function quoteTotals(code, discountType = 'regular') {
            sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
 }
 
-function payOrder(code, { method, tenderedCentavos, staffId = null, discountType = 'regular' } = {}) {
+function payOrder(code, { method, tenderedCentavos, staffId, discountType = 'regular' } = {}) {
   return db.transaction(() => {
     const o = rowByCode(code);
     if (o.status === 'done') throw new AppError('This order is already paid.', 409);
@@ -230,21 +219,74 @@ function payOrder(code, { method, tenderedCentavos, staffId = null, discountType
     if (method === 'cash' && tenderedCentavos < totalCentavos) {
       throw new AppError('Cash tendered is less than the total amount.');
     }
-
     const changeCentavos = method === 'cash' ? (tenderedCentavos - totalCentavos) : null;
+
+    // ==========================================
+    // NEW: RECEIPT GENERATION LOGIC
+    // ==========================================
+    const currentYear = new Date().getFullYear();
+    
+    // Get the current sequence for this year, or create it if it doesn't exist
+    let seqRow = db.prepare('SELECT last_number FROM receipt_sequences WHERE year = ?').get(currentYear);
+    if (!seqRow) {
+      db.prepare('INSERT INTO receipt_sequences (year, last_number) VALUES (?, 0)').run(currentYear);
+      seqRow = { last_number: 0 };
+    }
+
+    const nextNumber = seqRow.last_number + 1;
+    
+    // Update the sequence for the next order
+    db.prepare('UPDATE receipt_sequences SET last_number = ? WHERE year = ?').run(nextNumber, currentYear);
+
+    // Format: R-2026-000001 (Padded to 6 digits)
+    const receiptNo = `R-${currentYear}-${String(nextNumber).padStart(6, '0')}`;
+
+    // Create a JSON snapshot of the entire order for BIR compliance
+    const shopSettings = settings.all(); // Gets your store name, TIN, address from the settings table
+    const items = db.prepare('SELECT name, size, unit_price_centavos, quantity FROM order_items WHERE order_id = ?').all(o.id);
+    
+    const snapshot = {
+      shop: shopSettings,
+      receipt_no: receiptNo,
+      order_code: o.code,
+      date: new Date().toISOString(),
+      cashier_id: staffId,
+      items: items,
+      totals: totals,
+      payment: { method, tenderedCentavos, change: changeCentavos }
+    };
+
+    // Insert the receipt into the database
+    db.prepare(`
+      INSERT INTO receipts (
+        receipt_no, order_id, issued_by, subtotal_centavos, discount_centavos, total_centavos, snapshot_json
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      receiptNo,
+      o.id,
+      staffId || null,
+      totals.subCentavos,
+      totals.discCentavos,
+      totalCentavos,
+      JSON.stringify(snapshot)
+    );
+    // ==========================================
+    // END NEW RECEIPT LOGIC
+    // ==========================================
 
     // 2. Insert into payments table
     db.prepare(`
       INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, staff_id)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(o.id, method, totalCentavos, tenderedCentavos || totalCentavos, changeCentavos, staffId);
+    `).run(o.id, method, totalCentavos, tenderedCentavos || totalCentavos, changeCentavos, staffId || null);
 
-    // 3. Update order status to 'done'
+    // 3. Update order status
     db.prepare(`UPDATE orders SET status = 'done', updated_at = ${NOW} WHERE id = ?`).run(o.id);
-    history(o.id, o.status, 'done', staffId, 'Order paid');
+    
+    // 4. Add to history
+    history(o.id, o.status, 'done', staffId || null, 'Order paid');
 
-    // (Note: We will add receipt generation in the next step)
-
+    // 5. Return the hydrated order (which now includes the receiptNo)
     return hydrate([db.prepare('SELECT * FROM orders WHERE id = ?').get(o.id)])[0];
   })();
 }

@@ -1,30 +1,21 @@
 /* =====================================================================
    COFFEE SPOT RECEIPT — receipt.js
-   Load in cashier.html BEFORE cashier.js:
-     <script src="Javascript/receipt.js" defer></script>
-     <script src="Javascript/cashier.js" defer></script>
-   Use:  CoffeeSpotReceipt.print(order)
-   Reads the order object cashier.js already saves (items, totals,
-   discount, payment, receiptNo, paidAt ...). It never recalculates
-   a paid order, so a reprint always matches the original.
    ===================================================================== */
 (() => {
   'use strict';
 
-  /* ---------- Edit these ---------- */
   const BUSINESS = {
     name: 'Coffee Spot',
     address: '2124 Tayabas - Lucena Road, Lucena City',
-    phone: '',                       // e.g. '0912 345 6789'
-    tin: '000-000-000-000',          // your registered TIN
+    phone: '',                       
+    tin: '000-000-000-000',          
     website: '',
   };
-  const CASHIER = 'Maria S.';        // later: read from your login/shift data
-  const VAT_REGISTERED = false;      // true shows the VAT breakdown
+  const CASHIER = 'Maria S.';        
+  const VAT_REGISTERED = false;      
   const VAT_RATE = 0.12;
   const FOOTER_NOTE = 'Thank you! Come again.';
 
-  /* ---------- Helpers ---------- */
   const peso = (n) => '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const row = (l, r, cls = '') => `<div class="csr-row ${cls}"><span>${l}</span><span>${r}</span></div>`;
@@ -32,11 +23,14 @@
   const DISCOUNT = { pwd: 'PWD discount (20%)', senior: 'Senior discount (20%)' };
 
   function amounts(o) {
-    if (o.totals) return o.totals;                       // stored when paid
+    if (o.totals) return o.totals;                       
     const sub = o.items.reduce((s, i) => s + i.price * i.qty, 0);
-    return { sub, disc: 0, total: sub };                 // unpaid order slip
+    return { sub, disc: 0, total: sub };                 
   }
 
+  // ==========================================
+  // 1. THERMAL PRINT BUILD LOGIC (Restored)
+  // ==========================================
   function build(o) {
     const paid = o.status === 'done';
     const t = amounts(o);
@@ -130,26 +124,112 @@
     window.print();
   }
 
-  window.CoffeeSpotReceipt = { build, print };
+  // ==========================================
+  // 2. GCASH-STYLE MODAL LOGIC
+  // ==========================================
+  function showModal(o, payMethodOverride) {
+    if (!o) return;
+    window.currentReceiptOrder = o; // Save for the print button
+    
+    const t = amounts(o);
+    const when = new Date(o.paidAt || Date.now());
+
+    // Populate Meta
+    document.getElementById('rcpNo').textContent = o.receiptNo || 'N/A';
+    document.getElementById('rcpOrderCode').textContent = o.id;
+    document.getElementById('rcpDate').textContent = when.toLocaleString('en-PH');
+    document.getElementById('rcpCashier').textContent = CASHIER;
+
+    // Populate Items
+    document.getElementById('rcpItems').innerHTML = o.items.map(i => `
+      <div class="rcp-item">
+        <span class="rcp-item-qty">${i.qty}x</span>
+        <span class="rcp-item-name">${esc(i.name)} (${esc(i.size)})</span>
+        <span>${peso(i.price * i.qty)}</span>
+      </div>
+    `).join('');
+
+    // Populate Totals
+    document.getElementById('rcpSubtotal').textContent = peso(t.sub);
+    document.getElementById('rcpDiscount').textContent = '-' + peso(t.disc);
+    document.getElementById('rcpTotal').textContent = peso(t.total);
+
+    // Populate Payment
+    if (o.payment) {
+      const methodUsed = payMethodOverride || o.payment.method;
+      document.getElementById('rcpPaymentMethod').textContent = (METHOD[methodUsed] || methodUsed).toUpperCase();
+      
+      const cashRow = document.getElementById('rcpCashRow');
+      const changeRow = document.getElementById('rcpChangeRow');
+
+      if (methodUsed === 'cash') {
+        document.getElementById('rcpCash').textContent = peso(o.payment.cash);
+        document.getElementById('rcpChange').textContent = peso(Math.max(0, o.payment.cash - t.total));
+        cashRow.style.display = 'flex';
+        changeRow.style.display = 'flex';
+      } else {
+        cashRow.style.display = 'none';
+        changeRow.style.display = 'none';
+      }
+    }
+
+    document.getElementById('receiptOverlay').hidden = false;
+    document.getElementById('receiptModal').hidden = false;
+  }
+
+  function hideModal() {
+    document.getElementById('receiptOverlay').hidden = true;
+    document.getElementById('receiptModal').hidden = true;
+  }
+
+  // Expose functions
+  window.CoffeeSpotReceipt = { build, print, showModal, hideModal };
+
+  // Listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('rcpCloseBtn')?.addEventListener('click', hideModal);
+    document.getElementById('receiptOverlay')?.addEventListener('click', hideModal);
+    
+    document.getElementById('rcpPrintBtn')?.addEventListener('click', () => {
+      if (window.currentReceiptOrder) {
+        print(window.currentReceiptOrder);
+      }
+    });
+    
+    document.getElementById('rcpDownloadBtn')?.addEventListener('click', () => {
+      const captureArea = document.getElementById('receiptCaptureArea');
+      if (!captureArea || typeof html2canvas === 'undefined') return;
+      
+      html2canvas(captureArea).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Receipt-${document.getElementById('rcpOrderCode').textContent}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+  });
+
 })();
 
+// Lookup logic (keep as is)
 (() => {
-      const form = document.getElementById('cxLookupForm');
-      const input = document.getElementById('cxLookupInput');
-      const btn = document.getElementById('cxLookupBtn');
-      const out = document.getElementById('cxLookupResult');
-      const go = async () => {
-        const ref = input.value.trim();
-        if (!ref) { out.textContent = 'Enter an order or receipt number.'; return; }
-        out.textContent = 'Looking up…';
-        try {
-          const o = await CoffeeSpotAPI.receipt(ref);
-          if (!o) { out.textContent = 'No order found for “' + ref + '”.'; return; }
-          out.innerHTML = `Found <b>${o.id}</b> · ${o.status} ·
-            <button type="button" class="cx-btn" id="cxReprint">Print receipt</button>`;
-          document.getElementById('cxReprint').addEventListener('click', () => CoffeeSpotReceipt.print(o));
-        } catch (e) { out.textContent = 'Lookup failed: ' + e.message; }
-      };
-      btn.addEventListener('click', go);
-      form.addEventListener('submit', (e) => { e.preventDefault(); go(); });
-    })();
+  const form = document.getElementById('cxLookupForm');
+  if(!form) return;
+  const input = document.getElementById('cxLookupInput');
+  const btn = document.getElementById('cxLookupBtn');
+  const out = document.getElementById('cxLookupResult');
+  const go = async () => {
+    const ref = input.value.trim();
+    if (!ref) { out.textContent = 'Enter an order or receipt number.'; return; }
+    out.textContent = 'Looking up…';
+    try {
+      const o = await CoffeeSpotAPI.receipt(ref);
+      if (!o) { out.textContent = 'No order found for “' + ref + '”.'; return; }
+      out.innerHTML = `Found <b>${o.id}</b> · ${o.status} ·
+        <button type="button" class="cx-btn" id="cxReprint">Print receipt</button>`;
+      document.getElementById('cxReprint').addEventListener('click', () => CoffeeSpotReceipt.print(o));
+    } catch (e) { out.textContent = 'Lookup failed: ' + e.message; }
+  };
+  btn.addEventListener('click', go);
+  form.addEventListener('submit', (e) => { e.preventDefault(); go(); });
+})();
