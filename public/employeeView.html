@@ -190,7 +190,51 @@
 
   </div><!-- /#cxApp -->
 
-  <script src="js/cashier.js" defer></script>
+  <!-- ===== GCASH-STYLE RECEIPT MODAL ===== -->
+  <div class="receipt-overlay" id="receiptOverlay" hidden></div>
+  <div class="receipt-modal" id="receiptModal" role="dialog" aria-modal="true" hidden>
+    <div class="receipt-card" id="receiptCaptureArea">
+      <div class="receipt-header">
+        <h2>Coffee Spot</h2>
+        <p>Gulang-Gulang, Lucena City</p>
+        <p>TIN: 000-000-000-000</p>
+      </div>
+
+      <div class="receipt-meta">
+        <div><span>Receipt No:</span> <strong id="rcpNo"></strong></div>
+        <div><span>Order Code:</span> <strong id="rcpOrderCode"></strong></div>
+        <div><span>Date:</span> <span id="rcpDate"></span></div>
+        <div><span>Cashier:</span> <span id="rcpCashier"></span></div>
+      </div>
+
+      <div class="receipt-items" id="rcpItems"></div>
+
+      <div class="receipt-totals">
+        <div><span>Subtotal</span> <span id="rcpSubtotal"></span></div>
+        <div><span>Discount</span> <span id="rcpDiscount"></span></div>
+        <div class="rcp-grand-total"><span>Total</span> <span id="rcpTotal"></span></div>
+        <div><span>Payment</span> <span id="rcpPaymentMethod"></span></div>
+        <div id="rcpCashRow"><span>Cash</span> <span id="rcpCash"></span></div>
+        <div id="rcpChangeRow"><span>Change</span> <span id="rcpChange"></span></div>
+      </div>
+
+      <div class="receipt-footer">
+        <p>This serves as your Official Receipt.</p>
+        <p>Thank you for choosing Coffee Spot!</p>
+      </div>
+    </div>
+
+    <div class="receipt-actions">
+      <button type="button" class="cx-btn" id="rcpCloseBtn">Close</button>
+      <button type="button" class="cx-btn cx-btn--primary" id="rcpPrintBtn">Print</button>
+      <button type="button" class="cx-btn cx-btn--primary" id="rcpDownloadBtn">Save as Image</button>
+    </div>
+  </div>
+
+  <!-- FOR THE IMAGE DOWNLOAD -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <script src="js/receipt.js" defer></script>
+  <script src="js/cashier.js" defer></script>
 </body>
 </html>

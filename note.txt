@@ -19,6 +19,10 @@
       7. git push -u origin [branch name you're in] - this is the crucial part for pushing in someone's repo to out main github.
       8. git switch main or [another branch] - for switching either to main or preffered branch.
 
+    IF YOU'RE IN ANOTHER BRANCH:
+      IF YOU WANT AN UPDATE WHILE WORKING ON SPECIFIC TASK IN THAT BRANCH YOU CURRENTLY IN:
+         - git pull origin main
+
     -- Letter Suffix --
     • U = untracked/new (Git has never seen it)
     • A = added (staged)
