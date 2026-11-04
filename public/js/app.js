@@ -142,6 +142,18 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
       showOrderError('Please enter your full name.', fullNameInput);
       return false;
     }
+    
+    if (!/^[\p{L}][\p{L}\s.'-]*$/u.test(fullName)) {
+      setFieldError(fullNameInput, 'Use letters only (spaces, . - \' allowed).');
+      showOrderError('Full name can only contain letters, spaces, periods, hyphens, and apostrophes.', fullNameInput);
+      return false;
+    } //just added 11/02/2026 12:35am
+
+    if (!phone) {
+  setFieldError(phoneInput, 'Phone number is required.');
+  showOrderError('Please enter your phone number.', phoneInput);
+  return false;
+    } //just added 11/02/2026 12:10am
 
     if (!street) {
       setFieldError(streetInput, 'House, unit, or street is required.');
