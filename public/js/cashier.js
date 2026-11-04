@@ -244,15 +244,28 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       
-      alert("✅ Payment successful! Order marked as done.");
-      fetchOrders(); // This will update the UI and move it to the 'Done' tab
-      $('cxPrintBtn').disabled = false; // Enable print
+      // 1. Get the payment method the cashier selected
+      const payMethod = document.querySelector('input[name="cxPayment"]:checked').value;
+      
+      // 2. Show the GCash-style receipt modal instead of the alert
+      window.CoffeeSpotReceipt.showModal(data, payMethod);
+
+      // 3. Refresh background data and enable print
+      fetchOrders(); 
+      $('cxPrintBtn').disabled = false; 
     } catch (e) {
       alert("Payment Failed: " + e.message);
     }
   });
 
-  $('cxPrintBtn').addEventListener('click', () => window.print());
+  $('cxPrintBtn').addEventListener('click', () => {
+  if (current) {
+    // Open the GCash modal for the selected order
+    window.CoffeeSpotReceipt.showModal(current);
+  } else {
+    alert("Please select an order first.");
+  }
+  });
 
   // Startup
   syncTabs(); 
