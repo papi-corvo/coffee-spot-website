@@ -2,11 +2,18 @@
 const express = require('express');
 const path = require('path');
 
+// Import the auth routes
+const cookieParser = require('cookie-parser');
+const authRoutes = require('./src/routes/auth');
+
 // 1. Initialize Express
 const app = express();
 
 // 2. Middleware to read JSON from the frontend
 app.use(express.json());
+
+app.use(cookieParser());
+app.use('/api/auth', authRoutes);
 
 // 3. Serve your frontend files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));

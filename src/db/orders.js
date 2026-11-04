@@ -130,9 +130,11 @@ function validateHeader(input = {}) {
 function priceLines(items) {
   if (!Array.isArray(items) || !items.length) throw new AppError('The order has no items.');
   if (items.length > MAX_LINES) throw new AppError(`An order can have at most ${MAX_LINES} lines.`);
+
   return items.map((line) => {
     const qty = Number(line?.qty);
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) throw new AppError(`Quantity must be a whole number from 1 to ${MAX_QTY}.`);
+    
     return { ...resolveLine(line), qty };        // the price comes from the menu table, whatever the browser sent
   });
 }
@@ -215,5 +217,37 @@ function quoteTotals(code, discountType = 'regular') {
            sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
 }
 
+function payOrder(code, { method, tenderedCentavos, staffId = null, discountType = 'regular' } = {}) {
+  return db.transaction(() => {
+    const o = rowByCode(code);
+    if (o.status === 'done') throw new AppError('This order is already paid.', 409);
+    if (o.status === 'voided' || o.status === 'rejected') throw new AppError('Cannot pay a voided or rejected order.', 409);
+
+    const totals = quoteTotals(o.code, discountType);
+    const totalCentavos = totals.totalCentavos;
+
+    // 1. Validate Payment
+    if (method === 'cash' && tenderedCentavos < totalCentavos) {
+      throw new AppError('Cash tendered is less than the total amount.');
+    }
+
+    const changeCentavos = method === 'cash' ? (tenderedCentavos - totalCentavos) : null;
+
+    // 2. Insert into payments table
+    db.prepare(`
+      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, staff_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(o.id, method, totalCentavos, tenderedCentavos || totalCentavos, changeCentavos, staffId);
+
+    // 3. Update order status to 'done'
+    db.prepare(`UPDATE orders SET status = 'done', updated_at = ${NOW} WHERE id = ?`).run(o.id);
+    history(o.id, o.status, 'done', staffId, 'Order paid');
+
+    // (Note: We will add receipt generation in the next step)
+
+    return hydrate([db.prepare('SELECT * FROM orders WHERE id = ?').get(o.id)])[0];
+  })();
+}
+
 module.exports = { createOrder, getOrder, findOrder, listOrders, replaceItems, setNote, setStatus, quoteTotals,
-                   discountAmount, STATUSES, EDITABLE, TRANSITIONS, MAX_QTY };
+                   payOrder, discountAmount, STATUSES, EDITABLE, TRANSITIONS, MAX_QTY };

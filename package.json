@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/papi-corvo/coffee-spot-website.git"
@@ -19,7 +22,13 @@
   },
   "homepage": "https://github.com/papi-corvo/coffee-spot-website#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
-    "express": "^5.3.0"
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true
   }
 }

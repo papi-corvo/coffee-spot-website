@@ -196,7 +196,6 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
     orderStartOverlay.classList.add('is-hidden');
     document.body.classList.remove('order-setup-active');
     window.scrollTo(0, 0);
-    window.setTimeout(openFeaturedTasteScreen, 260);
   }
 
   citySelect.addEventListener('change', () => {
@@ -276,6 +275,12 @@ function closeFeaturedTasteScreen() {
   if (!featuredTasteScreen.classList.contains('is-visible')) return;
   featuredTasteScreen.classList.remove('is-visible');
   featuredTasteScreen.classList.add('is-leaving');
+
+  // show the Delivery / Pick-up card underneath as the featured screen slides away
+  orderStartOverlay.classList.remove('is-hidden');
+  const nameField = document.getElementById('orderReceiverName');
+  if (nameField) window.setTimeout(() => nameField.focus(), 400);
+
   featuredTasteScreen.addEventListener('animationend', () => {
     featuredTasteScreen.classList.remove('is-leaving');
     featuredTasteScreen.setAttribute('aria-hidden', 'true');
@@ -284,6 +289,7 @@ function closeFeaturedTasteScreen() {
 }
 
 featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
+window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee once the whole script has loaded
 
 // ===== Responsive navigation =====
     const sidebar = document.getElementById('sidebar');
@@ -947,10 +953,11 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
       const descriptors = [servingLabel, ...addonLabels].filter(Boolean);
       const entryKey = descriptors.length ? `${itemName} — ${descriptors.join(', ')}` : itemName;
       const itemImage = activeProductRow.querySelector('img')?.getAttribute('src') || '';
+      const itemId = activeProductRow.dataset.itemId;
       const existing = cart.find((entry) => entry.name === entryKey && entry.size === size);
 
       if (existing) existing.qty += qty;
-      else cart.push({ name: entryKey, size, price, qty, image: itemImage });
+      else cart.push({ id: itemId, name: entryKey, size, price, qty, image: itemImage });
 
       renderCart();
       productDetailAdd.textContent = 'Added to Cart ✓';
@@ -1075,6 +1082,7 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
 
         items.forEach((li) => {
           const itemName = li.dataset.itemName;
+          const itemId = li.dataset.itemId;
 
           const select = li.querySelector('.size-select');
           const stepper = li.querySelector('.qty-stepper');
@@ -1136,7 +1144,7 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
           if (existing) {
             existing.qty += qty;
           } else {
-            cart.push({ name: entryKey, size, price, qty, image: itemImage });
+            cart.push({ id: itemId, name: entryKey, size, price, qty, image: itemImage });
           }
 
           addedCount += qty;
@@ -1224,11 +1232,11 @@ cartCheckout.addEventListener('click', async () => {
     // 2. Map the cart (WITH THE TEMPORARY HARDCODED ID)
     items: cart.map((entry) => {
       return {
-        menuItemId: 1, // TEMPORARY: Faking the ID so the backend doesn't crash
+        menuItemId: Number(entry.id),
         name: entry.name.split(' — ')[0].trim(),
-        size: entry.size || 'Regular', 
+        size: entry.size,
         qty: entry.qty,
-        options: [] 
+        options: [] // We will wire up add-on options later!
       };
     })
   };
