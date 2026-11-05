@@ -1,0 +1,35 @@
+/* =====================================================================
+   ADMIN LOGIN — admin-login.css
+   Load AFTER loginform.css. Only contains overrides and new elements.
+   ===================================================================== */
+
+.lg-admin-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: var(--caramel);
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-left: auto;
+}
+
+.lg-links {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.lg-links a {
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.lg-links a:hover {
+  color: var(--caramel);
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Spot | Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="ad" id="adApp">
+
+    <aside class="ad-side">
+      <div class="ad-brand">
+        <span class="ad-mark">CS</span>
+        <span><strong>Coffee Spot</strong><small>Admin</small></span>
+      </div>
+      <nav class="ad-nav" aria-label="Admin sections">
+        <a class="ad-link" href="#overview" data-view="overview">Overview</a>
+        <a class="ad-link" href="#employees" data-view="employees">Employees</a>
+        <a class="ad-link" href="#menu" data-view="menu">Menu</a>
+      </nav>
+      <p class="ad-note">Draft with sample data.<br>Staff login (Supabase) comes next.</p>
+    </aside>
+
+    <main class="ad-main">
+      <header class="ad-top">
+        <h1 id="adTitle">Overview</h1>
+        <span class="ad-user">Admin · Maria S.</span>
+      </header>
+
+      <!-- ===== OVERVIEW ===== -->
+      <section class="ad-view" id="view-overview">
+        <div class="ad-stats" id="adStats"></div>
+        <div class="ad-grid">
+          <article class="ad-card"><h2>Sales, last 7 days</h2><div class="ad-bars" id="adBars"></div></article>
+          <article class="ad-card"><h2>Best sellers</h2><ol class="ad-top-items" id="adTopItems"></ol></article>
+          <article class="ad-card"><h2>Payment methods</h2><div id="adPayMix"></div></article>
+        </div>
+        <article class="ad-card">
+          <h2>Recent orders</h2>
+          <div class="ad-scroll"><table class="ad-table" id="adOrders"></table></div>
+        </article>
+      </section>
+
+      <!-- ===== EMPLOYEES ===== -->
+      <section class="ad-view" id="view-employees" hidden>
+        <div class="ad-toolbar">
+          <input class="ad-input" type="search" id="empSearch" placeholder="Search name or email" aria-label="Search employees">
+          <button class="ad-btn ad-btn--primary" type="button" id="empAdd">+ Register employee</button>
+        </div>
+        <article class="ad-card"><div class="ad-scroll"><table class="ad-table" id="adEmployees"></table></div></article>
+      </section>
+
+      <!-- ===== MENU ===== -->
+      <section class="ad-view" id="view-menu" hidden>
+        <div class="ad-toolbar">
+          <input class="ad-input" type="search" id="menuFilter" placeholder="Search menu items" aria-label="Search menu items">
+          <select class="ad-input" id="menuCat" aria-label="Category"><option value="">All categories</option></select>
+        </div>
+        <article class="ad-card"><div class="ad-scroll"><table class="ad-table" id="adMenu"></table></div></article>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== Register employee ===== -->
+  <dialog class="ad-dialog" id="empDialog">
+    <form method="dialog" id="empForm" novalidate>
+      <h2>Register employee</h2>
+      <label class="ad-field">Full name <input class="ad-input" id="empName" autocomplete="off"></label>
+      <label class="ad-field">Email (their login) <input class="ad-input" id="empEmail" type="email" autocomplete="off"></label>
+      <label class="ad-field">Role
+        <select class="ad-input" id="empRole"><option value="cashier">Cashier</option><option value="admin">Admin</option></select>
+      </label>
+      <p class="ad-hint">They receive an email invitation to set their own password. No passwords are stored in your database.</p>
+      <p class="ad-error" id="empError" role="alert"></p>
+      <div class="ad-dialog-actions">
+        <button class="ad-btn" type="submit" value="cancel">Cancel</button>
+        <button class="ad-btn ad-btn--primary" type="button" id="empSave">Send invitation</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="ad-toast" id="adToast" role="status" aria-live="polite"></div>
+  <script src="js/admin.js" defer></script>
+</body>
+</html>
