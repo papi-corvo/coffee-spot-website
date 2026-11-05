@@ -92,30 +92,29 @@
 
         <div class="address-grid">
           <div class="address-field">
-            <label for="addressFullName">Full Name</label>
+            <label for="addressFullName">Full Name <span class="field-required">*</span></label>
             <input type="text" id="addressFullName" name="fullName" placeholder="Juan Dela Cruz" autocomplete="name" required>
           </div>
 
           <div class="address-field">
-            <label for="addressPhone">Phone Number <span class="field-optional">(Optional)</span></label>
+            <label for="addressPhone">Phone Number <span class="field-required">*</span></label>
             <input type="tel" id="addressPhone" name="phone" placeholder="09XXXXXXXXX" autocomplete="tel" inputmode="numeric" maxlength="11" pattern="09[0-9]{9}" required>
-            <small class="field-help" id="addressPhoneHelp">Numeric only</small>
           </div>
 
           <div class="address-field full">
-            <label for="addressStreet">House / Unit / Street</label>
+            <label for="addressStreet">House / Unit / Street <span class="field-required">*</span></label>
             <input type="text" id="addressStreet" name="street" placeholder="House 12, Main Street" autocomplete="street-address" required>
           </div>
 
           <div class="address-field">
-            <label for="addressBarangay">Barangay</label>
+            <label for="addressBarangay">Barangay <span class="field-required">*</span></label>
             <select id="addressBarangay" name="barangay" autocomplete="address-level3" required>
               <option value="">Select your barangay</option>
             </select>
           </div>
 
           <div class="address-field">
-            <label for="addressCity">City / Municipality</label>
+            <label for="addressCity">City / Municipality <span class="field-required">*</span></label>
             <select id="addressCity" name="city" autocomplete="address-level2" required>
               <option value="">Select city / municipality</option>
               <option value="Candelaria">Candelaria</option>
