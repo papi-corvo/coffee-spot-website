@@ -59,6 +59,12 @@
 
       EXTENSION YOU WILL NEED FOR VIEWING DATABASE:
       - 'SQlite Viewer' by Florian Klampfer
+
+      OTHER EXTENSIONS:
+      - 'To Do Task' by Sandeep Somavarapu
+         Keys:
+          - Ctr + Enter: Create new check box
+          - Alt + D: Completing task
    
    STEP 5: START THE SERVER
       Now, start the Express backend server:
