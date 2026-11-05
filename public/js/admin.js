@@ -47,16 +47,25 @@
 
   /* ---------- the ONLY place that knows where data comes from ---------- */
   const api = {
-    stats: async () => SAMPLE,                                                         // later: GET /api/admin/stats
-    employees: async () => SAMPLE.employees,                                           // later: GET /api/admin/employees
-    registerEmployee: async (e) => {                                                   // later: POST /api/admin/employees (sends the Supabase invitation)
-      const row = { id: Date.now(), ...e, status: 'invited' };
-      SAMPLE.employees.push(row);
-      return row;
+    stats: async () => {
+      const res = await fetch('/api/admin/stats');
+      if (!res.ok) throw new Error('Failed to fetch stats');
+      return await res.json();
     },
-    updateEmployee: async (id, patch) => { Object.assign(SAMPLE.employees.find((e) => e.id === id), patch); },   // later: PATCH /api/admin/employees/:id
-    menu: async () => SAMPLE.menu,                                                     // later: GET /api/admin/menu (prices arrive in centavos, divide by 100)
-    updateMenuItem: async (slug, patch) => { Object.assign(SAMPLE.menu.find((m) => m.slug === slug), patch); }, // later: PATCH /api/admin/menu/:slug
+    employees: async () => {
+      const res = await fetch('/api/admin/employees');
+      if (!res.ok) throw new Error('Failed to fetch employees');
+      return await res.json();
+    },
+    menu: async () => {
+      const res = await fetch('/api/admin/menu');
+      if (!res.ok) throw new Error('Failed to fetch menu');
+      return await res.json();
+    },
+    // These will be connected in the next phase:
+    registerEmployee: async (e) => { console.log('TODO', e); }, 
+    updateEmployee: async (id, patch) => { console.log('TODO', id, patch); },
+    updateMenuItem: async (slug, patch) => { console.log('TODO', slug, patch); },
   };
 
   let toastTimer;
@@ -76,7 +85,7 @@
     $('adStats').innerHTML = [
       ['Sales today', peso(today), `${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs yesterday`],
       ['Orders today', d.ordersToday, 'All channels'],
-      ['Average order', peso(today / d.ordersToday), 'Per order'],
+      ['Average order', peso(d.ordersToday ? (today / d.ordersToday) : 0), 'Per order'],
       ['Open orders', open, 'New, accepted or ready'],
     ].map(([l, v, n]) => `<article class="ad-card ad-stat"><span>${l}</span><strong>${v}</strong><small>${n}</small></article>`).join('');
 

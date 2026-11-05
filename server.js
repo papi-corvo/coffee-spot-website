@@ -5,6 +5,8 @@ const path = require('path');
 // Import the auth routes
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./src/routes/auth');
+const adminRoutes = require('./src/routes/admin');
+const { verifyAdmin } = require('./src/middleware/adminMiddleware');
 
 // 1. Initialize Express
 const app = express();
@@ -14,6 +16,9 @@ app.use(express.json());
 
 app.use(cookieParser());
 app.use('/api/auth', authRoutes);
+
+// Protect all admin routes with the verifyAdmin bouncer
+app.use('/api/admin', verifyAdmin, adminRoutes); 
 
 // 3. Serve your frontend files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
