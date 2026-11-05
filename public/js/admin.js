@@ -216,17 +216,39 @@
   }
   window.addEventListener('hashchange', show);
 
-   (async () => {
-    // 1. The Bouncer: Check if we have a valid admin cookie
+    // 1. Function to load the dashboard data
+  async function loadDashboardData() {
     try {
+      // Only refresh stats if the Overview tab is currently visible
+      if (!document.getElementById('view-overview').hidden) {
+        renderOverview(await api.stats());
+      }
+    } catch (error) {
+      console.error("Failed to refresh stats:", error);
+    }
+  }
+
+  // 2. The Bouncer & Initial Load
+  (async () => {
+    try {
+      // Check if we have a valid admin cookie
       const res = await fetch('/api/auth/me');
       if (!res.ok) throw new Error('Not authorized');
       
-      // If success, we are good to go! Render the dashboard.
+      // Initial Load
       renderOverview(await api.stats());
       employees = await api.employees(); renderEmployees();
       menu = await api.menu(); renderMenu();
       show();
+
+      // 3. The Auto-Refresh Timer (Every 30 seconds)
+      setInterval(() => {
+        // Smart Pause: If the browser tab is minimized/hidden, do nothing.
+        if (document.hidden) return; 
+        
+        // Refresh the data
+        loadDashboardData();
+      }, 30000); // 30,000 milliseconds = 30 seconds
       
     } catch (error) {
       // If they don't have a token, or aren't an admin, kick them out!
