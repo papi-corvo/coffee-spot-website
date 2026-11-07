@@ -23,7 +23,7 @@
       const res = await fetch('/api/orders');
 
       if (res.status === 401) {
-        window.location.href = '/loginform.html'; // Redirect to login if unauthorized
+        window.location.href = '/staff-login.html'; // Redirect to login if unauthorized
         return;
       }
 
@@ -237,7 +237,8 @@
         body: JSON.stringify({
           method: method,
           tenderedCentavos: Math.round((Number($('cxCashIn').value) || 0) * 100), // convert to centavos
-          discountType: d
+          discountType: d,
+          reference_no: $('cxRefNo').value.trim()
         })
       });
       

@@ -35,7 +35,7 @@
       if (!res.ok) throw new Error(data.error || 'Login failed.');
       
       // Success! Redirect to Admin Dashboard
-      window.location.href = 'admin.html';
+      window.location.href = '/admin';
 
     } catch (ex) {
       err.textContent = ex.message;

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./src/routes/auth');
 const adminRoutes = require('./src/routes/admin');
 const { verifyAdmin } = require('./src/middleware/adminMiddleware');
+const { verifyToken } = require('./src/middleware/authMiddleware');
 
 // 1. Initialize Express
 const app = express();
@@ -22,6 +23,16 @@ app.use('/api/admin', verifyAdmin, adminRoutes);
 
 // 3. Serve your frontend files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Protect the Cashier HTML
+app.get('/cashier', verifyToken, (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'employeeView.html'));
+});
+
+// Protect the Admin Dashboard HTML
+app.get('/admin', verifyAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'views', 'admin.html'));
+});
 
 // 4. Connect your API Routes
 const orderRoutes = require('./src/routes/orders');
