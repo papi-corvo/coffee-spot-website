@@ -56,6 +56,7 @@
       Run these scripts to populate your database:
       - node scripts/seed-menu.js
       - node scripts/import-descriptions.js
+      - node scripts/seed-admin.js
 
       EXTENSION YOU WILL NEED FOR VIEWING DATABASE:
       - 'SQlite Viewer' by Florian Klampfer

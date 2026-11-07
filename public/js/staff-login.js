@@ -48,7 +48,7 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Login failed.');
-      window.location.href = 'employeeView.html';
+      window.location.href = '/cashier';
     } catch (ex) {
       lgErr.textContent = ex.message;
       lgErr.hidden = false;

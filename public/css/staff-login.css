@@ -214,51 +214,6 @@ body.lg-body,
 }
 
 /* ------------------------------------------------------------
-   8. Bottom switch link
-   ------------------------------------------------------------ */
-.lg-card .lg-switch {
-  margin: 1.4rem 0 0;
-  text-align: center;
-  color: #8c7568;
-  font-size: 0.88rem;
-}
-
-.lg-card .lg-switch .lg-link {
-  display: inline;
-  color: #3a1710;
-  font-weight: 800;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
-  cursor: pointer;
-  transition: color 0.25s ease;
-}
-
-.lg-card .lg-switch .lg-link:hover,
-.lg-card .lg-switch .lg-link:focus-visible {
-  color: #e35a1f;
-}
-
-.lg-card .lg-switch .lg-link:focus-visible {
-  outline: none;
-  border-radius: 4px;
-  box-shadow: 0 0 0 3px rgba(227, 90, 31, 0.25);
-}
-
-/* ------------------------------------------------------------
-   9. Registration-only tweaks
-   (tiny adjustments so 4 fields still fit comfortably)
-   ------------------------------------------------------------ */
-#rgForm .lg-field:last-of-type {
-  margin-bottom: 0.9rem;
-}
-
-#rgForm .lg-error,
-#rgForm .lg-success {
-  margin-top: -0.1rem;
-}
-
-/* ------------------------------------------------------------
    10. Cashier logout pill (kept for the cashier page)
    ------------------------------------------------------------ */
 .cx-logout {
@@ -309,8 +264,7 @@ body.lg-body,
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   .lg-field input,
-  .lg-submit,
-  .lg-link {
+  .lg-submit{
     transition: none !important;
   }
 }
