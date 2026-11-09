@@ -56,7 +56,7 @@
       We just recently added a security feature. You MUST create a .env file, or the server will crash.
       1. Create a new file in the ROOT folder (same level as package.json) and name it exactly: .env
       2. Paste this inside the file:
-         JWT_SECRET=coffee-spot-super-secret-key-change-this-in-production-987654321
+         JWT_SECRET=<PASTE_THE_SECRET_KEY_HERE>
    
    STEP 5: SET UP AND SEED THE DATABASE
       Because we ignored the database file in Git (to prevent conflicts), your local database is completely empty. You must generate the tables and insert the menu items and test accounts.
