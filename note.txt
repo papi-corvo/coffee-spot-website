@@ -1,4 +1,4 @@
- == Github simple syntax ==
+== Github simple syntax ==
     • git add file_name             - stage a file (ex: git add main.js)
     • git add .                     - stage everything changed at once
     • git commit -m "message"       - save staged changes with a description (ex: git commit -m "fix qty stepper going below 0")
@@ -29,6 +29,7 @@
     • M = modified
     • D = deleted
 
+
 == PROJECT SETUP & INSTALLATION GUIDE (FOR TEAM MEMBERS) TO MAKE THE PROJECT RUN IN YOUR LOCAL MACHINE ==
    STEP 1: INSTALL PREREQUISITES
       Before running any terminal commands, ensure you have installed:
@@ -48,15 +49,22 @@
       - cd "[Folder Name]"
    
    STEP 3: INSTALL REQUIRED PACKAGES
-      This is the most important step. Run this command to download all backend dependencies (Express, better-sqlite3, etc.) listed in the package.json file:
+      This is the most important step. Run this command to download all backend dependencies (Express, better-sqlite3, bcryptjs, jsonwebtoken, dotenv, etc.) listed in the package.json file:
       - npm install
    
-   STEP 4: SET UP AND SEED THE DATABASE
-      Because we ignored the database file in Git (to prevent conflicts), your local database is completely empty. You must generate the tables and insert the menu items.
+   STEP 4: SET UP ENVIRONMENT VARIABLES (.env)
+      We just recently added a security feature. You MUST create a .env file, or the server will crash.
+      1. Create a new file in the ROOT folder (same level as package.json) and name it exactly: .env
+      2. Paste this inside the file:
+         JWT_SECRET=coffee-spot-super-secret-key-change-this-in-production-987654321
+   
+   STEP 5: SET UP AND SEED THE DATABASE
+      Because we ignored the database file in Git (to prevent conflicts), your local database is completely empty. You must generate the tables and insert the menu items and test accounts.
       Run these scripts to populate your database:
       - node scripts/seed-menu.js
       - node scripts/import-descriptions.js
       - node scripts/seed-admin.js
+      - node scripts/seed-staff.js
 
       EXTENSION YOU WILL NEED FOR VIEWING DATABASE:
       - 'SQlite Viewer' by Florian Klampfer
@@ -67,14 +75,19 @@
           - Ctr + Enter: Create new check box
           - Alt + D: Completing task
    
-   STEP 5: START THE SERVER
+   STEP 6: START THE SERVER
       Now, start the Express backend server:
       - node server.js
 
-      You should see this message in the terminal:
-      "Server running at http://localhost:3000"
+      You should see these messages in the terminal:
+      "◇ injected env (1) from .env"
+      "☕ Server running at http://localhost:3000"
    
-   STEP 6: OPEN THE WEBSITE
+   STEP 7: OPEN THE WEBSITE
       You can use chrome or right click the file and find 'Open file in Integrated Browser'.
+      - Customer Menu: http://localhost:3000
+      - Staff Login: http://localhost:3000/staff-login.html
+      - Admin Login: http://localhost:3000/admin-login.html
    
    (WARNING: DO NOT double-click index.html in your folder. The website WILL NOT WORK. You must access it through localhost:3000 so the frontend can communicate with the backend server).
+   (WARNING 2: Do NOT try to access /admin.html or /employeeView.html directly in the URL. They are now securely hidden behind the login system. Use the login pages above).

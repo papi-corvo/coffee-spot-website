@@ -1,4 +1,5 @@
 // server.js
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -6,6 +7,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./src/routes/auth');
 const adminRoutes = require('./src/routes/admin');
+const menuRoutes = require('./src/routes/menu');
 const { verifyAdmin } = require('./src/middleware/adminMiddleware');
 const { verifyToken } = require('./src/middleware/authMiddleware');
 
@@ -20,6 +22,9 @@ app.use('/api/auth', authRoutes);
 
 // Protect all admin routes with the verifyAdmin bouncer
 app.use('/api/admin', verifyAdmin, adminRoutes); 
+
+// Connect your Menu Routes
+app.use('/api/menu', menuRoutes);
 
 // 3. Serve your frontend files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));

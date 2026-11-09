@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../db/db');
 const { verifyAdmin } = require('../middleware/adminMiddleware');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'coffee-spot-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/login', (req, res) => {
   try {
