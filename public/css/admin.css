@@ -44,7 +44,7 @@
 
 /* tables, badges, controls */
 .ad-scroll { overflow-x: auto; }
-.ad-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.ad-table { width: 100%; border-collapse: collapse; font-size: .88rem; table-layout: fixed; }
 .ad-table th { padding: .5rem .6rem; color: var(--ink-muted); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
 .ad-table td { padding: .65rem .6rem; border-top: 1px dashed rgba(46, 20, 16, .14); vertical-align: middle; }
 .ad-num { text-align: right; white-space: nowrap; }
@@ -64,7 +64,30 @@
 .ad-btn { padding: .6rem 1rem; border: 1px solid rgba(46, 20, 16, .16); border-radius: var(--radius-sm); background: var(--linen); color: var(--espresso); font-size: .85rem; font-weight: 700; transition: border-color var(--transition), transform var(--transition); }
 .ad-btn:hover, .ad-btn:focus-visible { border-color: var(--caramel); transform: translateY(-1px); }
 .ad-btn--primary { border-color: transparent; background: linear-gradient(135deg, var(--caramel), var(--espresso-2)); color: var(--white); box-shadow: var(--shadow-sm); }
+
 .ad-price { width: 6.5rem; text-align: right; }
+
+/* =========================================
+   FIX TABLE COLUMN ALIGNMENT
+   ========================================= */
+
+/* Employees Table Column Widths */
+#adEmployees th:nth-child(1) { width: 25%; }
+#adEmployees th:nth-child(2) { width: 35%; }
+#adEmployees th:nth-child(3) { width: 15%; }
+#adEmployees th:nth-child(4) { width: 15%; }
+#adEmployees th:nth-child(5) { width: 10%; }
+
+/* Menu Table Column Widths */
+#adMenu th:nth-child(1) { width: 40%; }
+#adMenu th:nth-child(2) { width: 25%; }
+#adMenu th:nth-child(3) { width: 20%; }
+#adMenu th:nth-child(4) { width: 15%; }
+
+/* Ensure the price inputs and toggle switches align nicely under their headers */
+#adMenu td:nth-child(3) { text-align: right; }
+#adMenu td:nth-child(4) { text-align: right; }
+
 .ad-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
 .ad-switch input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
 .ad-switch span { position: absolute; inset: 0; border-radius: 99px; background: #cfc6bd; transition: background var(--transition); }
@@ -89,4 +112,91 @@
   .ad-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: .8rem 1rem; }
   .ad-nav { display: flex; gap: .3rem; }
   .ad-note { display: none; }
+}
+
+/* =========================================
+   ADMIN DASHBOARD: FINAL TABLE ALIGNMENT FIXES
+   ========================================= */
+
+/* 1. Force fixed layout so columns respect our widths */
+.ad-table {
+  table-layout: fixed;
+}
+
+/* -----------------------------------------
+   2. EMPLOYEES TABLE (#adEmployees)
+   ----------------------------------------- */
+#adEmployees th:nth-child(1) { width: 25%; }
+#adEmployees th:nth-child(2) { width: 35%; }
+#adEmployees th:nth-child(3) { width: 15%; }
+#adEmployees th:nth-child(4) { width: 15%; }
+#adEmployees th:nth-child(5) { width: 10%; }
+
+/* Center the Status header and the green badge */
+#adEmployees th:nth-child(4),
+#adEmployees td:nth-child(4) {
+  text-align: center;
+}
+
+/* Right-align the Deactivate buttons */
+#adEmployees th:last-child,
+#adEmployees td:last-child {
+  text-align: right;
+  padding-right: 1rem;
+}
+
+/* -----------------------------------------
+   3. MENU TABLE (#adMenu)
+   ----------------------------------------- */
+#adMenu th:nth-child(1) { width: 40%; }
+#adMenu th:nth-child(2) { width: 25%; }
+#adMenu th:nth-child(3) { width: 20%; }
+#adMenu th:nth-child(4) { width: 15%; }
+
+/* Right-align the Price header and input */
+#adMenu th:nth-child(3),
+#adMenu td:nth-child(3) {
+  text-align: right;
+  padding-right: 3rem;
+}
+#adMenu .ad-price {
+  width: 6rem;
+  display: inline-block;
+  text-align: right;
+}
+
+/* Right-align the Available header and toggle switch */
+#adMenu th:nth-child(4),
+#adMenu td:nth-child(4) {
+  text-align: right;
+  padding-right: 1.5rem;
+}
+
+/* -----------------------------------------
+   4. RECENT ORDERS TABLE (#adOrders)
+   ----------------------------------------- */
+#adOrders th:nth-child(1) { width: 18%; }
+#adOrders th:nth-child(2) { width: 20%; }
+#adOrders th:nth-child(3) { width: 15%; }
+#adOrders th:nth-child(4) { width: 15%; }
+#adOrders th:nth-child(5) { width: 15%; }
+#adOrders th:nth-child(6) { width: 17%; }
+
+/* Right-align the Total header and amount */
+#adOrders th:nth-child(5),
+#adOrders td:nth-child(5) {
+  text-align: right;
+  padding-right: 2.5rem;
+}
+
+/* Center the Status header and the green badge */
+#adOrders th:nth-child(6),
+#adOrders td:nth-child(6) {
+  text-align: center;
+}
+
+/* Add vertical breathing room to the rows */
+#adOrders td {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
