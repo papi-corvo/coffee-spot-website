@@ -65,6 +65,7 @@
       - node scripts/import-descriptions.js
       - node scripts/seed-admin.js
       - node scripts/seed-staff.js
+      - node scripts/sync-descriptions.js
 
       EXTENSION YOU WILL NEED FOR VIEWING DATABASE:
       - 'SQlite Viewer' by Florian Klampfer
