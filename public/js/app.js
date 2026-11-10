@@ -252,8 +252,9 @@ function getFeaturedCoffee() {
 
   const name = row.dataset.itemName || 'Coffee Spot Favorite';
   const image = row.querySelector('img')?.getAttribute('src') || '';
-  const info = typeof PRODUCT_INFO !== 'undefined' && PRODUCT_INFO[name] ? PRODUCT_INFO[name] : null;
-  return { name, image, desc: info?.desc || 'A Coffee Spot favorite, freshly made for your perfect coffee moment.' };
+  const descEl = row.querySelector('.product-card-description');
+  const desc = descEl ? descEl.textContent : 'A Coffee Spot favorite, freshly made for your perfect coffee moment.';
+  return { name, image, desc };
 }
 
 function openFeaturedTasteScreen() {
@@ -611,7 +612,6 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
     const menuSearch = document.getElementById('menuSearch');
     const menuSearchClear = document.getElementById('menuSearchClear');
     const menuSearchCount = document.getElementById('menuSearchCount');
-    const searchableProducts = Array.from(document.querySelectorAll('main .product-grid li.product-row[data-item-name]'));
 
     function normalizeSearch(value) {
       return value.toLowerCase().trim().replace(/\s+/g, ' ');
@@ -621,10 +621,16 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       const query = normalizeSearch(menuSearch.value);
       let visibleCount = 0;
 
+      // Re-query the DOM every time we search, so it catches the dynamic items
+      const searchableProducts = Array.from(document.querySelectorAll('main .product-grid li.product-row[data-item-name]'));
+
       searchableProducts.forEach((row) => {
         const name = row.dataset.itemName || '';
+        const descEl = row.querySelector('.product-card-description');
+        const descText = descEl ? descEl.textContent : '';
         const info = PRODUCT_INFO[name] || {};
-        const searchableText = normalizeSearch([name, info.desc || '', ...(info.ingredients || [])].join(' '));
+        
+        const searchableText = normalizeSearch([name, descText, ...(info.ingredients || [])].join(' '));
         const matches = !query || searchableText.includes(query);
         row.classList.toggle('search-hidden', !matches);
         if (matches) visibleCount += 1;
@@ -671,24 +677,6 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       window.addEventListener('load', measure);
       measure();
     })();
-
-    // Reveal product cards smoothly as the customer scrolls through the menu.
-    if ('IntersectionObserver' in window) {
-      const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const row = entry.target;
-          const index = searchableProducts.indexOf(row);
-          row.style.setProperty('--reveal-delay', `${Math.min(Math.max(index, 0), 7) * 45}ms`);
-          row.classList.add('menu-reveal');
-          observer.unobserve(row);
-        });
-      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
-
-      searchableProducts.forEach((row) => revealObserver.observe(row));
-    } else {
-      searchableProducts.forEach((row) => row.classList.add('menu-reveal'));
-    }
 
     // ===== Product detail modal: click/tap any menu item to bring it to the front =====
     const productDetailOverlay = document.getElementById('productDetailOverlay');
@@ -812,7 +800,12 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       activeProductRow = row;
       detailLastFocused = document.activeElement;
       const name = row.dataset.itemName || 'Coffee';
-      const info = PRODUCT_INFO[name] || { desc: 'A café favorite, made fresh to order.', ingredients: [] };
+      // Pull the description directly from the card we just generated
+      const cardDesc = row.querySelector('.product-card-description');
+      const info = { 
+        desc: cardDesc ? cardDesc.textContent : 'A café favorite, made fresh to order.', 
+        ingredients: [] // We don't have ingredient lists in the DB yet
+      };
       const sourceImg = row.querySelector('.product-icon-wrap img');
 
       const section = row.closest('section');
@@ -856,28 +849,6 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       if (detailLastFocused && typeof detailLastFocused.focus === 'function') detailLastFocused.focus();
       detailLastFocused = null;
     }
-
-    document.querySelectorAll('main .product-grid li.product-row[data-item-name]').forEach((row) => {
-      row.addEventListener('click', (event) => {
-        const interactive = event.target.closest('button, input, select, label, a');
-        if (interactive && !interactive.classList.contains('product-name')) return;
-        openProductDetail(row);
-      });
-
-      row.querySelector('.product-name')?.addEventListener('click', (event) => {
-        event.stopPropagation();
-        openProductDetail(row);
-      });
-
-      row.setAttribute('tabindex', '0');
-      row.setAttribute('role', 'button');
-      row.addEventListener('keydown', (event) => {
-        if ((event.key === 'Enter' || event.key === ' ') && event.target === row) {
-          event.preventDefault();
-          openProductDetail(row);
-        }
-      });
-    });
 
     detailSizeSelect.addEventListener('change', syncDetailPrice);
     detailExtraOptions.addEventListener('change', syncDetailPrice);
@@ -1051,123 +1022,6 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       return val;
     }
 
-    document.querySelectorAll('.qty-stepper').forEach((stepper) => {
-      const minusBtn = stepper.querySelector('.qty-minus');
-      const plusBtn = stepper.querySelector('.qty-plus');
-      const qtyInput = stepper.querySelector('.qty-input');
-
-      minusBtn.addEventListener('click', () => {
-        qtyInput.value = clampQty(qtyInput.value) - 1;
-      });
-
-      plusBtn.addEventListener('click', () => {
-        qtyInput.value = clampQty(qtyInput.value) + 1;
-      });
-
-      qtyInput.addEventListener('change', () => {
-        qtyInput.value = clampQty(qtyInput.value);
-      });
-    });
-
-
-    // Generalized to price up: base size price + any checked add-on prices, and to
-    // label the cart line with whatever serving/flavor choice the shopper made.
-    document.querySelectorAll('.category-add-btn').forEach((catBtn) => {
-      catBtn.addEventListener('click', () => {
-        const list = document.getElementById(catBtn.dataset.target);
-        const items = list.querySelectorAll('li.product-row[data-item-name]');
-
-        let addedCount = 0;
-        let hadUnavailable = false;
-
-        items.forEach((li) => {
-          const itemName = li.dataset.itemName;
-          const itemId = li.dataset.itemId;
-
-          const select = li.querySelector('.size-select');
-          const stepper = li.querySelector('.qty-stepper');
-          if (!select || !stepper) return;
-
-          const qtyInput = stepper.querySelector('.qty-input');
-          const qty = clampQty(qtyInput.value);
-          if (qty <= 0) return;
-
-          const option = select.options[select.selectedIndex];
-          if (!option) {
-            hadUnavailable = true;
-            return;
-          }
-          const basePrice = parseFloat(option.dataset.price);
-
-          if (!option.dataset.price || isNaN(basePrice)) {
-            hadUnavailable = true;
-            return;
-          }
-
-          const size = option.hasAttribute('value') ? option.value : 'Regular';
-
-          // Serving-style single choice (e.g. Hot/Iced, wings flavor) — no price change, just a label.
-          let servingLabel = null;
-          const servingGroup = li.querySelector('.serving-options');
-          if (servingGroup) {
-            const checkedRadio = servingGroup.querySelector('input[type="radio"]:checked');
-            if (checkedRadio) {
-              const labelEl = checkedRadio.closest('label');
-              servingLabel = labelEl ? labelEl.textContent.trim() : checkedRadio.value;
-            }
-          }
-
-          // Add-on groups: checkboxes add to price, radios (e.g. fries flavor) just describe a choice.
-          let addonPrice = 0;
-          const addonLabels = [];
-          li.querySelectorAll('.addon-options').forEach((fieldset) => {
-            fieldset.querySelectorAll('input[type="checkbox"]:checked').forEach((box) => {
-              const p = parseFloat(box.dataset.price);
-              if (!isNaN(p)) addonPrice += p;
-              const labelEl = box.closest('label');
-              addonLabels.push(labelEl ? labelEl.textContent.trim() : box.value);
-            });
-
-            const checkedRadio = fieldset.querySelector('input[type="radio"]:checked');
-            if (checkedRadio) {
-              const labelEl = checkedRadio.closest('label');
-              addonLabels.push(labelEl ? labelEl.textContent.trim() : checkedRadio.value);
-            }
-          });
-
-          const price = basePrice + addonPrice;
-          const descriptors = [servingLabel, ...addonLabels].filter(Boolean);
-          const entryKey = descriptors.length ? `${itemName} — ${descriptors.join(', ')}` : itemName;
-          const itemImage = li.querySelector('img')?.getAttribute('src') || '';
-
-          const existing = cart.find((entry) => entry.name === entryKey && entry.size === size);
-          if (existing) {
-            existing.qty += qty;
-          } else {
-            cart.push({ id: itemId, name: entryKey, size, price, qty, image: itemImage });
-          }
-
-          addedCount += qty;
-          qtyInput.value = 0;
-        });
-
-        if (addedCount > 0) {
-          renderCart();
-          const original = catBtn.textContent;
-          catBtn.textContent = 'Added to Cart ✓';
-          catBtn.classList.add('is-flash');
-          setTimeout(() => {
-            catBtn.textContent = original;
-            catBtn.classList.remove('is-flash');
-          }, 1100);
-        } else {
-          const original = catBtn.textContent;
-          catBtn.textContent = hadUnavailable ? 'Item unavailable' : 'Set a quantity first';
-          setTimeout(() => { catBtn.textContent = original; }, 1300);
-        }
-      });
-    });
-
     // ===== Cart panel and checkout modal =====
     const checkoutModal = document.getElementById('checkoutModal');
     const checkoutOverlay = document.getElementById('checkoutOverlay');
@@ -1274,33 +1128,8 @@ cartCheckout.addEventListener('click', async () => {
 
     renderCart();
 
-(() => {
-  const fallbackDescription = 'Freshly prepared at Coffee Spot with a balanced flavor made for an easy, satisfying treat.';
-  const info = (typeof PRODUCT_INFO !== 'undefined') ? PRODUCT_INFO : {};
-
-  document.querySelectorAll('.product-grid .product-row[data-item-name]').forEach((card) => {
-    const name = card.dataset.itemName || '';
-    const details = card.querySelector('.product-details');
-    const title = card.querySelector('.product-name');
-    if (!details || !title || details.querySelector('.product-card-description')) return;
-
-    const description = info[name]?.desc || fallbackDescription;
-    const desc = document.createElement('p');
-    desc.className = 'product-card-description';
-    desc.textContent = description;
-
-    const hint = document.createElement('span');
-    hint.className = 'product-card-hint';
-    hint.innerHTML = '<span aria-hidden="true">✦</span> Tap for details & order';
-
-    title.insertAdjacentElement('afterend', desc);
-    details.appendChild(hint);
-  });
-})();
-
 /* ===== ADD-ON ONLY: Coffee Spot Hero Showcase ===== */
-(function(){
-  function initCoffeeSpotHeroShowcase(){
+function initCoffeeSpotHeroShowcase(){
     const hero = document.getElementById('home');
     if (!hero || hero.querySelector('.cs-hero-showcase-addon')) return;
 
@@ -1476,10 +1305,158 @@ cartCheckout.addEventListener('click', async () => {
     start();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded',initCoffeeSpotHeroShowcase,{once:true});
-  } else {
-    initCoffeeSpotHeroShowcase();
-  }
-})();
+// ==========================================
+// DYNAMIC MENU RENDERER
+// ==========================================
+async function renderDynamicMenu() {
+  try {
+    const response = await fetch('/api/menu');
+    let menuData = await response.json();
 
+    // Sort the items by category, then by group_name so they stay together
+    menuData.sort((a, b) => {
+      if (a.category !== b.category) return a.category.localeCompare(b.category);
+      const groupA = a.group_name || 'zzz'; // 'zzz' pushes ungrouped items to the end (or you can use 'aaa' to put them first)
+      const groupB = b.group_name || 'zzz';
+      if (groupA !== groupB) return groupA.localeCompare(groupB);
+      return a.id - b.id; // Keep original order within the group
+    });
+
+    const categoryMap = {
+      coffee: 'coffee-items',
+      soda: 'soda-items',
+      tea: 'tea-items',
+      pastries: 'pastries-items',
+      food: 'food-menu-items'
+    };
+
+    let currentGroup = {};
+
+    menuData.forEach(item => {
+      const containerId = categoryMap[item.category];
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+       // If this item has a group_name and it's different from the last one, inject the <h3> header
+      if (item.group_name && currentGroup[item.category] !== item.group_name) {
+        container.insertAdjacentHTML('beforeend', `<h3 class="group-header">${item.group_name}</h3>`);
+        currentGroup[item.category] = item.group_name;
+      }
+
+      let sizeOptions = '';
+      item.variants.forEach(variant => {
+        // Use variant label (e.g., Medium) and price
+        sizeOptions += `<option data-price="${variant.price}" value="${variant.code}">${variant.label} — ₱${variant.price}</option>`;
+      });
+
+      if (!sizeOptions) {
+        sizeOptions = `<option data-price="0" value="regular">Regular</option>`;
+      }
+
+      // Just use the database description directly!
+      const descText = item.description || 'Freshly prepared for you.';
+
+      const html = `
+        <li class="product-row" data-item-name="${item.name}" data-item-id="${item.id}">
+          <div class="product-icon-wrap">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='image/pastry-placeholder.svg'">
+          </div>
+          <div class="product-details">
+            <button type="button" class="product-name">${item.name}</button>
+            <p class="product-card-description">${descText}</p>
+            <div class="item-row-controls">
+              <select class="size-select">
+                ${sizeOptions}
+              </select>
+              <div class="qty-stepper">
+                <button type="button" class="qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" class="qty-input" value="0" min="0" max="20" inputmode="numeric" aria-label="Quantity">
+                <button type="button" class="qty-plus" aria-label="Increase quantity">+</button>
+              </div>
+            </div>
+            <span class="product-card-hint"><span aria-hidden="true">✦</span> Tap for details & order</span>
+          </div>
+        </li>
+      `;
+
+      container.insertAdjacentHTML('beforeend', html);
+    });
+
+    // Reveal product cards smoothly as the customer scrolls
+    if ('IntersectionObserver' in window) {
+      const searchableProducts = Array.from(document.querySelectorAll('main .product-grid li.product-row[data-item-name]'));
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const row = entry.target;
+          const index = searchableProducts.indexOf(row);
+          row.style.setProperty('--reveal-delay', `${Math.min(Math.max(index, 0), 7) * 45}ms`);
+          row.classList.add('menu-reveal');
+          observer.unobserve(row);
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+
+      searchableProducts.forEach((row) => revealObserver.observe(row));
+    } else {
+      document.querySelectorAll('main .product-grid li.product-row').forEach((row) => row.classList.add('menu-reveal'));
+    }
+
+    // CRITICAL: Re-attach listeners to the NEW elements
+    attachDynamicEventListeners();
+
+    initCoffeeSpotHeroShowcase();
+    updateMenuSearch(); // This initializes the count (e.g., "70 items")
+
+  } catch (error) {
+    console.error('Failed to load dynamic menu:', error);
+  }
+}
+
+// ==========================================
+// RE-ATTACHING EVENT LISTENERS
+// ==========================================
+function attachDynamicEventListeners() {
+  // 1. Quantity Steppers
+  document.querySelectorAll('.qty-stepper').forEach((stepper) => {
+    const minusBtn = stepper.querySelector('.qty-minus');
+    const plusBtn = stepper.querySelector('.qty-plus');
+    const qtyInput = stepper.querySelector('.qty-input');
+
+    // Remove old listeners to prevent duplicates
+    minusBtn.replaceWith(minusBtn.cloneNode(true));
+    plusBtn.replaceWith(plusBtn.cloneNode(true));
+
+    // Re-query after replacing
+    const newMinus = stepper.querySelector('.qty-minus');
+    const newPlus = stepper.querySelector('.qty-plus');
+
+    newMinus.addEventListener('click', () => { qtyInput.value = Math.max(0, parseInt(qtyInput.value) - 1); });
+    newPlus.addEventListener('click', () => { qtyInput.value = Math.min(20, parseInt(qtyInput.value) + 1); });
+  });
+
+  // 2. Product Detail Modal
+  document.querySelectorAll('main .product-grid li.product-row[data-item-name]').forEach((row) => {
+    row.addEventListener('click', (event) => {
+      const interactive = event.target.closest('button, input, select, label, a');
+      if (interactive && !interactive.classList.contains('product-name')) return;
+      openProductDetail(row);
+    });
+
+    row.querySelector('.product-name')?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openProductDetail(row);
+    });
+
+    row.setAttribute('tabindex', '0');
+    row.setAttribute('role', 'button');
+    row.addEventListener('keydown', (event) => {
+      if ((event.key === 'Enter' || event.key === ' ') && event.target === row) {
+        event.preventDefault();
+        openProductDetail(row);
+      }
+    });
+  });
+}
+
+// Run the function on page load
+renderDynamicMenu();
