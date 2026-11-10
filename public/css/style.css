@@ -4143,3 +4143,22 @@ body.order-setup-active { overflow: hidden; }
   .cx-topbar { flex-direction: column; align-items: flex-start; }
 }
 
+/* =====================================================================
+   HERO HEIGHT FIX: Shrink the hero so the menu is visible faster
+   ===================================================================== */
+
+/* For Desktop/Laptop */
+.hero {
+  min-height: 65vh !important; /* Reduced from 86vh (Takes up 65% of screen instead) */
+  padding-top: 4rem !important;
+  padding-bottom: 4rem !important;
+}
+
+/* For Mobile/Tablet */
+@media (max-width: 760px) {
+  .hero {
+    min-height: 500px !important; /* Reduced from 680px */
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+}
