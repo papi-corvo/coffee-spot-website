@@ -1,4 +1,5 @@
 // ===== Order start: delivery or pick-up must be selected before the menu =====
+sessionStorage.removeItem('cs_receiver_name');
 const orderStartOverlay = document.getElementById('orderStartOverlay');
   const deliveryMethodBtn = document.getElementById('deliveryMethodBtn');
   const pickupMethodBtn = document.getElementById('pickupMethodBtn');
@@ -196,6 +197,13 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
     orderStartOverlay.classList.add('is-hidden');
     document.body.classList.remove('order-setup-active');
     window.scrollTo(0, 0);
+
+    // This will automatically trigger the checkout after they enter their name
+    setTimeout(() => {
+      if (cart.length > 0) {
+        document.getElementById('cartCheckout').click();
+      }
+    }, 100);
   }
 
   citySelect.addEventListener('change', () => {
@@ -277,10 +285,8 @@ function closeFeaturedTasteScreen() {
   featuredTasteScreen.classList.remove('is-visible');
   featuredTasteScreen.classList.add('is-leaving');
 
-  // show the Delivery / Pick-up card underneath as the featured screen slides away
-  orderStartOverlay.classList.remove('is-hidden');
-  const nameField = document.getElementById('orderReceiverName');
-  if (nameField) window.setTimeout(() => nameField.focus(), 400);
+  // Unlock the body so the user can scroll the menu
+  document.body.classList.remove('order-setup-active');
 
   featuredTasteScreen.addEventListener('animationend', () => {
     featuredTasteScreen.classList.remove('is-leaving');
@@ -290,7 +296,7 @@ function closeFeaturedTasteScreen() {
 }
 
 featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
-window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee once the whole script has loaded
+window.setTimeout(openFeaturedTasteScreen, 0);
 
 // ===== Responsive navigation =====
     const sidebar = document.getElementById('sidebar');
@@ -1048,11 +1054,23 @@ window.setTimeout(openFeaturedTasteScreen, 0);   // fills in the featured coffee
       checkoutModal.classList.add('open');
       checkoutOverlay.classList.add('open');
       checkoutModal.setAttribute('aria-hidden', 'false');
+
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.body.style.overflow = 'hidden';
     }
+
     function closeCheckoutModal() {
       checkoutModal.classList.remove('open');
       checkoutOverlay.classList.remove('open');
       checkoutModal.setAttribute('aria-hidden', 'true');
+
+      // Restore the page layout
+      document.body.style.paddingRight = '';
+      document.body.style.overflow = '';
+
+      // Scroll to top cleanly
+      window.scrollTo(0, 0); 
     }
 
     const mobileCartButton = document.getElementById('mobileCartButton');
