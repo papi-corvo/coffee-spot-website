@@ -296,7 +296,6 @@ function closeFeaturedTasteScreen() {
 }
 
 featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
-window.setTimeout(openFeaturedTasteScreen, 0);
 
 // ===== Responsive navigation =====
     const sidebar = document.getElementById('sidebar');
@@ -1424,6 +1423,8 @@ async function renderDynamicMenu() {
 
     initCoffeeSpotHeroShowcase();
     updateMenuSearch(); // This initializes the count (e.g., "70 items")
+
+    openFeaturedTasteScreen();
 
   } catch (error) {
     console.error('Failed to load dynamic menu:', error);
