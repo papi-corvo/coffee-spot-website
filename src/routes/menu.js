@@ -26,6 +26,7 @@ router.get('/', (req, res) => {
       id: item.id,
       name: item.name,
       category: item.category, // 'coffee', 'soda', 'tea', 'pastries', 'food'
+      group_name: item.group_name,
       image: item.image,
       description: item.description || 'Freshly prepared for you.',
       variants: variantsByItem[item.id] || []
