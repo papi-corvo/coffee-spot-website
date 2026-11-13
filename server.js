@@ -46,5 +46,18 @@ app.use('/api/orders', orderRoutes);
 // 5. Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`
+======================================================
+                  COFFEE SPOT SERVER
+======================================================
+Customer View  : http://localhost:${PORT}
+Staff Login    : http://localhost:${PORT}/staff-login.html
+Admin Login    : http://localhost:${PORT}/admin-login.html
+
+Menu API JSON  : http://localhost:${PORT}/api/menu
+
+------------------------------------------------------
+
+Press Ctrl+C to stop the server.
+  `);
 });
