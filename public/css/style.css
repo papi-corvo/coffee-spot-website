@@ -4147,19 +4147,37 @@ body.order-setup-active { overflow: hidden; }
    HERO HEIGHT FIX: Shrink the hero so the menu is visible faster
    ===================================================================== */
 
-/* For Desktop/Laptop */
-.hero {
-  min-height: 65vh !important; /* Reduced from 86vh (Takes up 65% of screen instead) */
-  padding-top: 4rem !important;
-  padding-bottom: 4rem !important;
+/* 1. Desktop */
+@media (min-width: 992px) {
+  #home.hero {
+    /* Let the height perfectly hug the content */
+    height: auto !important;
+    min-height: auto !important;
+    padding: 0 !important; 
+  }
+
+  .cs-hero-showcase-inner {
+    /* Remove the massive top/bottom padding that was causing the empty space */
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+    height: auto !important;
+  }
 }
 
-/* For Mobile/Tablet */
-@media (max-width: 760px) {
-  .hero {
-    min-height: 500px !important; /* Reduced from 680px */
-    padding-top: 3.5rem !important;
-    padding-bottom: 3.5rem !important;
+/* 2. Tablet & Mobile */
+@media (max-width: 991px) {
+  #home.hero {
+    height: auto !important;
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .cs-hero-showcase-inner {
+    /* Tighter padding on mobile */
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+    gap: 1rem !important;
+    height: auto !important;
   }
 }
 
@@ -4418,6 +4436,7 @@ body.order-setup-active { overflow: hidden; }
   }
   .product-card-description {
     font-size: 0.75rem !important;
+    line-clamp: 2 !important;
     -webkit-line-clamp: 2 !important;
   }
 }
