@@ -4556,3 +4556,35 @@ body.order-setup-active { overflow: hidden; }
 .ad-tab-btn svg {
   stroke: currentColor;
 }
+
+/* =========================================
+   ADMIN MENU CLEAN ALIGNMENT
+   ========================================= */
+
+/* 1. Right-align the headers for Price and Available */
+#adMenu th.ad-num {
+  text-align: right !important;
+  padding-right: 2rem !important; /* Matches the input margin */
+}
+
+/* 2. Right-align the cells */
+#adMenu td.ad-num {
+  text-align: right !important;
+  padding-right: 2rem !important;
+}
+
+/* 3. Style the input box to sit flush */
+#adMenu .ad-price {
+  width: 85px !important;
+  display: inline-block !important;
+  text-align: right !important;
+  padding: 0.4rem 0.6rem !important;
+  margin: 0 !important; 
+}
+
+/* 4. Hide the up/down arrows */
+#adMenu .ad-price::-webkit-outer-spin-button,
+#adMenu .ad-price::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
