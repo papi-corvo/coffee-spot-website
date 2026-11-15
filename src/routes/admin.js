@@ -124,4 +124,25 @@ router.get('/menu', (req, res) => {
   }
 });
 
+// PATCH: Update a menu item (availability)
+router.patch('/menu/:slug', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { active } = req.body;
+    
+    // Update the active status in the database
+    if (active !== undefined) {
+      const result = db.prepare('UPDATE menu_items SET active = ? WHERE slug = ?').run(active ? 1 : 0, slug);
+      if (result.changes === 0) {
+        return res.status(404).json({ error: 'Menu item not found' });
+      }
+    }
+
+    res.json({ message: 'Menu item updated successfully' });
+  } catch (error) {
+    console.error("Admin menu update error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

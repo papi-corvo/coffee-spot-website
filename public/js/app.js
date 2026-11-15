@@ -251,15 +251,20 @@ const featuredMiniDescription = document.getElementById('featuredMiniDescription
 
 function getFeaturedCoffee() {
   const preferredNames = ['Cafe Americano', 'Cafe Latte', 'Mocha Latte', 'Caramel Macchiato', 'Matcha Latte'];
-  const available = preferredNames.map((name) => document.querySelector(`li.product-row[data-item-name="${name}"]`)).filter(Boolean);
-  const fallback = Array.from(document.querySelectorAll('#coffee li.product-row[data-item-name]'));
+  
+  // Only select items that are NOT unavailable
+  const available = preferredNames
+    .map((name) => document.querySelector(`li.product-row[data-item-name="${name}"]:not(.is-unavailable)`))
+    .filter(Boolean);
+    
+  const fallback = Array.from(document.querySelectorAll('#coffee li.product-row:not(.is-unavailable)'));
   const choices = available.length ? available : fallback;
   const row = choices[Math.floor(Math.random() * choices.length)];
 
-  if (!row) return { name: 'Coffee Spot Favorite', image: '', desc: 'Freshly brewed and made for your perfect coffee moment.' };
+  if (!row) return { name: 'Coffee Spot Favorite', image: 'image/pastry-placeholder.svg', desc: 'Freshly brewed and made for your perfect coffee moment.' };
 
   const name = row.dataset.itemName || 'Coffee Spot Favorite';
-  const image = row.querySelector('img')?.getAttribute('src') || '';
+  const image = row.querySelector('img')?.getAttribute('src') || 'image/pastry-placeholder.svg';
   const descEl = row.querySelector('.product-card-description');
   const desc = descEl ? descEl.textContent : 'A Coffee Spot favorite, freshly made for your perfect coffee moment.';
   return { name, image, desc };
@@ -1373,9 +1378,14 @@ async function renderDynamicMenu() {
       // Just use the database description directly!
       const descText = item.description || 'Freshly prepared for you.';
 
+      const isUnavailable = !item.active;
+      const unavailableClass = isUnavailable ? ' is-unavailable' : '';
+      const badgeHtml = isUnavailable ? '<span class="unavailable-badge">Unavailable</span>' : '';
+
       const html = `
-        <li class="product-row" data-item-name="${item.name}" data-item-id="${item.id}">
+        <li class="product-row${unavailableClass}" data-item-name="${item.name}" data-item-id="${item.id}">
           <div class="product-icon-wrap">
+            ${badgeHtml}
             <img src="${item.image}" alt="${item.name}" onerror="this.src='image/pastry-placeholder.svg'">
           </div>
           <div class="product-details">
@@ -1441,11 +1451,9 @@ function attachDynamicEventListeners() {
     const plusBtn = stepper.querySelector('.qty-plus');
     const qtyInput = stepper.querySelector('.qty-input');
 
-    // Remove old listeners to prevent duplicates
     minusBtn.replaceWith(minusBtn.cloneNode(true));
     plusBtn.replaceWith(plusBtn.cloneNode(true));
 
-    // Re-query after replacing
     const newMinus = stepper.querySelector('.qty-minus');
     const newPlus = stepper.querySelector('.qty-plus');
 
@@ -1456,6 +1464,10 @@ function attachDynamicEventListeners() {
   // 2. Product Detail Modal
   document.querySelectorAll('main .product-grid li.product-row[data-item-name]').forEach((row) => {
     row.addEventListener('click', (event) => {
+      // 1. Stop if unavailable
+      if (row.classList.contains('is-unavailable')) return; 
+      
+      // 2. Otherwise, open modal
       const interactive = event.target.closest('button, input, select, label, a');
       if (interactive && !interactive.classList.contains('product-name')) return;
       openProductDetail(row);
@@ -1463,6 +1475,7 @@ function attachDynamicEventListeners() {
 
     row.querySelector('.product-name')?.addEventListener('click', (event) => {
       event.stopPropagation();
+      if (row.classList.contains('is-unavailable')) return; // Stop if unavailable
       openProductDetail(row);
     });
 
@@ -1471,6 +1484,7 @@ function attachDynamicEventListeners() {
     row.addEventListener('keydown', (event) => {
       if ((event.key === 'Enter' || event.key === ' ') && event.target === row) {
         event.preventDefault();
+        if (row.classList.contains('is-unavailable')) return;
         openProductDetail(row);
       }
     });

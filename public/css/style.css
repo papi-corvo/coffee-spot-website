@@ -4459,3 +4459,36 @@ body.order-setup-active { overflow: hidden; }
     grid-template-columns: 1fr !important;
   }
 }
+
+/* =====================================================================
+   UNAVAILABLE MENU ITEMS
+   ===================================================================== */
+.product-row.is-unavailable {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(100%); /* Turns the card black and white */
+}
+
+/* Keep the badge colored even if the card is grayscale */
+.product-row.is-unavailable .unavailable-badge {
+  filter: grayscale(0%);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #a6371d; /* Dark red */
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Disable the hover effect on unavailable items */
+.product-row.is-unavailable:hover {
+  transform: none !important;
+  box-shadow: var(--shadow-sm) !important;
+}
