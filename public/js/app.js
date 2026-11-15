@@ -646,6 +646,33 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
         if (matches) visibleCount += 1;
       });
 
+      // NEW: Hide group headers that have no visible items under them
+      document.querySelectorAll('.group-header').forEach(header => {
+        if (!query) {
+          header.classList.remove('search-hidden');
+          return;
+        }
+        
+        let nextEl = header.nextElementSibling;
+        let hasVisibleItems = false;
+        
+        // Look at the siblings below this header until we hit the next header
+        while (nextEl && !nextEl.classList.contains('group-header')) {
+          if (nextEl.classList.contains('product-row') && !nextEl.classList.contains('search-hidden')) {
+            hasVisibleItems = true;
+            break;
+          }
+          nextEl = nextEl.nextElementSibling;
+        }
+        
+        // Hide the header if no visible items were found under it
+        if (!hasVisibleItems) {
+          header.classList.add('search-hidden');
+        } else {
+          header.classList.remove('search-hidden');
+        }
+      });
+
       document.querySelectorAll('main section.panel[id]').forEach((section) => {
         if (!['coffee', 'soda', 'tea', 'pastries', 'food-menu'].includes(section.id)) return;
         const products = Array.from(section.querySelectorAll('li.product-row[data-item-name]'));

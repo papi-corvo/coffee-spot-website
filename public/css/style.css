@@ -4588,3 +4588,8 @@ body.order-setup-active { overflow: hidden; }
   -webkit-appearance: none;
   margin: 0;
 }
+
+/* Make the search hidden class work for ALL elements, not just product rows */
+.search-hidden {
+  display: none !important;
+}
