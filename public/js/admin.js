@@ -65,7 +65,15 @@
     // These will be connected in the next phase:
     registerEmployee: async (e) => { console.log('TODO', e); }, 
     updateEmployee: async (id, patch) => { console.log('TODO', id, patch); },
-    updateMenuItem: async (slug, patch) => { console.log('TODO', slug, patch); },
+    updateMenuItem: async (slug, patch) => {
+      const res = await fetch(`/api/admin/menu/${slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch)
+      });
+      if (!res.ok) throw new Error('Failed to update menu item');
+      return await res.json();
+    },
   };
 
   let toastTimer;

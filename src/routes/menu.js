@@ -5,7 +5,7 @@ const { db } = require('../db/db');
 router.get('/', (req, res) => {
   try {
     // 1. Get all active menu items
-    const items = db.prepare('SELECT * FROM menu_items WHERE active = 1').all();
+    const items = db.prepare('SELECT * FROM menu_items').all();
     
     // 2. Get all variants (sizes/prices)
     const variants = db.prepare('SELECT * FROM menu_variants').all();
@@ -25,12 +25,14 @@ router.get('/', (req, res) => {
     const menu = items.map(item => ({
       id: item.id,
       name: item.name,
-      category: item.category, // 'coffee', 'soda', 'tea', 'pastries', 'food'
+      category: item.category,
       group_name: item.group_name,
       image: item.image,
       description: item.description || 'Freshly prepared for you.',
+      active: item.active === 1,
       variants: variantsByItem[item.id] || []
     }));
+    
 
     res.json(menu);
   } catch (error) {
