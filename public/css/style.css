@@ -4144,41 +4144,54 @@ body.order-setup-active { overflow: hidden; }
 }
 
 /* =====================================================================
-   HERO HEIGHT FIX: Shrink the hero so the menu is visible faster
+   HERO HEIGHT FIX
+   The old hero text + logo are hidden but still take up space, and the
+   showcase floats on top. Here the old content leaves the layout and the
+   showcase sits in the normal flow, so the hero is exactly as tall as the
+   showcase. Change --hero-pad-y to add or remove space above/below it.
    ===================================================================== */
+:root { --hero-pad-y: 2.5rem; }            /* desktop */
 
-/* 1. Desktop */
-@media (min-width: 992px) {
-  #home.hero {
-    /* Let the height perfectly hug the content */
-    height: auto !important;
-    min-height: auto !important;
-    padding: 0 !important; 
-  }
-
-  .cs-hero-showcase-inner {
-    /* Remove the massive top/bottom padding that was causing the empty space */
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-    height: auto !important;
-  }
+/* old hero content stops taking space (only when the showcase exists, so the fallback still works) */
+#home.hero:has(.cs-hero-showcase-addon) > .hero-copy,
+#home.hero:has(.cs-hero-showcase-addon) > .hero-mark,
+#home.hero:has(.cs-hero-showcase-addon) > .hero-decoration {
+  display: none !important;
 }
 
-/* 2. Tablet & Mobile */
-@media (max-width: 991px) {
-  #home.hero {
-    height: auto !important;
-    min-height: auto !important;
-    padding: 0 !important;
-  }
+#home.hero {
+  height: auto !important;
+  min-height: 0 !important;                /* want a minimum? e.g. min-height: 420px !important; */
+  padding: 0 !important;
+  gap: 0 !important;
+}
 
-  .cs-hero-showcase-inner {
-    /* Tighter padding on mobile */
-    padding-top: 1.5rem !important;
-    padding-bottom: 1.5rem !important;
-    gap: 1rem !important;
-    height: auto !important;
-  }
+/* the showcase becomes part of the page flow */
+#home.hero .cs-hero-showcase-addon {
+  position: relative;
+  inset: auto;
+  width: 100%;
+}
+
+#home.hero .cs-hero-showcase-inner {
+  padding-top: var(--hero-pad-y);
+  padding-bottom: var(--hero-pad-y);
+}
+
+/* tablet and phone: tighter */
+@media (max-width: 991px) {
+  :root { --hero-pad-y: 1.25rem; }
+  #home.hero .cs-hero-showcase-inner { gap: .9rem; }
+}
+
+/* small phones: drop the least important parts so the menu appears sooner */
+@media (max-width: 560px) {
+  .cs-hero-showcase-proof { display: none; }          /* "Loved by our customers" row */
+  .cs-hero-showcase-copy p { margin-bottom: .9rem; }
+  .cs-hero-showcase-image { min-height: 120px; }
+  /* want it even shorter? uncomment one: */
+  /* .cs-hero-showcase-copy p { display: none; } */
+  /* .cs-hero-showcase-card-foot { display: none; } */
 }
 
 /* =====================================================================
