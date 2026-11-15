@@ -862,9 +862,37 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
       detailProductDescription.textContent = info.desc;
       detailFlavorChips.innerHTML = getFlavorNotes(name, info).map((note) => `<span class="flavor-chip">${note}</span>`).join('');
 
+      // 1. Populate the hidden select (for backend logic)
       const sourceSelect = row.querySelector('.size-select');
       detailSizeSelect.innerHTML = sourceSelect ? sourceSelect.innerHTML : '';
       if (sourceSelect) detailSizeSelect.value = sourceSelect.value;
+
+      // 2. Build the new Size Pills
+      const pillsContainer = document.getElementById('detailSizePills');
+      pillsContainer.innerHTML = '';
+      
+      if (detailSizeSelect.options.length > 0) {
+        Array.from(detailSizeSelect.options).forEach((opt, index) => {
+          const pill = document.createElement('button');
+          pill.type = 'button';
+          pill.className = 'size-pill' + (index === 0 ? ' is-active' : '');
+          pill.innerHTML = opt.textContent.trim(); // e.g., "Medium — ₱110"
+          pill.dataset.value = opt.value;
+          
+          // When a pill is clicked:
+          pill.addEventListener('click', () => {
+            detailSizeSelect.value = opt.value; // Update hidden select
+            pillsContainer.querySelectorAll('.size-pill').forEach(p => p.classList.remove('is-active'));
+            pill.classList.add('is-active'); // Highlight clicked pill
+            syncDetailPrice(); // Update the total price
+          });
+          
+          pillsContainer.appendChild(pill);
+        });
+        
+        // Auto-select the first option by default
+        detailSizeSelect.value = detailSizeSelect.options[0].value;
+      }
 
       renderDetailExtras(row);
       detailQtyInput.value = '1';

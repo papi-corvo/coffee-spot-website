@@ -397,10 +397,17 @@
       </div>
 
       <div class="product-detail-options">
-        <label class="detail-field">
-          <span class="detail-section-label">SIZE</span>
+        <!-- Hidden select for backend logic -->
+        <div style="display: none;">
           <select id="detailSizeSelect"></select>
-        </label>
+        </div>
+        
+        <!-- New Pills Container -->
+        <div class="detail-field">
+          <span class="detail-section-label">SIZE</span>
+          <div id="detailSizePills" class="size-pills-container"></div>
+        </div>
+        
         <div class="detail-extra" id="detailExtraOptions"></div>
       </div>
 

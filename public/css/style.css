@@ -4593,3 +4593,38 @@ body.order-setup-active { overflow: hidden; }
 .search-hidden {
   display: none !important;
 }
+
+/* =========================================
+   SIZE SELECTION PILLS
+   ========================================= */
+.size-pills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.size-pill {
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(46, 20, 16, 0.15);
+  background: var(--white);
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.size-pill:hover {
+  border-color: var(--caramel);
+}
+
+.size-pill.is-active {
+  border-color: var(--caramel);
+  background: var(--caramel-light);
+  color: var(--espresso);
+  box-shadow: 0 0 0 1px var(--caramel);
+}
