@@ -5,7 +5,6 @@ const { db } = require('../db/db');
 // GET: Dashboard Stats
 router.get('/stats', (req, res) => {
   try {
-    // 1. Today's Sales & Orders
     const todaySales = db.prepare(`
       SELECT COALESCE(SUM(amount_centavos), 0) as total 
       FROM payments WHERE date(paid_at, 'localtime') = date('now', 'localtime')
@@ -19,7 +18,6 @@ router.get('/stats', (req, res) => {
       SELECT COUNT(*) as count FROM orders WHERE status IN ('new', 'accepted', 'ready')
     `).get().count;
 
-    // 2. Last 7 Days Sales (simplified for SQLite)
     const weekData = [];
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     for (let i = 6; i >= 0; i--) {
@@ -33,29 +31,25 @@ router.get('/stats', (req, res) => {
         FROM payments WHERE date(paid_at, 'localtime') = ?
       `).get(dateStr).total;
       
-      weekData.push([dayName, dailySales / 100]); // Convert to PHP
+      weekData.push([dayName, dailySales / 100]);
     }
 
-    // 3. Top Items
     const topItemsRaw = db.prepare(`
       SELECT name, SUM(quantity) as count 
       FROM order_items GROUP BY name ORDER BY count DESC LIMIT 5
     `).all();
     const topItems = topItemsRaw.map(item => [item.name, item.count]);
 
-    // 4. Payment Mix
     const payMixRaw = db.prepare(`
       SELECT method, COUNT(*) as count FROM payments GROUP BY method
     `).all();
     const payMix = payMixRaw.map(p => [p.method.toUpperCase(), p.count]);
 
-    // 5. Recent Orders
     const recentOrdersRaw = db.prepare(`
       SELECT code as id, receiver_name as name, order_type as type, status, created_at 
       FROM orders ORDER BY created_at DESC LIMIT 5
     `).all();
     
-    // We need to calculate the total for each recent order
     const recentOrders = recentOrdersRaw.map(o => {
       const orderTotal = db.prepare(`
         SELECT COALESCE(SUM(unit_price_centavos * quantity), 0) as total FROM order_items WHERE order_id = (SELECT id FROM orders WHERE code = ?)
@@ -84,6 +78,51 @@ router.get('/stats', (req, res) => {
   }
 });
 
+// GET: All Menu Items (with variants)
+router.get('/menu', (req, res) => {
+  try {
+    const items = db.prepare('SELECT id, slug, name, category, active FROM menu_items').all();
+    const variants = db.prepare('SELECT * FROM menu_variants ORDER BY sort_order').all();
+
+    const variantsByItem = variants.reduce((acc, v) => {
+      if (!acc[v.item_id]) acc[v.item_id] = [];
+      acc[v.item_id].push({
+        id: v.id,
+        code: v.code,
+        label: v.label,
+        price: v.price_centavos / 100,
+        price_centavos: v.price_centavos
+      });
+      return acc;
+    }, {});
+
+    const formattedMenu = items.map(m => {
+      const itemVariants = variantsByItem[m.id] || [];
+      
+      // Only consider variants with a valid price to find the base price
+      const validVariants = itemVariants.filter(v => v.price_centavos !== null && v.price_centavos > 0);
+      
+      const baseVariant = validVariants.length > 0 
+        ? validVariants.reduce((min, v) => v.price < min.price ? v : min, validVariants[0])
+        : null;
+
+      return {
+        slug: m.slug,
+        name: m.name,
+        category: m.category,
+        price: baseVariant ? baseVariant.price : 0,
+        active: m.active === 1,
+        variants: itemVariants
+      };
+    });
+
+    res.json(formattedMenu);
+  } catch (error) {
+    console.error("Menu fetch error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // GET: All Employees
 router.get('/employees', (req, res) => {
   try {
@@ -98,49 +137,64 @@ router.get('/employees', (req, res) => {
   }
 });
 
-// GET: All Menu Items
-router.get('/menu', (req, res) => {
-  try {
-    // Get the lowest variant price as the base price for display
-    const menu = db.prepare(`
-      SELECT m.id, m.slug, m.name, m.category, m.active, 
-             MIN(v.price_centavos) as price_centavos 
-      FROM menu_items m 
-      LEFT JOIN menu_variants v ON m.id = v.item_id 
-      GROUP BY m.id
-    `).all();
-
-    const formattedMenu = menu.map(m => ({
-      slug: m.slug,
-      name: m.name,
-      category: m.category,
-      price: (m.price_centavos || 0) / 100,
-      active: m.active === 1
-    }));
-
-    res.json(formattedMenu);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// PATCH: Update a menu item (availability)
+// PATCH: Update a menu item (price or availability)
 router.patch('/menu/:slug', (req, res) => {
   try {
     const { slug } = req.params;
-    const { active } = req.body;
+    const { price, active } = req.body;
     
-    // Update the active status in the database
+    const item = db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug);
+    if (!item) return res.status(404).json({ error: 'Menu item not found' });
+
     if (active !== undefined) {
-      const result = db.prepare('UPDATE menu_items SET active = ? WHERE slug = ?').run(active ? 1 : 0, slug);
-      if (result.changes === 0) {
-        return res.status(404).json({ error: 'Menu item not found' });
-      }
+      db.prepare('UPDATE menu_items SET active = ? WHERE id = ?').run(active ? 1 : 0, item.id);
+    }
+
+    if (price !== undefined) {
+      const priceCentavos = Math.round(Number(price) * 100);
+      db.prepare(`
+        UPDATE menu_variants 
+        SET price_centavos = ? 
+        WHERE id = (SELECT id FROM menu_variants WHERE item_id = ? ORDER BY price_centavos ASC LIMIT 1)
+      `).run(priceCentavos, item.id);
     }
 
     res.json({ message: 'Menu item updated successfully' });
   } catch (error) {
     console.error("Admin menu update error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PATCH: Update all variants for a specific item
+router.patch('/menu/:slug/variants', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { variants } = req.body;
+
+    if (!Array.isArray(variants)) {
+      return res.status(400).json({ error: 'Variants must be an array' });
+    }
+
+    const item = db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug);
+    if (!item) return res.status(404).json({ error: 'Menu item not found' });
+
+    db.transaction(() => {
+      const updateStmt = db.prepare('UPDATE menu_variants SET price_centavos = ? WHERE id = ? AND item_id = ?');
+      
+      variants.forEach(v => {
+        const priceCentavos = v.price === null ? null : Math.round(Number(v.price) * 100);
+        
+        if (priceCentavos !== null && (!Number.isFinite(priceCentavos) || priceCentavos < 0 || priceCentavos > 1000000)) {
+          throw new Error(`Invalid price for variant ID ${v.id}`);
+        }
+        updateStmt.run(priceCentavos, v.id, item.id);
+      });
+    })();
+
+    res.json({ message: 'Variants updated successfully' });
+  } catch (error) {
+    console.error("Variant update error:", error);
     res.status(500).json({ error: error.message });
   }
 });

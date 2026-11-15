@@ -1,33 +1,33 @@
-/* admin.css — load AFTER style.css (it reuses your colors, fonts, radii). Every class starts with ad-. */
+/* =========================================
+   BASE ADMIN LAYOUT
+   ========================================= */
 .ad { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: 100vh; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-variant-numeric: tabular-nums; }
 .ad [hidden] { display: none !important; }
-
-/* sidebar */
 .ad-side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem 1rem; background: linear-gradient(180deg, var(--espresso), var(--espresso-2)); color: var(--cream); }
 .ad-brand { display: flex; align-items: center; gap: .7rem; }
 .ad-brand strong { display: block; font-family: var(--font-display); font-size: 1.1rem; color: var(--linen); line-height: 1.2; }
 .ad-brand small { color: var(--caramel-light); opacity: .8; font-size: .75rem; }
 .ad-mark { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--caramel), var(--espresso-2)); color: var(--linen); font-family: var(--font-display); font-weight: 600; }
 .ad-nav { display: grid; gap: .2rem; }
-.ad-link { padding: .7rem .85rem; border-radius: var(--radius-sm); color: var(--cream); font-size: .92rem; font-weight: 600; opacity: .75; transition: background var(--transition), opacity var(--transition); }
+.ad-link { padding: .7rem .85rem; border-radius: var(--radius-sm); color: var(--cream); font-size: .92rem; font-weight: 600; opacity: .75; transition: background var(--transition), opacity var(--transition); cursor: pointer; }
 .ad-link:hover, .ad-link:focus-visible { background: rgba(250, 243, 231, .08); opacity: 1; }
 .ad-link.is-active { background: rgba(227, 90, 31, .18); color: var(--caramel-light); opacity: 1; }
-.ad-note { margin-top: auto; color: var(--caramel-light); opacity: .75; font-size: .74rem; line-height: 1.5; }
 
-/* page */
 .ad-main { min-width: 0; padding: 1.5rem clamp(1rem, 3vw, 2.25rem) 3rem; }
 .ad-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
 .ad-top h1 { color: var(--espresso); font-size: 1.7rem; }
 .ad-user { padding: .35rem .8rem; border: 1px solid rgba(46, 20, 16, .1); border-radius: var(--radius-pill); background: var(--linen); color: var(--espresso); font-size: .8rem; font-weight: 700; }
 .ad-card { padding: 1.1rem 1.2rem; border: 1px solid rgba(46, 20, 16, .07); border-radius: var(--radius-md); background: var(--white); box-shadow: var(--shadow-sm); }
 .ad-card h2 { margin-bottom: .9rem; color: var(--espresso); font-size: 1.02rem; }
+
+/* =========================================
+   OVERVIEW PAGE
+   ========================================= */
 .ad-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
 .ad-stat span { color: var(--ink-muted); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .ad-stat strong { display: block; margin: .2rem 0; color: var(--espresso); font-family: var(--font-display); font-size: 1.7rem; }
 .ad-stat small { color: var(--ink-muted); font-size: .78rem; }
 .ad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
-
-/* charts */
 .ad-bars { display: flex; align-items: flex-end; gap: .6rem; height: 170px; }
 .ad-bar { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .35rem; }
 .ad-bar i { width: 100%; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, var(--caramel), var(--espresso-2)); }
@@ -42,52 +42,32 @@
 .ad-legend i { width: 10px; height: 10px; border-radius: 50%; }
 .ad-legend b { margin-left: auto; }
 
-/* tables, badges, controls */
+/* =========================================
+   TABLES & TOOLBARS
+   ========================================= */
 .ad-scroll { overflow-x: auto; }
 .ad-table { width: 100%; border-collapse: collapse; font-size: .88rem; table-layout: fixed; }
 .ad-table th { padding: .5rem .6rem; color: var(--ink-muted); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
 .ad-table td { padding: .65rem .6rem; border-top: 1px dashed rgba(46, 20, 16, .14); vertical-align: middle; }
 .ad-num { text-align: right; white-space: nowrap; }
 .ad-empty { padding: 2rem; color: var(--ink-muted); text-align: center; }
-.ad-badge { display: inline-block; padding: .15rem .6rem; border-radius: var(--radius-pill); background: var(--caramel-light); color: var(--espresso); font-size: .72rem; font-weight: 800; }
-.ad-badge[data-s="done"], .ad-badge[data-s="active"] { background: #e3f3e8; color: #2f7650; }
-.ad-badge[data-s="accepted"] { background: #e8eefc; color: #2a4a9a; }
-.ad-badge[data-s="invited"], .ad-badge[data-s="ready"] { background: #fff3d6; color: #8a5a00; }
-.ad-badge[data-s="voided"], .ad-badge[data-s="rejected"] { background: #fde8e5; color: #a6371d; }
-.ad-badge[data-s="inactive"] { background: #ece8e4; color: var(--ink-muted); }
 .ad-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; }
 .ad-toolbar .ad-input { flex: 1 1 220px; max-width: 360px; }
 .ad-toolbar .ad-btn { margin-left: auto; }
+
+/* =========================================
+   INPUTS & BUTTONS
+   ========================================= */
 .ad-input { width: 100%; padding: .6rem .75rem; border: 1px solid rgba(46, 20, 16, .15); border-radius: var(--radius-sm); background: var(--linen); color: var(--ink); font: 500 .9rem var(--font-body); }
 .ad-input:focus-visible { outline: none; border-color: var(--caramel); box-shadow: 0 0 0 3px rgba(227, 90, 31, .25); }
 .ad-sm { width: auto; padding: .35rem .6rem; font-size: .8rem; }
-.ad-btn { padding: .6rem 1rem; border: 1px solid rgba(46, 20, 16, .16); border-radius: var(--radius-sm); background: var(--linen); color: var(--espresso); font-size: .85rem; font-weight: 700; transition: border-color var(--transition), transform var(--transition); }
+.ad-btn { padding: .6rem 1rem; border: 1px solid rgba(46, 20, 16, .16); border-radius: var(--radius-sm); background: var(--linen); color: var(--espresso); font-size: .85rem; font-weight: 700; transition: border-color var(--transition), transform var(--transition); cursor: pointer; }
 .ad-btn:hover, .ad-btn:focus-visible { border-color: var(--caramel); transform: translateY(-1px); }
 .ad-btn--primary { border-color: transparent; background: linear-gradient(135deg, var(--caramel), var(--espresso-2)); color: var(--white); box-shadow: var(--shadow-sm); }
 
-.ad-price { width: 6.5rem; text-align: right; }
-
 /* =========================================
-   FIX TABLE COLUMN ALIGNMENT
+   SWITCH TOGGLES
    ========================================= */
-
-/* Employees Table Column Widths */
-#adEmployees th:nth-child(1) { width: 25%; }
-#adEmployees th:nth-child(2) { width: 35%; }
-#adEmployees th:nth-child(3) { width: 15%; }
-#adEmployees th:nth-child(4) { width: 15%; }
-#adEmployees th:nth-child(5) { width: 10%; }
-
-/* Menu Table Column Widths */
-#adMenu th:nth-child(1) { width: 40%; }
-#adMenu th:nth-child(2) { width: 25%; }
-#adMenu th:nth-child(3) { width: 20%; }
-#adMenu th:nth-child(4) { width: 15%; }
-
-/* Ensure the price inputs and toggle switches align nicely under their headers */
-#adMenu td:nth-child(3) { text-align: right; }
-#adMenu td:nth-child(4) { text-align: right; }
-
 .ad-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
 .ad-switch input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
 .ad-switch span { position: absolute; inset: 0; border-radius: 99px; background: #cfc6bd; transition: background var(--transition); }
@@ -96,7 +76,27 @@
 .ad-switch input:checked + span::after { transform: translateX(18px); }
 .ad-switch input:focus-visible + span { outline: 2px solid var(--caramel); outline-offset: 2px; }
 
-/* dialog + toast */
+/* =========================================
+   APP-LIKE TABS (Admin Menu)
+   ========================================= */
+.ad-tabs-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 0.5rem; }
+.ad-tab-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: var(--radius-pill); background: var(--white); border: 1px solid rgba(46, 20, 16, 0.15); color: var(--ink-muted); font-weight: 700; font-size: 0.85rem; white-space: nowrap; transition: all 0.2s ease; cursor: pointer; }
+.ad-tab-btn:hover { border-color: var(--caramel); color: var(--espresso); }
+.ad-tab-btn.is-active { background: var(--espresso); border-color: var(--espresso); color: var(--white); box-shadow: var(--shadow-sm); }
+.ad-tab-btn svg { stroke: currentColor; }
+
+/* =========================================
+   ADMIN MENU TABLE ALIGNMENT FIX
+   ========================================= */
+#adMenu th:nth-child(3), #adMenu td:nth-child(3), #adMenu th:nth-child(4), #adMenu td:nth-child(4) { text-align: right !important; }
+#adMenu th:nth-child(3), #adMenu td:nth-child(3) { padding-right: 1rem !important; }
+#adMenu th:nth-child(4), #adMenu td:nth-child(4) { padding-right: 1rem !important; }
+#adMenu .ad-price { width: 80px !important; display: inline-block !important; text-align: right !important; padding: 0.4rem 0.6rem !important; margin: 0 !important; }
+#adMenu .ad-price::-webkit-outer-spin-button, #adMenu .ad-price::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* =========================================
+   DIALOGS & MODALS
+   ========================================= */
 .ad-dialog { width: min(420px, 92vw); padding: 1.5rem; border: 0; border-radius: var(--radius-md); background: var(--linen); color: var(--ink); box-shadow: var(--shadow-lg); }
 .ad-dialog::backdrop { background: rgba(46, 20, 16, .55); }
 .ad-dialog h2 { margin-bottom: .6rem; color: var(--espresso); }
@@ -104,6 +104,31 @@
 .ad-hint { margin-top: .9rem; color: var(--ink-muted); font-size: .78rem; line-height: 1.5; }
 .ad-error { min-height: 1.2em; margin-top: .5rem; color: #a6371d; font-size: .8rem; font-weight: 700; }
 .ad-dialog-actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .5rem; }
+
+/* Variant Editor Modal */
+#variantDialog { margin: auto; }
+.variant-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+.variant-row { display: flex; align-items: center; justify-content: space-between; background: var(--cream); padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid rgba(46, 20, 16, 0.1); }
+.variant-row label { font-family: var(--font-body); font-weight: 700; color: var(--espresso); font-size: 0.95rem; }
+.variant-row input { width: 100px; padding: 0.5rem; border: 1px solid rgba(46, 20, 16, 0.2); border-radius: 8px; font-family: var(--font-body); font-size: 0.95rem; text-align: right; font-weight: 700; color: var(--espresso); }
+.variant-row input:focus { outline: none; border-color: var(--caramel); box-shadow: 0 0 0 3px rgba(227, 90, 31, 0.15); }
+.variant-row input:placeholder-shown { background-color: rgba(46, 20, 16, 0.04) !important; border-style: dashed !important; color: var(--ink-muted) !important; }
+.variant-row input:not(:placeholder-shown) { background-color: var(--white) !important; border-style: solid !important; color: var(--espresso) !important; }
+
+/* Confirmation Dialog */
+#menuConfirmDialog::backdrop { background: rgba(46, 20, 16, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+#menuConfirmDialog { border: none; border-radius: 20px; padding: 2.5rem 2rem; background: var(--white); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: min(400px, 90vw); margin: auto; text-align: center; }
+.confirm-icon { width: 56px; height: 56px; margin: 0 auto 1.25rem; border-radius: 50%; background: #ffe4e6; color: #e11d48; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; font-family: var(--font-display); }
+.confirm-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--espresso); margin-bottom: 0.5rem; }
+.confirm-message { font-family: var(--font-body); color: var(--ink-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.75rem; }
+.confirm-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+.confirm-actions button { width: 100%; padding: 0.85rem; border-radius: 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+#menuConfirmOk { background: var(--espresso); color: var(--white); border: none; box-shadow: 0 4px 12px rgba(46, 20, 16, 0.15); }
+#menuConfirmOk:hover { background: var(--caramel); }
+#menuConfirmCancel { background: var(--white); color: var(--ink-muted); border: 1px solid rgba(46, 20, 16, 0.15); }
+#menuConfirmCancel:hover { background: var(--cream); color: var(--espresso); }
+
+/* Toast */
 .ad-toast { position: fixed; left: 50%; bottom: 1.5rem; z-index: 50; padding: .7rem 1.1rem; border-radius: var(--radius-pill); background: var(--espresso); color: var(--cream); font-size: .85rem; font-weight: 700; box-shadow: var(--shadow-md); opacity: 0; transform: translate(-50%, 12px); pointer-events: none; transition: opacity var(--transition), transform var(--transition); }
 .ad-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
 
@@ -111,92 +136,4 @@
   .ad { grid-template-columns: 1fr; }
   .ad-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; padding: .8rem 1rem; }
   .ad-nav { display: flex; gap: .3rem; }
-  .ad-note { display: none; }
-}
-
-/* =========================================
-   ADMIN DASHBOARD: FINAL TABLE ALIGNMENT FIXES
-   ========================================= */
-
-/* 1. Force fixed layout so columns respect our widths */
-.ad-table {
-  table-layout: fixed;
-}
-
-/* -----------------------------------------
-   2. EMPLOYEES TABLE (#adEmployees)
-   ----------------------------------------- */
-#adEmployees th:nth-child(1) { width: 25%; }
-#adEmployees th:nth-child(2) { width: 35%; }
-#adEmployees th:nth-child(3) { width: 15%; }
-#adEmployees th:nth-child(4) { width: 15%; }
-#adEmployees th:nth-child(5) { width: 10%; }
-
-/* Center the Status header and the green badge */
-#adEmployees th:nth-child(4),
-#adEmployees td:nth-child(4) {
-  text-align: center;
-}
-
-/* Right-align the Deactivate buttons */
-#adEmployees th:last-child,
-#adEmployees td:last-child {
-  text-align: right;
-  padding-right: 1rem;
-}
-
-/* -----------------------------------------
-   3. MENU TABLE (#adMenu)
-   ----------------------------------------- */
-#adMenu th:nth-child(1) { width: 40%; }
-#adMenu th:nth-child(2) { width: 25%; }
-#adMenu th:nth-child(3) { width: 20%; }
-#adMenu th:nth-child(4) { width: 15%; }
-
-/* Right-align the Price header and input */
-#adMenu th:nth-child(3),
-#adMenu td:nth-child(3) {
-  text-align: right;
-  padding-right: 3rem;
-}
-#adMenu .ad-price {
-  width: 6rem;
-  display: inline-block;
-  text-align: right;
-}
-
-/* Right-align the Available header and toggle switch */
-#adMenu th:nth-child(4),
-#adMenu td:nth-child(4) {
-  text-align: right;
-  padding-right: 1.5rem;
-}
-
-/* -----------------------------------------
-   4. RECENT ORDERS TABLE (#adOrders)
-   ----------------------------------------- */
-#adOrders th:nth-child(1) { width: 18%; }
-#adOrders th:nth-child(2) { width: 20%; }
-#adOrders th:nth-child(3) { width: 15%; }
-#adOrders th:nth-child(4) { width: 15%; }
-#adOrders th:nth-child(5) { width: 15%; }
-#adOrders th:nth-child(6) { width: 17%; }
-
-/* Right-align the Total header and amount */
-#adOrders th:nth-child(5),
-#adOrders td:nth-child(5) {
-  text-align: right;
-  padding-right: 2.5rem;
-}
-
-/* Center the Status header and the green badge */
-#adOrders th:nth-child(6),
-#adOrders td:nth-child(6) {
-  text-align: center;
-}
-
-/* Add vertical breathing room to the rows */
-#adOrders td {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
