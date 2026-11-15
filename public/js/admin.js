@@ -1,18 +1,13 @@
-/* =====================================================================
-   admin.js — admin dashboard DRAFT. Runs on sample data.
-   Every read/write goes through the `api` object below, so connecting the real
-   backend later means replacing those few functions (see the "later:" comments).
-   ===================================================================== */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
   const peso = (n) => '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const ME = 1;                                   // the signed-in admin (comes from the Supabase login later)
+  const ME = 1;                                   
   const CATS = { coffee: 'Coffee', soda: 'Italian soda', tea: 'Tea', pastries: 'Pastries', food: 'Food' };
   const STATUS = { active: 'Active', invited: 'Invited', inactive: 'Inactive' };
 
-  /* ---------- sample data ---------- */
+  /* ---------- sample data (Fallback) ---------- */
   const SAMPLE = {
     week: [['Fri', 17250], ['Sat', 19800], ['Sun', 0], ['Mon', 14200], ['Tue', 12850], ['Wed', 15900], ['Thu', 18450]],
     ordersToday: 62,
@@ -45,7 +40,7 @@
     ],
   };
 
-  /* ---------- the ONLY place that knows where data comes from ---------- */
+  /* ---------- API ---------- */
   const api = {
     stats: async () => {
       const res = await fetch('/api/admin/stats');
@@ -62,7 +57,6 @@
       if (!res.ok) throw new Error('Failed to fetch menu');
       return await res.json();
     },
-    // These will be connected in the next phase:
     registerEmployee: async (e) => { console.log('TODO', e); }, 
     updateEmployee: async (id, patch) => { console.log('TODO', id, patch); },
     updateMenuItem: async (slug, patch) => {
@@ -182,33 +176,102 @@
     }
   });
 
-  /* ---------- menu ---------- */
+  /* ---------- menu (APP-LIKE TABS) ---------- */
   let menu = [];
+  let currentMenuTab = 'all'; 
+
   function renderMenu() {
-    const q = $('menuFilter').value.trim().toLowerCase(), cat = $('menuCat').value;
-    const rows = menu.filter((m) => (!cat || m.category === cat) && (!q || m.name.toLowerCase().includes(q)));
-    $('adMenu').innerHTML = '<thead><tr><th>Item</th><th>Category</th><th class="ad-num">Price (base size)</th><th class="ad-num">Available</th></tr></thead><tbody>' +
-      (rows.map((m) => `<tr>
-        <td><b>${esc(m.name)}</b></td><td>${CATS[m.category]}</td>
-        <td class="ad-num"><input class="ad-input ad-sm ad-price" type="number" min="0" step="0.01" value="${m.price}" data-price="${esc(m.slug)}" aria-label="Price of ${esc(m.name)}"></td>
-        <td class="ad-num"><label class="ad-switch"><input type="checkbox" data-active="${esc(m.slug)}" ${m.active ? 'checked' : ''} aria-label="${esc(m.name)} available"><span></span></label></td>
-      </tr>`).join('') || '<tr><td colspan="4" class="ad-empty">No items match.</td></tr>') + '</tbody>';
-  }
-  $('menuCat').innerHTML += Object.entries(CATS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
-  $('menuFilter').addEventListener('input', renderMenu);
-  $('menuCat').addEventListener('change', renderMenu);
-  $('adMenu').addEventListener('change', async (e) => {
-    const price = e.target.closest('[data-price]'), act = e.target.closest('[data-active]');
-    if (price) {
-      const v = Number(price.value);
-      if (!Number.isFinite(v) || v < 0) { renderMenu(); return toast('Enter a valid price'); }
-      await api.updateMenuItem(price.dataset.price, { price: v });
-      toast('Price saved');
-    } else if (act) {
-      await api.updateMenuItem(act.dataset.active, { active: act.checked });
-      toast(act.checked ? 'Item is on the menu' : 'Item hidden from customers');
+    const q = $('menuFilter').value.trim().toLowerCase();
+
+    // 1. Filter
+    const filtered = menu.filter((m) => {
+      const matchesSearch = !q || m.name.toLowerCase().includes(q);
+      const matchesTab = currentMenuTab === 'all' || m.category === currentMenuTab;
+      return matchesSearch && matchesTab;
+    });
+
+    // 2. Category Data with SVGs
+    const categoryData = {
+      all: { label: 'All Items', icon: '' },
+      coffee: { 
+        label: 'Coffee', 
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>' 
+      },
+      soda: { 
+        label: 'Italian Soda', 
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4"/><path d="M19 6H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/><path d="M9 12h.01"/><path d="M15 16h.01"/><path d="M12 14h.01"/><path d="M7 16h.01"/><path d="M17 12h.01"/></svg>' 
+      },
+      tea: { 
+        label: 'Tea', 
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><path d="M6 2c0 2-2 2-2 4"/><path d="M10 2c0 2-2 2-2 4"/><path d="M14 2c0 2-2 2-2 4"/></svg>' 
+      },
+      pastries: { 
+        label: 'Pastries', 
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20V8a6 6 0 0 1 12 0v12"/><path d="M6 12h12"/><path d="M6 16h12"/></svg>' 
+      },
+      food: { 
+        label: 'Food Menu', 
+        icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>' 
+      }
+    };
+
+    // 3. Build Tabs
+    let tabsHtml = '<div class="ad-tabs-bar">';
+    Object.entries(categoryData).forEach(([key, data]) => {
+      const activeClass = currentMenuTab === key ? 'is-active' : '';
+      tabsHtml += `<button type="button" class="ad-tab-btn ${activeClass}" data-cat="${key}">
+        ${data.icon} 
+        <span>${data.label}</span>
+      </button>`;
+    });
+    tabsHtml += '</div>';
+
+    // 4. Build Table
+    let tableHtml = '<thead><tr><th>Item</th><th>Category</th><th class="ad-num">Price</th><th class="ad-num">Available</th></tr></thead><tbody>';
+
+    if (filtered.length === 0) {
+      tableHtml += '<tr><td colspan="4" class="ad-empty">No items match.</td></tr>';
+    } else {
+      filtered.forEach((m) => {
+        // SAFE FALLBACK: Use categoryData if it exists, otherwise just capitalize the category string
+        const catLabel = categoryData[m.category] ? categoryData[m.category].label : m.category;
+        
+        tableHtml += `<tr>
+          <td><b>${esc(m.name)}</b></td>
+          <td>${catLabel}</td>
+          <td class="ad-num"><input class="ad-input ad-sm ad-price" type="number" min="0" step="0.01" value="${m.price}" data-price="${esc(m.slug)}"></td>
+          <td class="ad-num"><label class="ad-switch"><input type="checkbox" data-active="${esc(m.slug)}" ${m.active ? 'checked' : ''}><span></span></label></td>
+        </tr>`;
+      });
     }
-  });
+    tableHtml += '</tbody>';
+
+    const container = $('adMenu').parentElement; 
+    container.innerHTML = tabsHtml + '<table class="ad-table" id="adMenu">' + tableHtml + '</table>';
+
+    // 5. Attach Listeners
+    container.querySelectorAll('.ad-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        currentMenuTab = e.target.closest('.ad-tab-btn').dataset.cat;
+        renderMenu(); 
+      });
+    });
+
+    $('adMenu').addEventListener('change', async (e) => {
+      const price = e.target.closest('[data-price]'), act = e.target.closest('[data-active]');
+      if (price) {
+        const v = Number(price.value);
+        if (!Number.isFinite(v) || v < 0) { renderMenu(); return toast('Enter a valid price'); }
+        await api.updateMenuItem(price.dataset.price, { price: v });
+        toast('Price saved');
+      } else if (act) {
+        await api.updateMenuItem(act.dataset.active, { active: act.checked });
+        toast(act.checked ? 'Item is on the menu' : 'Item hidden from customers');
+      }
+    });
+  }
+
+  $('menuFilter').addEventListener('input', renderMenu);
 
   /* ---------- views ---------- */
   const TITLES = { overview: 'Overview', employees: 'Employees', menu: 'Menu' };
@@ -224,10 +287,8 @@
   }
   window.addEventListener('hashchange', show);
 
-    // 1. Function to load the dashboard data
   async function loadDashboardData() {
     try {
-      // Only refresh stats if the Overview tab is currently visible
       if (!document.getElementById('view-overview').hidden) {
         renderOverview(await api.stats());
       }
@@ -236,30 +297,22 @@
     }
   }
 
-  // 2. The Bouncer & Initial Load
   (async () => {
     try {
-      // Check if we have a valid admin cookie
       const res = await fetch('/api/auth/me');
       if (!res.ok) throw new Error('Not authorized');
       
-      // Initial Load
       renderOverview(await api.stats());
       employees = await api.employees(); renderEmployees();
       menu = await api.menu(); renderMenu();
       show();
 
-      // 3. The Auto-Refresh Timer (Every 30 seconds)
       setInterval(() => {
-        // Smart Pause: If the browser tab is minimized/hidden, do nothing.
         if (document.hidden) return; 
-        
-        // Refresh the data
         loadDashboardData();
-      }, 30000); // 30,000 milliseconds = 30 seconds
+      }, 30000); 
       
     } catch (error) {
-      // If they don't have a token, or aren't an admin, kick them out!
       window.location.href = 'admin-login.html';
     }
   })();
