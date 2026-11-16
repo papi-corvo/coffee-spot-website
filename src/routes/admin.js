@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../db/db');
 
+const MAX_PRICE = 10000; // 10,000 PHP limit
+// Safe centavos conversion (avoids 19.99 * 100 = 1998.999999)
+const toCentavos = (amount) => Math.round(Number(amount) * 100);
+
 // GET: Dashboard Stats
 router.get('/stats', (req, res) => {
   try {
@@ -137,7 +141,7 @@ router.get('/employees', (req, res) => {
   }
 });
 
-// PATCH: Update a menu item (price or availability)
+// PATCH: Update a menu item (base price or availability)
 router.patch('/menu/:slug', (req, res) => {
   try {
     const { slug } = req.params;
@@ -146,12 +150,22 @@ router.patch('/menu/:slug', (req, res) => {
     const item = db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug);
     if (!item) return res.status(404).json({ error: 'Menu item not found' });
 
+    // 1. Validate Availability
     if (active !== undefined) {
       db.prepare('UPDATE menu_items SET active = ? WHERE id = ?').run(active ? 1 : 0, item.id);
     }
 
+    // 2. Validate and Update Base Price
     if (price !== undefined) {
-      const priceCentavos = Math.round(Number(price) * 100);
+      const numPrice = Number(price);
+      
+      if (!Number.isFinite(numPrice) || numPrice <= 0 || numPrice > MAX_PRICE) {
+        return res.status(400).json({ error: `Price must be between 0.01 and ${MAX_PRICE}.` });
+      }
+
+      const priceCentavos = toCentavos(numPrice);
+      
+      // Update the FIRST (lowest/base) variant for this item
       db.prepare(`
         UPDATE menu_variants 
         SET price_centavos = ? 
@@ -172,22 +186,38 @@ router.patch('/menu/:slug/variants', (req, res) => {
     const { slug } = req.params;
     const { variants } = req.body;
 
-    if (!Array.isArray(variants)) {
-      return res.status(400).json({ error: 'Variants must be an array' });
+    if (!Array.isArray(variants) || variants.length === 0) {
+      return res.status(400).json({ error: 'Variants must be a non-empty array.' });
     }
 
     const item = db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug);
     if (!item) return res.status(404).json({ error: 'Menu item not found' });
 
+    // Validation: Check all prices before touching the DB
+    let hasAtLeastOnePrice = false;
+    
+    for (const v of variants) {
+      if (v.price === null) continue; // Null is allowed (means unavailable)
+      
+      const numPrice = Number(v.price);
+      if (!Number.isFinite(numPrice) || numPrice <= 0 || numPrice > MAX_PRICE) {
+        return res.status(400).json({ error: `All prices must be between 0.01 and ${MAX_PRICE}.` });
+      }
+      hasAtLeastOnePrice = true;
+    }
+
+    // Claude's Rule: Prevent items where ALL sizes are null
+    if (!hasAtLeastOnePrice) {
+      return res.status(400).json({ error: 'At least one size must have a valid price.' });
+    }
+
+    // Execute inside a transaction so it's all-or-nothing
     db.transaction(() => {
       const updateStmt = db.prepare('UPDATE menu_variants SET price_centavos = ? WHERE id = ? AND item_id = ?');
       
       variants.forEach(v => {
-        const priceCentavos = v.price === null ? null : Math.round(Number(v.price) * 100);
-        
-        if (priceCentavos !== null && (!Number.isFinite(priceCentavos) || priceCentavos < 0 || priceCentavos > 1000000)) {
-          throw new Error(`Invalid price for variant ID ${v.id}`);
-        }
+        // If it's null, save null. Otherwise, safely convert to centavos.
+        const priceCentavos = v.price === null ? null : toCentavos(v.price);
         updateStmt.run(priceCentavos, v.id, item.id);
       });
     })();

@@ -18,20 +18,21 @@ function resolveLine(line) {
   // 2. Find the specific size/variant to get the price
   const variant = db.prepare('SELECT * FROM menu_variants WHERE item_id = ? AND code = ?').get(item.id, size);
   
-  if (!variant || variant.price_centavos === null) {
-    throw new AppError(`Size '${size}' is not available for ${item.name}.`);
+  if (!variant) {
+    throw new AppError(`Size '${size}' does not exist for ${item.name}.`);
   }
 
-  // 3. Calculate the final base price
-  let unitCentavos = variant.price_centavos;
-
+  // CRITICAL FIX: Block checkout if the variant price is null (unavailable)
+  if (variant.price_centavos === null || variant.price_centavos <= 0) {
+    throw new AppError(`Size '${size}' for ${item.name} is currently unavailable.`);
+  }
 
   // 4. Return the formatted line item
   return {
     menuItemId: item.id,
     name: item.name,
     size: variant.label,
-    unitCentavos: unitCentavos,
+    unitCentavos: variant.price_centavos,
     options: []
   };
 }
