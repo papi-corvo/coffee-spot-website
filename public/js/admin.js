@@ -1,13 +1,14 @@
 (() => {
   'use strict';
+
+  const MAX_PRICE = 10000; 
+
   const $ = (id) => document.getElementById(id);
   const peso = (n) => '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ME = 1;                                   
   const CATS = { coffee: 'Coffee', soda: 'Italian soda', tea: 'Tea', pastries: 'Pastries', food: 'Food' };
   const STATUS = { active: 'Active', invited: 'Invited', inactive: 'Inactive' };
-
-  const SAMPLE = { week: [], ordersToday: 0, top: [], pay: [], orders: [], employees: [], menu: [] };
 
   const api = {
     stats: async () => { const res = await fetch('/api/admin/stats'); if (!res.ok) throw new Error('Failed'); return await res.json(); },
@@ -16,16 +17,12 @@
     registerEmployee: async (e) => { console.log('TODO', e); }, 
     updateEmployee: async (id, patch) => { console.log('TODO', id, patch); },
     updateMenuItem: async (slug, patch) => {
-      const res = await fetch(`/api/admin/menu/${slug}`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch)
-      });
+      const res = await fetch(`/api/admin/menu/${slug}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
       if (!res.ok) throw new Error('Failed to update menu item');
       return await res.json();
     },
     updateVariants: async (slug, variants) => {
-      const res = await fetch(`/api/admin/menu/${slug}/variants`, {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ variants })
-      });
+      const res = await fetch(`/api/admin/menu/${slug}/variants`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ variants }) });
       if (!res.ok) throw new Error('Failed to update variants');
       return await res.json();
     },
@@ -33,7 +30,16 @@
 
   let toastTimer;
   function toast(msg) {
-    const t = $('adToast');
+    const isVariantOpen = $('variantDialog')?.open;
+    const isConfirmOpen = $('menuConfirmDialog')?.open;
+    
+    let t;
+    if (isVariantOpen) t = $('variantToast');
+    else if (isConfirmOpen) t = $('confirmToast');
+    else t = $('adToast');
+    
+    if (!t) return;
+    
     t.textContent = msg;
     t.classList.add('is-on');
     clearTimeout(toastTimer);
@@ -173,7 +179,7 @@
           <td><b>${esc(m.name)}</b></td>
           <td>${catLabel}</td>
           <td class="ad-num" style="display: flex; align-items: center; justify-content: flex-end; gap: 8px; border-bottom: none;">
-            <input class="ad-input ad-sm ad-price" type="number" min="0" step="0.01" value="${m.price}" data-price="${esc(m.slug)}" style="width: 80px;">
+            <input class="ad-input ad-sm ad-price" type="text" inputmode="decimal" value="${Number(m.price).toLocaleString('en-PH')}" data-price="${esc(m.slug)}" data-db-value="${m.price}" style="width: 85px; text-align: right;">
             <button type="button" class="ad-btn ad-btn--primary ad-sm" data-edit-variant="${esc(m.slug)}" style="padding: 0.4rem 0.6rem; font-size: 0.75rem; white-space: nowrap;">Sizes</button>
           </td>
           <td class="ad-num"><label class="ad-switch"><input type="checkbox" data-active="${esc(m.slug)}" ${m.active ? 'checked' : ''}><span></span></label></td>
@@ -197,12 +203,13 @@
       const toggleInput = e.target.closest('[data-active]');
 
       if (priceInput) {
-        const newPrice = Number(priceInput.value);
+        const rawValue = priceInput.value.replace(/,/g, '');
+        const newPrice = Number(rawValue);
         const slug = priceInput.dataset.price;
         const item = menu.find((m) => m.slug === slug);
 
-        if (!Number.isFinite(newPrice) || newPrice < 0 || newPrice > 10000) {
-          toast('Price must be between 0 and 10,000');
+        if (!Number.isFinite(newPrice) || newPrice < 0 || newPrice > MAX_PRICE) {
+          toast('Maximum price exceeded. Please enter an amount up to ₱10,000.');
           renderMenu(); 
           return;
         }
@@ -255,40 +262,68 @@
 
     $('variantItemName').textContent = `Edit Prices: ${item.name}`;
     const list = $('variantList');
+    
+    // Add data-db-value to the variant inputs!
     list.innerHTML = item.variants.map(v => `
       <div class="variant-row">
         <label>${v.label}</label>
-        <input type="number" min="0" step="0.01" value="${v.price_centavos !== null ? v.price : ''}" data-id="${v.id}" placeholder="Not available">
+        <input class="ad-price" type="text" inputmode="decimal" value="${v.price_centavos !== null ? Number(v.price).toLocaleString('en-PH') : ''}" data-id="${v.id}" data-db-value="${v.price}" placeholder="Not available">
       </div>
     `).join('');
 
     $('variantDialog').showModal();
 
-    $('variantSave').onclick = async () => {
-      try {
-        const inputs = list.querySelectorAll('input');
-        const newVariants = Array.from(inputs).map(input => ({
+    $('variantSave').onclick = () => {
+      const inputs = list.querySelectorAll('input');
+      const newVariants = Array.from(inputs).map(input => {
+        const rawValue = input.value.replace(/,/g, '').trim();
+        return {
           id: Number(input.dataset.id),
-          price: input.value.trim() === '' ? null : Number(input.value)
-        }));
+          price: rawValue === '' ? null : Number(rawValue)
+        };
+      });
 
-        if (newVariants.some(v => v.price !== null && (!Number.isFinite(v.price) || v.price < 0 || v.price > 10000))) {
-          return toast('Prices must be between 0 and 10,000');
+      if (newVariants.some(v => v.price !== null && (!Number.isFinite(v.price) || v.price < 0 || v.price > MAX_PRICE))) {
+        return toast('Maximum price exceeded. Please enter an amount up to ₱10,000.');
+      }
+
+      $('variantDialog').close();
+      
+      document.querySelector('#menuConfirmDialog .confirm-icon').style.background = '#e0f2fe';
+      document.querySelector('#menuConfirmDialog .confirm-icon').style.color = '#0284c7';
+      $('menuConfirmMessage').innerHTML = `Are you sure you want to save the new prices for <strong>${item.name}</strong>?`;
+      $('menuConfirmDialog').showModal();
+
+      $('menuConfirmOk').onclick = async () => {
+        $('menuConfirmDialog').close();
+        try {
+          $('variantSave').disabled = true;
+          await api.updateVariants(slug, newVariants);
+          
+          item.variants.forEach(v => {
+            const match = newVariants.find(nv => nv.id === v.id);
+            if (match) {
+              v.price = match.price;
+              v.price_centavos = match.price === null ? null : Math.round(match.price * 100);
+            }
+          });
+          
+          const validPrices = item.variants.filter(v => v.price !== null).map(v => v.price);
+          item.price = validPrices.length > 0 ? Math.min(...validPrices) : 0;
+
+          toast('All prices saved');
+          renderMenu(); 
+        } catch (err) {
+          toast(err.message || 'Failed to save prices');
+        } finally {
+          $('variantSave').disabled = false;
         }
+      };
 
-        $('variantSave').disabled = true;
-        await api.updateVariants(slug, newVariants);
-        
-        item.variants.forEach(v => {
-          const match = newVariants.find(nv => nv.id === v.id);
-          if (match) { v.price = match.price; v.price_centavos = match.price === null ? null : Math.round(match.price * 100); }
-        });
-        item.price = Math.min(...item.variants.filter(v=>v.price!==null).map(v => v.price));
-
-        toast('All prices saved');
-        $('variantDialog').close();
-        renderMenu(); 
-      } catch (err) { toast(err.message || 'Failed'); } finally { $('variantSave').disabled = false; }
+      $('menuConfirmCancel').onclick = () => {
+        $('menuConfirmDialog').close();
+        $('variantDialog').showModal(); 
+      };
     };
 
     $('variantCancel').onclick = () => { $('variantDialog').close(); };
@@ -319,4 +354,68 @@
       window.location.href = 'admin-login.html';
     }
   })();
+
+  // =========================================
+  // PRICE FORMATTING & RESTRICTIONS (CLEAN)
+  // =========================================
+
+  // 1. Handle keyboard input: Block invalid chars & handle Enter key
+  document.addEventListener('keydown', (e) => {
+    if (e.target.classList.contains('ad-price')) {
+      
+      // Block letters and symbols
+      if (['e', 'E', '+', '-'].includes(e.key)) {
+        e.preventDefault();
+        return;
+      }
+
+      // Handle Enter key (Confirm the input)
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Stop the dialog from closing
+        e.target.blur();    // Force the input to lose focus (triggers focusout validation)
+      }
+    }
+  });
+
+  // 2. Save original value & strip commas on focus
+  document.addEventListener('focusin', (e) => {
+    if (e.target.classList.contains('ad-price')) {
+      e.target.value = e.target.value.replace(/,/g, '');
+    }
+  });
+
+  // 3. Sanitize characters while typing (no aggressive blocking)
+  document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('ad-price')) {
+      let cleanValue = e.target.value.replace(/[^0-9.]/g, '');
+      const parts = cleanValue.split('.');
+      if (parts.length > 2) {
+        cleanValue = parts[0] + '.' + parts.slice(1).join('');
+      }
+      e.target.value = cleanValue;
+    }
+  });
+
+  // 4. On focusout, check if it exceeds MAX_PRICE. If so, revert to DB value.
+  document.addEventListener('focusout', (e) => {
+    if (e.target.classList.contains('ad-price')) {
+      let rawValue = e.target.value.replace(/,/g, '').trim();
+      
+      if (rawValue === '') return; 
+
+      let num = Number(rawValue);
+      
+      // Get the original DB value we attached as a data attribute
+      const dbValue = Number(e.target.dataset.dbValue);
+
+      // If it's over the limit or invalid, instantly revert to the DB value
+      if (isNaN(num) || num < 0 || num > MAX_PRICE) {
+        e.target.value = dbValue.toLocaleString('en-PH', { maximumFractionDigits: 2 });
+        toast(`Maximum price exceeded. Please enter an amount up to ₱${MAX_PRICE.toLocaleString('en-PH', { maximumFractionDigits: 2 })}.`);
+      } else {
+        // Format normally
+        e.target.value = num.toLocaleString('en-PH', { maximumFractionDigits: 2 });
+      }
+    }
+  });
 })();

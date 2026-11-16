@@ -84,14 +84,15 @@
     <h2 class="confirm-title" id="variantItemName">Edit Prices</h2>
     <p class="confirm-message">Update the price for each available size. Leave blank if not available.</p>
     
-    <div id="variantList" class="variant-list">
-      <!-- JS will inject the inputs here -->
-    </div>
+    <div id="variantList" class="variant-list"></div>
 
     <div class="confirm-actions" style="margin-top: 1.5rem;">
       <button type="button" class="ad-btn ad-btn--primary" id="variantSave">Save all prices</button>
       <button type="button" class="ad-btn" id="variantCancel">Cancel</button>
     </div>
+
+    <!-- Toast INSIDE the dialog so it stays on top -->
+    <div class="ad-toast" id="variantToast"></div>
   </dialog>
 
   <!-- ===== Menu Change Confirmation Dialog ===== -->
@@ -103,6 +104,9 @@
       <button type="button" class="ad-btn ad-btn--primary" id="menuConfirmOk">Yes, save changes</button>
       <button type="button" class="ad-btn" id="menuConfirmCancel">Cancel</button>
     </div>
+
+    <!-- Toast INSIDE the dialog so it stays on top -->
+    <div class="ad-toast" id="confirmToast"></div>
   </dialog>
 
   <div class="ad-toast" id="adToast" role="status" aria-live="polite"></div>
