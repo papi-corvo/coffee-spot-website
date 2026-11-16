@@ -113,35 +113,64 @@
   <!-- ===== Add New Item Dialog ===== -->
   <dialog class="ad-dialog" id="addItemDialog">
     <form method="dialog" id="addItemForm" novalidate>
-      <h2>Add New Menu Item</h2>
+      <h2 style="margin-bottom: 1rem;">Add New Menu Item</h2>
       
-      <label class="ad-field">Item Name <input class="ad-input" id="addItemName" autocomplete="off" required placeholder="e.g. Iced Caramel Latte"></label>
+      <div class="ad-field">
+        <span>Item Name <span class="ad-required">*</span></span>
+        <input class="ad-input" id="addItemName" autocomplete="off" required placeholder="e.g. Iced Caramel Latte">
+      </div>
       
-      <label class="ad-field">Category
-        <select class="ad-input" id="addItemCategory" required>
-          <option value="coffee">Coffee</option>
-          <option value="soda">Italian Soda</option>
-          <option value="tea">Tea</option>
-          <option value="pastries">Pastries</option>
-          <option value="food">Food Menu</option>
-        </select>
-      </label>
+      <div class="ad-field">
+        <span>Category <span class="ad-required">*</span></span>
+        <input type="hidden" id="addItemCategory" value="coffee" required>
+        <div class="cat-pills">
+          <button type="button" class="cat-pill is-active" data-cat="coffee">Coffee</button>
+          <button type="button" class="cat-pill" data-cat="soda">Italian Soda</button>
+          <button type="button" class="cat-pill" data-cat="tea">Tea</button>
+          <button type="button" class="cat-pill" data-cat="pastries">Pastries</button>
+          <button type="button" class="cat-pill" data-cat="food">Food Menu</button>
+        </div>
+      </div>
 
-      <label class="ad-field">Group Name (Optional) <input class="ad-input" id="addItemGroup" placeholder="e.g. Milk-Based Frappe" autocomplete="off"></label>
+      <div class="ad-field">
+        <span>Product Image <span class="ad-required">*</span></span>
+        <input type="file" id="addItemImageUpload" accept=".png, .jpg, .jpeg" style="display: none;" required>
+        <div class="upload-zone" id="uploadZone">
+          <!-- Sleek SVG instead of emoji -->
+          <svg class="upload-icon-svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <p class="upload-text" id="uploadZoneText">Click to browse or drag & drop an image here</p>
+          <img id="uploadPreview" class="upload-preview" alt="Preview">
+        </div>
+        <input type="hidden" id="addItemImage" required>
+      </div>
 
-      <label class="ad-field">Description (Optional) <textarea class="ad-input" id="addItemDesc" rows="2" placeholder="Freshly prepared for you..."></textarea></label>
+      <div class="ad-field">
+        <span>Group Name (Optional)</span>
+        <input class="ad-input" id="addItemGroup" placeholder="Select a group below or type a new one..." autocomplete="off">
+        <!-- Container for the Group Pills -->
+        <div class="cat-pills" id="groupPillsContainer" style="margin-top: 8px;"></div>
+      </div>
 
-      <label class="ad-field">Image Path (Optional) <input class="ad-input" id="addItemImage" placeholder="e.g. image/latte.jpg" autocomplete="off"></label>
+      <div class="ad-field">
+        <span>Description (Optional)</span>
+        <textarea class="ad-input" id="addItemDesc" rows="2" placeholder="Freshly prepared for you..."></textarea>
+      </div>
 
       <div class="ad-field" style="margin-top: 1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
-          <span style="font-weight: 600; font-size: 0.9rem; color: var(--ink);">Variants (Sizes & Prices)</span>
+          <span>Variants (Sizes & Prices) <span class="ad-required">*</span></span>
           <button type="button" class="ad-btn ad-sm" id="btnAddVariantRow" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">+ Add Size</button>
         </div>
         <div id="addItemVariantsContainer" style="display: flex; flex-direction: column; gap: 8px;">
-          <!-- Default Row -->
+          <!-- SMART DEFAULTS: Pre-filled Medium and Large -->
           <div class="variant-row" style="display: flex; gap: 8px;">
-            <input class="ad-input" type="text" placeholder="Size (e.g. Medium)" data-variant-label required>
+            <input class="ad-input" type="text" value="Medium" placeholder="Size" data-variant-label required style="flex: 1;">
+            <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
+          </div>
+          <div class="variant-row" style="display: flex; gap: 8px;">
+            <input class="ad-input" type="text" value="Large" placeholder="Size" data-variant-label required style="flex: 1;">
             <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
           </div>
         </div>
@@ -153,6 +182,7 @@
         <button class="ad-btn" type="submit" value="cancel">Cancel</button>
         <button class="ad-btn ad-btn--primary" type="button" id="btnSaveNewItem">Save Item</button>
       </div>
+      <div class="ad-toast" id="addItemToast"></div>
     </form>
   </dialog>
 

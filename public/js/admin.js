@@ -44,10 +44,12 @@
   function toast(msg) {
     const isVariantOpen = $('variantDialog')?.open;
     const isConfirmOpen = $('menuConfirmDialog')?.open;
-    
+    const isAddItemOpen = $('addItemDialog')?.open; // NEW
+
     let t;
     if (isVariantOpen) t = $('variantToast');
     else if (isConfirmOpen) t = $('confirmToast');
+    else if (isAddItemOpen) t = $('addItemToast'); // NEW
     else t = $('adToast');
     
     if (!t) return;
@@ -221,7 +223,7 @@
         const item = menu.find((m) => m.slug === slug);
 
         if (!Number.isFinite(newPrice) || newPrice < 0 || newPrice > MAX_PRICE) {
-          toast('Maximum price exceeded. Please enter an amount up to ₱10,000.');
+          toast(`Maximum price exceeded. Please enter an amount up to ₱${MAX_PRICE.toLocaleString('en-PH', { maximumFractionDigits: 2 })}.`);
           renderMenu(); 
           return;
         }
@@ -296,7 +298,7 @@
       });
 
       if (newVariants.some(v => v.price !== null && (!Number.isFinite(v.price) || v.price < 0 || v.price > MAX_PRICE))) {
-        return toast('Maximum price exceeded. Please enter an amount up to ₱10,000.');
+        return toast(`Maximum price exceeded. Please enter an amount up to ₱${MAX_PRICE.toLocaleString('en-PH', { maximumFractionDigits: 2 })}.`);
       }
 
       $('variantDialog').close();
@@ -417,12 +419,17 @@
 
       let num = Number(rawValue);
       
-      // Get the original DB value we attached as a data attribute
-      const dbValue = Number(e.target.dataset.dbValue);
+      // Check if data-db-value exists (it won't for new items)
+      const hasDbValue = e.target.dataset.dbValue !== undefined;
+      const dbValue = hasDbValue ? Number(e.target.dataset.dbValue) : 0;
 
-      // If it's over the limit or invalid, instantly revert to the DB value
+      // If it's over the limit or invalid, revert or clear
       if (isNaN(num) || num < 0 || num > MAX_PRICE) {
-        e.target.value = dbValue.toLocaleString('en-PH', { maximumFractionDigits: 2 });
+        if (hasDbValue) {
+          e.target.value = dbValue.toLocaleString('en-PH', { maximumFractionDigits: 2 });
+        } else {
+          e.target.value = ''; // Clear it if it's a new item
+        }
         toast(`Maximum price exceeded. Please enter an amount up to ₱${MAX_PRICE.toLocaleString('en-PH', { maximumFractionDigits: 2 })}.`);
       } else {
         // Format normally
@@ -438,80 +445,303 @@
   const addItemError = $('addItemError');
   const addItemVariantsContainer = $('addItemVariantsContainer');
 
-  // 1. Open Dialog
+  // Helper to create a variant row with Category-Aware Pills
+  function createVariantRow(label = '', category = 'coffee') {
+    const row = document.createElement('div');
+    row.className = 'variant-row';
+    row.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
+
+    // Mapping of categories to standard sizes
+    const CATEGORY_SIZES = {
+      coffee: ['Medium', 'Large'],
+      soda: ['16oz', '22oz'],
+      tea: ['Medium', 'Large'],
+      pastries: ['Regular', 'Slice', 'Whole'],
+      food: ['Solo', 'w/ Rice']
+    };
+
+    const sizes = CATEGORY_SIZES[category] || ['Regular'];
+    let pillsHtml = '';
+    
+    sizes.forEach(size => {
+      const isActive = size === label ? 'is-active' : '';
+      pillsHtml += `<button type="button" class="size-pill ${isActive}" data-size="${size}">${size}</button>`;
+    });
+    
+    // Add the "Other" pill
+    const isCustom = label && !sizes.includes(label);
+    pillsHtml += `<button type="button" class="size-pill ${isCustom ? 'is-active' : ''}" data-size="custom">Other</button>`;
+
+    row.innerHTML = `
+      <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+        <div class="size-pill-group" style="display: flex; gap: 4px; flex-wrap: wrap;">
+          ${pillsHtml}
+        </div>
+        <input type="hidden" data-variant-label value="${label}" required>
+        <input type="text" class="ad-input custom-size-input" value="${isCustom ? label : ''}" placeholder="Type size..." style="display: ${isCustom ? 'block' : 'none'}; flex: 1;">
+      </div>
+      <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 100px;">
+      <button type="button" class="ad-btn ad-sm" style="padding: 0 0.6rem; color: var(--danger); border-color: var(--border); font-weight: bold; font-size: 1.1rem;" onclick="this.parentElement.remove()">×</button>
+    `;
+
+    // Event listeners for the pills
+    const hiddenInput = row.querySelector('[data-variant-label]');
+    const pillGroup = row.querySelector('.size-pill-group');
+    const customInput = row.querySelector('.custom-size-input');
+
+    pillGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.size-pill');
+      if (!btn) return;
+
+      pillGroup.querySelectorAll('.size-pill').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      const size = btn.dataset.size;
+      if (size === 'custom') {
+         customInput.style.display = 'block';
+         customInput.focus();
+         hiddenInput.value = customInput.value;
+      } else {
+         customInput.style.display = 'none';
+         hiddenInput.value = size;
+      }
+    });
+
+    customInput.addEventListener('input', (e) => {
+      hiddenInput.value = e.target.value;
+    });
+
+    return row;
+  }
+
+  // Helper to render Group Pills based on Category
+  function renderGroupPills(category) {
+    const uniqueGroups = [...new Set(
+      menu
+        .filter(m => m.category === category && m.group_name)
+        .map(m => m.group_name)
+    )];
+    
+    const container = $('groupPillsContainer');
+    
+    if (uniqueGroups.length === 0) {
+      container.innerHTML = '<span style="font-size: 0.8rem; color: var(--ink-muted);">No existing groups for this category. Type one above to create it.</span>';
+      return;
+    }
+
+    container.innerHTML = uniqueGroups.map(g => 
+      `<button type="button" class="cat-pill" data-group="${esc(g)}">${esc(g)}</button>`
+    ).join('');
+  }
+
+  // 1. Open Dialog & Set Smart Defaults
   $('btnAddItem').addEventListener('click', () => {
     $('addItemForm').reset();
     addItemError.textContent = '';
     
-    // Reset to a single variant row
-    addItemVariantsContainer.innerHTML = `
-      <div class="variant-row" style="display: flex; gap: 8px;">
-        <input class="ad-input" type="text" placeholder="Size (e.g. Medium)" data-variant-label required>
-        <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
-      </div>
-    `;
+    // Populate Group Pills based on default category
+    renderGroupPills($('addItemCategory').value);
+    $('addItemGroup').value = ''; // Clear input on open
+
+    // Reset variants with Smart Defaults based on category
+    addItemVariantsContainer.innerHTML = '';
+    const category = $('addItemCategory').value;
+    
+    if (['coffee', 'soda', 'tea'].includes(category)) {
+      addItemVariantsContainer.appendChild(createVariantRow('Medium', category));
+      addItemVariantsContainer.appendChild(createVariantRow('Large', category));
+    } else {
+      addItemVariantsContainer.appendChild(createVariantRow('Regular', category));
+    }
     
     addItemDialog.showModal();
     $('addItemName').focus();
   });
 
-  // 2. Add Variant Row
-  $('btnAddVariantRow').addEventListener('click', () => {
-    const row = document.createElement('div');
-    row.className = 'variant-row';
-    row.style.cssText = 'display: flex; gap: 8px;';
-    row.innerHTML = `
-      <input class="ad-input" type="text" placeholder="Size (e.g. Large)" data-variant-label required>
-      <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
-      <button type="button" class="ad-btn ad-sm" style="padding: 0 0.6rem; color: var(--danger); border-color: var(--border);" onclick="this.parentElement.remove()">×</button>
-    `;
-    addItemVariantsContainer.appendChild(row);
+  // Handle Category Pill Clicks
+  document.querySelectorAll('.cat-pill[data-cat]').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      // Only target category pills for the active state, not group pills
+      document.querySelectorAll('.cat-pill[data-cat]').forEach(p => p.classList.remove('is-active'));
+      e.target.classList.add('is-active');
+      
+      const cat = e.target.dataset.cat;
+      $('addItemCategory').value = cat;
+
+      // Update Variants
+      addItemVariantsContainer.innerHTML = '';
+      if (['coffee', 'soda', 'tea'].includes(cat)) {
+        addItemVariantsContainer.appendChild(createVariantRow('Medium', cat));
+        addItemVariantsContainer.appendChild(createVariantRow('Large', cat));
+      } else {
+        addItemVariantsContainer.appendChild(createVariantRow('Regular', cat));
+      }
+
+      // Update Group Pills
+      renderGroupPills(cat);
+      $('addItemGroup').value = '';
+    });
   });
 
-  // 3. Save New Item
-  $('btnSaveNewItem').addEventListener('click', async () => {
+  // Handle Group Pill Clicks & Manual Input
+  $('groupPillsContainer').addEventListener('click', (e) => {
+    const btn = e.target.closest('.cat-pill');
+    if (!btn) return;
+    
+    // Toggle active states
+    $('groupPillsContainer').querySelectorAll('.cat-pill').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    
+    // Update input
+    $('addItemGroup').value = btn.dataset.group;
+  });
+
+  $('addItemGroup').addEventListener('input', () => {
+    // If user types manually, remove active state from all pills
+    $('groupPillsContainer').querySelectorAll('.cat-pill').forEach(b => b.classList.remove('is-active'));
+  });
+
+  // 2. Add Variant Row Manually
+  $('btnAddVariantRow').addEventListener('click', () => {
+    const currentCat = $('addItemCategory').value;
+    addItemVariantsContainer.appendChild(createVariantRow('', currentCat));
+  });
+
+  // 3. Save New Item (With Confirmation)
+  $('btnSaveNewItem').addEventListener('click', () => {
     const name = $('addItemName').value.trim();
-    const category = $('addItemCategory').value;
-    const group_name = $('addItemGroup').value.trim();
-    const description = $('addItemDesc').value.trim();
     const image = $('addItemImage').value.trim();
 
     if (!name) return addItemError.textContent = 'Item name is required.';
+    if (!image) return addItemError.textContent = 'Please upload a product image.';
 
     const variantRows = addItemVariantsContainer.querySelectorAll('.variant-row');
     const variants = [];
     
-    // Loop through the DOM to extract the size/price pairs
     for (const row of variantRows) {
       const label = row.querySelector('[data-variant-label]').value.trim();
       const priceRaw = row.querySelector('[data-variant-price]').value.replace(/,/g, '');
       const price = Number(priceRaw);
 
-      if (!label) return addItemError.textContent = 'All sizes must have a label.';
+      if (!label) return addItemError.textContent = 'All sizes must have a name.';
       if (!Number.isFinite(price) || price <= 0 || price > MAX_PRICE) {
-        return addItemError.textContent = `All sizes must have a valid price between 0.01 and ${MAX_PRICE}.`;
+        return addItemError.textContent = `Prices must be between 0.01 and ₱${MAX_PRICE.toLocaleString('en-PH')}.`;
       }
       variants.push({ label, price });
     }
 
     if (variants.length === 0) return addItemError.textContent = 'At least one size is required.';
 
-    $('btnSaveNewItem').disabled = true;
-    try {
-      const payload = { name, category, group_name, description, image, variants };
+    // Show Confirmation Dialog
+    document.querySelector('#menuConfirmDialog .confirm-icon').style.background = '#e0f2fe';
+    document.querySelector('#menuConfirmDialog .confirm-icon').style.color = '#0284c7';
+    $('menuConfirmMessage').innerHTML = `Are you sure you want to add <strong>${esc(name)}</strong> to the menu?`;
+    $('menuConfirmDialog').showModal();
+
+    // If Confirmed, Fire the API
+    $('menuConfirmOk').onclick = async () => {
+      $('menuConfirmDialog').close();
+      $('btnSaveNewItem').disabled = true;
       
-      await api.addMenuItem(payload);
-      
-      addItemDialog.close();
-      toast(`"${name}" added to menu`);
-      
-      // Fetch the fresh menu from the DB and re-render
-      menu = await api.menu(); 
-      renderMenu();
-    } catch (err) {
-      addItemError.textContent = err.message;
-    } finally {
-      $('btnSaveNewItem').disabled = false;
+      try {
+        const category = $('addItemCategory').value;
+        const group_name = $('addItemGroup').value.trim();
+        const description = $('addItemDesc').value.trim();
+        
+        const payload = { name, category, group_name, description, image, variants };
+        await api.addMenuItem(payload);
+        
+        addItemDialog.close();
+        toast(`"${name}" added to menu`);
+        
+        menu = await api.menu(); 
+        renderMenu();
+      } catch (err) {
+        addItemError.textContent = err.message;
+      } finally {
+        $('btnSaveNewItem').disabled = false;
+      }
+    };
+
+    $('menuConfirmCancel').onclick = () => {
+      $('menuConfirmDialog').close();
+    };
+  });
+
+  // =========================================
+  // 5. DRAG & DROP IMAGE UPLOAD
+  // =========================================
+  const uploadZone = $('uploadZone');
+  const fileInput = $('addItemImageUpload');
+  const uploadPreview = $('uploadPreview');
+  const uploadZoneText = $('uploadZoneText');
+  const hiddenImageInput = $('addItemImage');
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('is-dragover');
+  });
+
+  uploadZone.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('is-dragover');
+  });
+
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('is-dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileUpload(e.dataTransfer.files[0]);
     }
   });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFileUpload(e.target.files[0]);
+    }
+  });
+
+  async function handleFileUpload(file) {
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      return toast('Invalid format. Please upload a .jpg, .jpeg, or .png image.');
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadPreview.src = e.target.result;
+      uploadPreview.style.display = 'block';
+      uploadZoneText.textContent = 'Uploading...';
+    };
+    reader.readAsDataURL(file);
+
+    // 1. Upload the image FIRST
+    uploadZoneText.textContent = 'Uploading image...';
+    const formData = new FormData();
+    formData.append('image', pendingImageFile);
+    formData.append('itemName', name); // Send the name so backend can slugify it
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+      hiddenImageInput.value = data.imagePath;
+      uploadZoneText.textContent = 'Image uploaded successfully ✓';
+      uploadZoneText.style.color = 'var(--success, #2f7650)';
+
+    } catch (err) {
+      uploadZoneText.textContent = 'Upload failed. Click to try again.';
+      uploadZoneText.style.color = 'var(--danger, #a6371d)';
+      uploadPreview.style.display = 'none';
+      hiddenImageInput.value = '';
+      toast(err.message);
+    }
+  }
 })();

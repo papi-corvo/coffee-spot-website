@@ -1,10 +1,53 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db/db');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const uploadDir = path.join(__dirname, '..', '..', 'public', 'image', 'uploads');
+
+// Create the folder if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const MAX_PRICE = 10000; // 10,000 PHP limit
 // Safe centavos conversion (avoids 19.99 * 100 = 1998.999999)
 const toCentavos = (amount) => Math.round(Number(amount) * 100);
+
+// Configure Multer for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // Saves to public/image/uploads
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // 1. Get the item name sent from the frontend
+    const itemName = req.body.itemName || 'item';
+    
+    // 2. Slugify the name (e.g., "Iced Latte" -> "iced-latte")
+    const baseSlug = itemName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    
+    // 3. Keep the original extension (.jpg, .png)
+    const ext = path.extname(file.originalname).toLowerCase();
+    
+    // Result: iced-latte.jpg
+    cb(null, `${baseSlug}${ext}`);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPG and PNG are allowed.'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Optional: Limit to 5MB
+  fileFilter: fileFilter
+});
 
 // GET: Dashboard Stats
 router.get('/stats', (req, res) => {
@@ -85,7 +128,8 @@ router.get('/stats', (req, res) => {
 // GET: All Menu Items (with variants)
 router.get('/menu', (req, res) => {
   try {
-    const items = db.prepare('SELECT id, slug, name, category, active FROM menu_items').all();
+    // Add WHERE deleted_at IS NULL to hide soft-deleted items
+    const items = db.prepare('SELECT id, slug, name, category, group_name, active FROM menu_items WHERE deleted_at IS NULL').all();
     const variants = db.prepare('SELECT * FROM menu_variants ORDER BY sort_order').all();
 
     const variantsByItem = variants.reduce((acc, v) => {
@@ -114,6 +158,7 @@ router.get('/menu', (req, res) => {
         slug: m.slug,
         name: m.name,
         category: m.category,
+        group_name: m.group_name,
         price: baseVariant ? baseVariant.price : 0,
         active: m.active === 1,
         variants: itemVariants
@@ -285,6 +330,39 @@ router.post('/menu', (req, res) => {
     res.status(201).json({ message: 'Menu item created successfully', id: newItemId, slug });
   } catch (error) {
     console.error("Admin menu create error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST: Upload an image (WITH ERROR CATCHING)
+router.post('/upload', (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided.' });
+    }
+    
+    const imagePath = `image/uploads/${req.file.filename}`;
+    res.json({ imagePath });
+  });
+});
+
+// DELETE: Soft delete a menu item
+router.delete('/menu/:slug', (req, res) => {
+  try {
+    const { slug } = req.params;
+    const item = db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug);
+    
+    if (!item) return res.status(404).json({ error: 'Menu item not found' });
+
+    // Soft delete: set deleted_at to current timestamp
+    db.prepare('UPDATE menu_items SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?').run(item.id);
+    
+    res.json({ message: 'Menu item removed successfully' });
+  } catch (error) {
+    console.error("Admin delete error:", error);
     res.status(500).json({ error: error.message });
   }
 });

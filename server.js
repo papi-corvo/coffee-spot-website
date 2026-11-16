@@ -26,7 +26,12 @@ app.use('/api/admin', verifyAdmin, adminRoutes);
 // Connect your Menu Routes
 app.use('/api/menu', menuRoutes);
 
-// 3. Serve your frontend files from the 'public' folder
+// 3. Ensure the upload directory exists, then serve frontend files
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'public', 'image', 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Protect the Cashier HTML
@@ -42,6 +47,12 @@ app.get('/admin', verifyAdmin, (req, res) => {
 // 4. Connect your API Routes
 const orderRoutes = require('./src/routes/orders');
 app.use('/api/orders', orderRoutes);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("GLOBAL SERVER ERROR:", err.message);
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
+});
 
 // 5. Start the server
 const PORT = 3000;

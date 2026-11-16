@@ -730,3 +730,116 @@
     gap: .3rem;
   }
 }
+
+/* =========================================
+   ADD NEW ITEM MODAL STYLES
+   ========================================= */
+
+/* Modal Centering & Backdrop */
+#addItemDialog {
+  margin: auto;
+  width: 100%;
+  max-width: 550px;
+  border-radius: 16px;
+}
+#addItemDialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+}
+
+/* Category Pills */
+.cat-pills { 
+  display: flex; 
+  gap: 8px; 
+  flex-wrap: wrap; 
+  margin-top: 6px; 
+}
+.cat-pill { 
+  padding: 8px 14px; 
+  border-radius: 20px; 
+  border: 1px solid var(--border); 
+  background: var(--white); 
+  cursor: pointer; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  color: var(--ink-muted); 
+  transition: all 0.2s ease; 
+}
+.cat-pill:hover { 
+  border-color: var(--caramel); 
+  color: var(--caramel); 
+}
+.cat-pill.is-active { 
+  background: var(--caramel); 
+  color: var(--white); 
+  border-color: var(--caramel); 
+}
+
+/* Drag & Drop Zone */
+.upload-zone { 
+  border: 2px dashed var(--border); 
+  border-radius: 12px; 
+  padding: 20px; 
+  text-align: center; 
+  cursor: pointer; 
+  transition: all 0.2s ease; 
+  margin-top: 6px;
+  background: #faf9f8;
+}
+.upload-zone:hover, 
+.upload-zone.is-dragover { 
+  border-color: var(--caramel); 
+  background: #fdfaf6; 
+}
+.upload-preview { 
+  max-width: 120px; 
+  max-height: 120px; 
+  border-radius: 8px; 
+  object-fit: cover; 
+  margin: 10px auto 0; 
+  display: none; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.upload-text { 
+  font-size: 0.85rem; 
+  color: var(--ink-muted); 
+  margin-top: 8px; 
+}
+
+/* Fix asterisk wrapping and label spacing */
+.ad-field > span:first-child,
+.ad-field > div:first-child > span:first-child {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ad-required { color: #e74c3c; margin-left: 2px; }
+
+/* Professional Upload SVG */
+.upload-icon-svg {
+  width: 32px;
+  height: 32px;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+.upload-zone:hover .upload-icon-svg {
+  color: var(--caramel);
+}
+
+/* Size Pills for New Item Modal */
+.size-pill {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  transition: all 0.2s ease;
+}
+.size-pill:hover { border-color: var(--caramel); color: var(--caramel); }
+.size-pill.is-active { background: var(--caramel); color: var(--white); border-color: var(--caramel); }
+.custom-size-input { padding: 0.4rem !important; font-size: 0.85rem !important; }
