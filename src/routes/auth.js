@@ -35,10 +35,12 @@ router.post('/login', (req, res) => {
     );
 
     // Set token as HttpOnly cookie
+    // Set token as HttpOnly cookie
     res.cookie('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      // Trust the proxy if it's using HTTPS (like Cloudflare Tunnel)
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+      sameSite: 'lax', // 'lax' works better with redirects than 'strict'
       maxAge: 12 * 60 * 60 * 1000 // 12 hours
     });
 

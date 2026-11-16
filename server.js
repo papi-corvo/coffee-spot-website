@@ -14,6 +14,9 @@ const { verifyToken } = require('./src/middleware/authMiddleware');
 // 1. Initialize Express
 const app = express();
 
+// Trust the proxy if it's behind one (like Cloudflare Tunnel)
+app.set('trust proxy', 1);
+
 // 2. Middleware to read JSON from the frontend
 app.use(express.json());
 
