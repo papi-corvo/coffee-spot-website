@@ -12,6 +12,19 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
   const barangaySelect = document.getElementById('addressBarangay');
   const citySelect = document.getElementById('addressCity');
 
+  function escapeHTML(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, (match) => {
+    const escapeMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return escapeMap[match];
+  });
+}
 
   (() => {
   const overlay = document.getElementById('orderStartOverlay');
@@ -1422,30 +1435,36 @@ async function renderDynamicMenu() {
 
       let sizeOptions = '';
       item.variants.forEach(variant => {
-        // Use variant label (e.g., Medium) and price
-        sizeOptions += `<option data-price="${variant.price}" value="${variant.code}">${variant.label} — ₱${variant.price}</option>`;
+        // Escape the label and code to prevent injection
+        const safeLabel = escapeHTML(variant.label);
+        const safeCode = escapeHTML(variant.code);
+        sizeOptions += `<option data-price="${variant.price}" value="${safeCode}">${safeLabel} — ₱${variant.price}</option>`;
       });
 
       if (!sizeOptions) {
         sizeOptions = `<option data-price="0" value="regular">Regular</option>`;
       }
 
-      // Just use the database description directly!
       const descText = item.description || 'Freshly prepared for you.';
-
       const isUnavailable = !item.active;
       const unavailableClass = isUnavailable ? ' is-unavailable' : '';
       const badgeHtml = isUnavailable ? '<span class="unavailable-badge">Unavailable</span>' : '';
 
+      // Escape all dynamic variables before inserting into the DOM
+      const safeName = escapeHTML(item.name);
+      const safeImage = escapeHTML(item.image);
+      const safeDesc = escapeHTML(descText);
+      const safeId = Number(item.id); // Force ID to be a number
+
       const html = `
-        <li class="product-row${unavailableClass}" data-item-name="${item.name}" data-item-id="${item.id}">
+        <li class="product-row${unavailableClass}" data-item-name="${safeName}" data-item-id="${safeId}">
           <div class="product-icon-wrap">
             ${badgeHtml}
-            <img src="${item.image}" alt="${item.name}" onerror="this.src='image/pastry-placeholder.svg'">
+            <img src="${safeImage}" alt="${safeName}" onerror="this.src='image/pastry-placeholder.svg'">
           </div>
           <div class="product-details">
-            <button type="button" class="product-name">${item.name}</button>
-            <p class="product-card-description">${descText}</p>
+            <button type="button" class="product-name">${safeName}</button>
+            <p class="product-card-description">${safeDesc}</p>
             <div class="item-row-controls">
               <select class="size-select">
                 ${sizeOptions}
