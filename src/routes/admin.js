@@ -229,4 +229,64 @@ router.patch('/menu/:slug/variants', (req, res) => {
   }
 });
 
+// POST: Create a new menu item
+router.post('/menu', (req, res) => {
+  try {
+    const { name, category, group_name, description, image, variants } = req.body;
+
+    // 1. Basic Validation
+    if (!name || !category || !Array.isArray(variants) || variants.length === 0) {
+      return res.status(400).json({ error: 'Name, category, and at least one variant are required.' });
+    }
+
+    if (!['coffee', 'soda', 'tea', 'pastries', 'food'].includes(category)) {
+      return res.status(400).json({ error: 'Invalid category.' });
+    }
+
+    // 2. Generate a safe, unique slug
+    let baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    let slug = baseSlug;
+    let counter = 1;
+    
+    // Check if slug exists, if so, append a number (e.g., 'iced-latte-1')
+    while (db.prepare('SELECT id FROM menu_items WHERE slug = ?').get(slug)) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
+    // 3. Insert using a Transaction (all-or-nothing)
+    const insertItem = db.prepare(`
+      INSERT INTO menu_items (slug, name, category, group_name, description, image, active)
+      VALUES (?, ?, ?, ?, ?, ?, 1)
+    `);
+    
+    const insertVariant = db.prepare(`
+      INSERT INTO menu_variants (item_id, code, label, price_centavos, sort_order)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+
+    const createNewItem = db.transaction(() => {
+      // Insert the main item
+      const info = insertItem.run(slug, name, category, group_name || null, description || null, image || null);
+      const itemId = info.lastInsertRowid;
+
+      // Insert all the variants (sizes)
+      variants.forEach((v, index) => {
+        const safeCode = v.label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const priceCentavos = toCentavos(v.price);
+        insertVariant.run(itemId, safeCode, v.label, priceCentavos, index);
+      });
+
+      return itemId;
+    });
+
+    const newItemId = createNewItem();
+
+    res.status(201).json({ message: 'Menu item created successfully', id: newItemId, slug });
+  } catch (error) {
+    console.error("Admin menu create error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

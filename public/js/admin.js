@@ -26,6 +26,18 @@
       if (!res.ok) throw new Error('Failed to update variants');
       return await res.json();
     },
+    addMenuItem: async (payload) => {
+      const res = await fetch('/api/admin/menu', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(payload) 
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to add menu item');
+      }
+      return await res.json();
+    },
   };
 
   let toastTimer;
@@ -416,6 +428,90 @@
         // Format normally
         e.target.value = num.toLocaleString('en-PH', { maximumFractionDigits: 2 });
       }
+    }
+  });
+
+  // =========================================
+  // ADD NEW ITEM LOGIC
+  // =========================================
+  const addItemDialog = $('addItemDialog');
+  const addItemError = $('addItemError');
+  const addItemVariantsContainer = $('addItemVariantsContainer');
+
+  // 1. Open Dialog
+  $('btnAddItem').addEventListener('click', () => {
+    $('addItemForm').reset();
+    addItemError.textContent = '';
+    
+    // Reset to a single variant row
+    addItemVariantsContainer.innerHTML = `
+      <div class="variant-row" style="display: flex; gap: 8px;">
+        <input class="ad-input" type="text" placeholder="Size (e.g. Medium)" data-variant-label required>
+        <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
+      </div>
+    `;
+    
+    addItemDialog.showModal();
+    $('addItemName').focus();
+  });
+
+  // 2. Add Variant Row
+  $('btnAddVariantRow').addEventListener('click', () => {
+    const row = document.createElement('div');
+    row.className = 'variant-row';
+    row.style.cssText = 'display: flex; gap: 8px;';
+    row.innerHTML = `
+      <input class="ad-input" type="text" placeholder="Size (e.g. Large)" data-variant-label required>
+      <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
+      <button type="button" class="ad-btn ad-sm" style="padding: 0 0.6rem; color: var(--danger); border-color: var(--border);" onclick="this.parentElement.remove()">×</button>
+    `;
+    addItemVariantsContainer.appendChild(row);
+  });
+
+  // 3. Save New Item
+  $('btnSaveNewItem').addEventListener('click', async () => {
+    const name = $('addItemName').value.trim();
+    const category = $('addItemCategory').value;
+    const group_name = $('addItemGroup').value.trim();
+    const description = $('addItemDesc').value.trim();
+    const image = $('addItemImage').value.trim();
+
+    if (!name) return addItemError.textContent = 'Item name is required.';
+
+    const variantRows = addItemVariantsContainer.querySelectorAll('.variant-row');
+    const variants = [];
+    
+    // Loop through the DOM to extract the size/price pairs
+    for (const row of variantRows) {
+      const label = row.querySelector('[data-variant-label]').value.trim();
+      const priceRaw = row.querySelector('[data-variant-price]').value.replace(/,/g, '');
+      const price = Number(priceRaw);
+
+      if (!label) return addItemError.textContent = 'All sizes must have a label.';
+      if (!Number.isFinite(price) || price <= 0 || price > MAX_PRICE) {
+        return addItemError.textContent = `All sizes must have a valid price between 0.01 and ${MAX_PRICE}.`;
+      }
+      variants.push({ label, price });
+    }
+
+    if (variants.length === 0) return addItemError.textContent = 'At least one size is required.';
+
+    $('btnSaveNewItem').disabled = true;
+    try {
+      const payload = { name, category, group_name, description, image, variants };
+      
+      await api.addMenuItem(payload);
+      
+      addItemDialog.close();
+      toast(`"${name}" added to menu`);
+      
+      // Fetch the fresh menu from the DB and re-render
+      menu = await api.menu(); 
+      renderMenu();
+    } catch (err) {
+      addItemError.textContent = err.message;
+    } finally {
+      $('btnSaveNewItem').disabled = false;
     }
   });
 })();

@@ -55,6 +55,7 @@
       <section class="ad-view" id="view-menu" hidden>
         <div class="ad-toolbar">
           <input class="ad-input" type="search" id="menuFilter" placeholder="Search menu items" aria-label="Search menu items">
+          <button class="ad-btn ad-btn--primary" type="button" id="btnAddItem">+ Add New Item</button>
         </div>
         <article class="ad-card"><div class="ad-scroll"><table class="ad-table" id="adMenu"></table></div></article>
       </section>
@@ -107,6 +108,52 @@
 
     <!-- Toast INSIDE the dialog so it stays on top -->
     <div class="ad-toast" id="confirmToast"></div>
+  </dialog>
+
+  <!-- ===== Add New Item Dialog ===== -->
+  <dialog class="ad-dialog" id="addItemDialog">
+    <form method="dialog" id="addItemForm" novalidate>
+      <h2>Add New Menu Item</h2>
+      
+      <label class="ad-field">Item Name <input class="ad-input" id="addItemName" autocomplete="off" required placeholder="e.g. Iced Caramel Latte"></label>
+      
+      <label class="ad-field">Category
+        <select class="ad-input" id="addItemCategory" required>
+          <option value="coffee">Coffee</option>
+          <option value="soda">Italian Soda</option>
+          <option value="tea">Tea</option>
+          <option value="pastries">Pastries</option>
+          <option value="food">Food Menu</option>
+        </select>
+      </label>
+
+      <label class="ad-field">Group Name (Optional) <input class="ad-input" id="addItemGroup" placeholder="e.g. Milk-Based Frappe" autocomplete="off"></label>
+
+      <label class="ad-field">Description (Optional) <textarea class="ad-input" id="addItemDesc" rows="2" placeholder="Freshly prepared for you..."></textarea></label>
+
+      <label class="ad-field">Image Path (Optional) <input class="ad-input" id="addItemImage" placeholder="e.g. image/latte.jpg" autocomplete="off"></label>
+
+      <div class="ad-field" style="margin-top: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+          <span style="font-weight: 600; font-size: 0.9rem; color: var(--ink);">Variants (Sizes & Prices)</span>
+          <button type="button" class="ad-btn ad-sm" id="btnAddVariantRow" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">+ Add Size</button>
+        </div>
+        <div id="addItemVariantsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Default Row -->
+          <div class="variant-row" style="display: flex; gap: 8px;">
+            <input class="ad-input" type="text" placeholder="Size (e.g. Medium)" data-variant-label required>
+            <input class="ad-input ad-price" type="text" inputmode="decimal" placeholder="Price" data-variant-price required style="width: 120px;">
+          </div>
+        </div>
+      </div>
+
+      <p class="ad-error" id="addItemError" role="alert"></p>
+      
+      <div class="ad-dialog-actions" style="margin-top: 1.5rem;">
+        <button class="ad-btn" type="submit" value="cancel">Cancel</button>
+        <button class="ad-btn ad-btn--primary" type="button" id="btnSaveNewItem">Save Item</button>
+      </div>
+    </form>
   </dialog>
 
   <div class="ad-toast" id="adToast" role="status" aria-live="polite"></div>
