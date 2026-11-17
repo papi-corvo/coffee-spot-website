@@ -441,9 +441,17 @@
   // =========================================
   // ADD NEW ITEM LOGIC
   // =========================================
+  let pendingImageFile = null;
   const addItemDialog = $('addItemDialog');
   const addItemError = $('addItemError');
   const addItemVariantsContainer = $('addItemVariantsContainer');
+
+  const uploadZone = $('uploadZone');
+  const fileInput = $('addItemImageUpload');
+  const uploadPreview = $('uploadPreview');
+  const uploadZoneText = $('uploadZoneText');
+  const hiddenImageInput = $('addItemImage');
+  const btnRemoveImage = $('btnRemoveImage');
 
   // Helper to create a variant row with Category-Aware Pills
   function createVariantRow(label = '', category = 'coffee') {
@@ -538,22 +546,29 @@
   $('btnAddItem').addEventListener('click', () => {
     $('addItemForm').reset();
     addItemError.textContent = '';
-    
-    // Populate Group Pills based on default category
-    renderGroupPills($('addItemCategory').value);
-    $('addItemGroup').value = ''; // Clear input on open
+    resetImageUploader();
 
-    // Reset variants with Smart Defaults based on category
+    // Reset category pills UI back to default ('coffee')
+    $('addItemCategory').value = 'coffee';
+    document.querySelectorAll('.cat-pill[data-cat]').forEach(p => {
+    p.classList.toggle('is-active', p.dataset.cat === 'coffee');
+    });
+
+    // Populate Group Pills based on default category
+    renderGroupPills('coffee');
+    $('addItemGroup').value = '';
+
+    // Reset variants with Smart Defaults
     addItemVariantsContainer.innerHTML = '';
-    const category = $('addItemCategory').value;
-    
-    if (['coffee', 'soda', 'tea'].includes(category)) {
-      addItemVariantsContainer.appendChild(createVariantRow('Medium', category));
-      addItemVariantsContainer.appendChild(createVariantRow('Large', category));
-    } else {
-      addItemVariantsContainer.appendChild(createVariantRow('Regular', category));
-    }
-    
+    addItemVariantsContainer.appendChild(createVariantRow('Medium', 'coffee'));
+    addItemVariantsContainer.appendChild(createVariantRow('Large', 'coffee'));
+
+    addItemDialog.addEventListener('close', () => {
+      $('addItemForm').reset();
+      addItemError.textContent = '';
+      resetImageUploader();
+    });
+
     addItemDialog.showModal();
     $('addItemName').focus();
   });
@@ -671,13 +686,15 @@
   // =========================================
   // 5. DRAG & DROP IMAGE UPLOAD
   // =========================================
-  const uploadZone = $('uploadZone');
-  const fileInput = $('addItemImageUpload');
-  const uploadPreview = $('uploadPreview');
-  const uploadZoneText = $('uploadZoneText');
-  const hiddenImageInput = $('addItemImage');
-
-  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('click', (e) => {
+    if (e.target.closest('#btnRemoveImage')) {
+      e.preventDefault();
+      e.stopPropagation();
+      resetImageUploader();
+      return;
+    }
+    fileInput.click();
+  });
 
   uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -713,15 +730,17 @@
     reader.onload = (e) => {
       uploadPreview.src = e.target.result;
       uploadPreview.style.display = 'block';
+      btnRemoveImage.style.display = 'flex';
       uploadZoneText.textContent = 'Uploading...';
     };
     reader.readAsDataURL(file);
 
     // 1. Upload the image FIRST
     uploadZoneText.textContent = 'Uploading image...';
+    const currentItemName = $('addItemName').value.trim() || 'item';
     const formData = new FormData();
-    formData.append('image', pendingImageFile);
-    formData.append('itemName', name); // Send the name so backend can slugify it
+    formData.append('image', file);
+    formData.append('itemName', currentItemName); // Send the name so backend can slugify it
 
     try {
       const res = await fetch('/api/admin/upload', {
@@ -737,11 +756,27 @@
       uploadZoneText.style.color = 'var(--success, #2f7650)';
 
     } catch (err) {
+      resetImageUpload();
       uploadZoneText.textContent = 'Upload failed. Click to try again.';
       uploadZoneText.style.color = 'var(--danger, #a6371d)';
       uploadPreview.style.display = 'none';
       hiddenImageInput.value = '';
       toast(err.message);
+    }
+  }
+
+  function resetImageUploader() {
+    pendingImageFile = null;
+    if (fileInput) fileInput.value = '';
+    if (hiddenImageInput) hiddenImageInput.value = '';
+    if (uploadPreview) {
+      uploadPreview.src = '';
+      uploadPreview.style.display = 'none';
+    }
+    if (btnRemoveImage) btnRemoveImage.style.display = 'none';
+    if (uploadZoneText) {
+      uploadZoneText.textContent = 'Click to browse or drag & drop an image here';
+      uploadZoneText.style.color = 'var(--ink-muted)';
     }
   }
 })();
