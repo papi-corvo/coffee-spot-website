@@ -207,6 +207,9 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
   }
 
   function finishOrderSetup() {
+    const payChoice = document.querySelector('input[name="payMethod"]:checked');
+    if (payChoice) sessionStorage.setItem('cs_pay_method', payChoice.value);
+
     orderStartOverlay.classList.add('is-hidden');
     document.body.classList.remove('order-setup-active');
     window.scrollTo(0, 0);
@@ -243,6 +246,36 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
     if (orderMethod === 'delivery' && !validateDeliveryAddress()) return;
 
     finishOrderSetup();
+  });
+
+  // Restore the payment method picked earlier in this session.
+  (() => {
+    const saved = sessionStorage.getItem('cs_pay_method');
+    if (!saved) return;
+    const radio = document.querySelector(`input[name="payMethod"][value="${saved}"]`);
+    if (radio) radio.checked = true;
+  })();
+
+   // ===== Close the order-setup modal: X button, backdrop click, or Escape =====
+  function closeOrderSetup() {
+    orderStartOverlay.classList.add('is-hidden');
+    document.body.classList.remove('order-setup-active');
+  }
+
+  const orderStartClose = document.getElementById('orderStartClose');
+  if (orderStartClose) {
+    orderStartClose.addEventListener('click', closeOrderSetup);
+  }
+
+  // Only a click on the overlay itself (the dimmed space around the card) closes it.
+  orderStartOverlay.addEventListener('click', (event) => {
+    if (event.target === orderStartOverlay) closeOrderSetup();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (orderStartOverlay.classList.contains('is-hidden')) return;
+    closeOrderSetup();
   });
 
   // Keep the selected order details available to the existing cart/checkout logic.
@@ -1154,7 +1187,127 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-cartCheckout.addEventListener('click', async () => {
+// ===== Payment step: choose Cash / GCash / Maya before the order is sent =====
+const payModal = document.getElementById('payModal');
+const payOverlay = document.getElementById('payOverlay');
+const payModalTotal = document.getElementById('payModalTotal');
+const payModalNote = document.getElementById('payModalNote');
+const payError = document.getElementById('payError');
+const payConfirmBtn = document.getElementById('payModalConfirm');
+const payCancelBtn = document.getElementById('payModalCancel');
+
+const PAY_METHODS = ['cash', 'gcash', 'maya'];
+const PAY_NOTES = {
+  cash: 'Pay in cash when your order is handed over at the counter or on delivery.',
+  gcash: 'Pay via GCash at the counter or to the rider, then show your GCash reference number.',
+  maya: 'Pay via Maya at the counter or to the rider, then show your Maya reference number.'
+};
+
+function cartTotal() {
+  return cart.reduce((sum, entry) => sum + entry.price * entry.qty, 0);
+}
+
+function selectedPayMethod() {
+  return document.querySelector('input[name="payMethod"]:checked')?.value || 'cash';
+}
+
+function syncPayNote() {
+  payModalNote.textContent = PAY_NOTES[selectedPayMethod()] || '';
+}
+
+function showPayError(message) {
+  payError.textContent = message;
+  payError.classList.add('show');
+}
+
+function clearPayError() {
+  payError.textContent = '';
+  payError.classList.remove('show');
+}
+
+function openPayModal() {
+  clearPayError();
+  payModalTotal.textContent = formatPeso(cartTotal());
+
+  const remembered = sessionStorage.getItem('cs_pay_method');
+  const choice = PAY_METHODS.includes(remembered) ? remembered : 'cash';
+  document.querySelector(`input[name="payMethod"][value="${choice}"]`).checked = true;
+  syncPayNote();
+
+  payModal.classList.add('open');
+  payOverlay.classList.add('open');
+  payModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePayModal() {
+  payModal.classList.remove('open');
+  payOverlay.classList.remove('open');
+  payModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+
+  payConfirmBtn.disabled = false;
+  payConfirmBtn.textContent = 'Place order';
+  clearPayError();
+}
+
+async function placeOrder(payMethod) {
+  const receiverName = sessionStorage.getItem('cs_receiver_name');
+  if (!receiverName) {
+    closePayModal();
+    closeCart();
+    orderStartOverlay.classList.remove('is-hidden');
+    document.body.classList.add('order-setup-active');
+    return;
+  }
+
+  const orderPayload = {
+    receiverName: receiverName,
+    type: orderMethod === 'delivery' ? 'delivery' : 'pickup',
+    payPref: payMethod,                      // what the customer actually chose
+    note: deliveryAddress?.notes || '',
+    address: orderMethod === 'delivery' ? deliveryAddress : null,
+    items: cart.map((entry) => ({
+      menuItemId: Number(entry.id),
+      name: entry.name.split(' — ')[0].trim(),
+      size: entry.size,
+      qty: entry.qty,
+      options: []
+    }))
+  };
+
+  payConfirmBtn.disabled = true;
+  payConfirmBtn.textContent = 'Placing order…';
+  clearPayError();
+
+  try {
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderPayload)
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Failed to place order');
+
+    sessionStorage.setItem('cs_pay_method', payMethod);
+    console.log('Order saved to SQLite:', data);
+
+    cart.length = 0;
+    renderCart();
+    closePayModal();
+    closeCart();
+    openCheckoutModal();
+  } catch (err) {
+    showPayError(err.message);
+    console.error(err);
+    payConfirmBtn.disabled = false;
+    payConfirmBtn.textContent = 'Place order';
+  }
+}
+
+cartCheckout.addEventListener('click', () => {
   if (cart.length === 0) return;
 
   const receiverName = sessionStorage.getItem('cs_receiver_name');
@@ -1165,52 +1318,18 @@ cartCheckout.addEventListener('click', async () => {
     return;
   }
 
-  // 1. Build the payload using YOUR actual user inputs
-  const orderPayload = {
-    receiverName: receiverName,
-    type: orderMethod === 'delivery' ? 'delivery' : 'pickup', 
-    payPref: 'cash', 
-    note: deliveryAddress?.notes || '',
-    address: orderMethod === 'delivery' ? deliveryAddress : null,
-    
-    // 2. Map the cart (WITH THE TEMPORARY HARDCODED ID)
-    items: cart.map((entry) => {
-      return {
-        menuItemId: Number(entry.id),
-        name: entry.name.split(' — ')[0].trim(),
-        size: entry.size,
-        qty: entry.qty,
-        options: [] // We will wire up add-on options later!
-      };
-    })
-  };
+  openPayModal();          // show the total + payment options, do not send yet
+});
 
-  try {
-    // 3. Send to the Express server
-    const response = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderPayload)
-    });
+document.querySelectorAll('input[name="payMethod"]').forEach((radio) => {
+  radio.addEventListener('change', syncPayNote);
+});
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to place order');
-    }
-    
-    // 4. Success!
-    console.log("Order saved to SQLite:", data);
-    
-    cart.length = 0;
-    renderCart();
-    closeCart();
-    openCheckoutModal(); 
-
-  } catch (err) {
-    alert("Order Failed: " + err.message);
-    console.error(err);
-  }
+payConfirmBtn.addEventListener('click', () => placeOrder(selectedPayMethod()));
+payCancelBtn.addEventListener('click', closePayModal);
+payOverlay.addEventListener('click', closePayModal);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && payModal.classList.contains('open')) closePayModal();
 });
 
     document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);

@@ -237,8 +237,10 @@
         body: JSON.stringify({
           method: method,
           tenderedCentavos: Math.round((Number($('cxCashIn').value) || 0) * 100), // convert to centavos
+          referenceNo: $('cxRefNo').value.trim(),
           discountType: d,
-          reference_no: $('cxRefNo').value.trim()
+          discountId: d === 'regular' ? '' : $('cxDiscountId').value.trim(),
+          discountName: d === 'regular' ? '' : $('cxDiscountName').value.trim()
         })
       });
       
