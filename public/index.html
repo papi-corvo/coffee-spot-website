@@ -14,6 +14,8 @@
   <div class="order-start-overlay is-hidden" id="orderStartOverlay" role="dialog" aria-modal="true" aria-labelledby="orderStartTitle">
     <div class="order-start-card">
 
+      <button type="button" class="order-start-close" id="orderStartClose" aria-label="Close and keep browsing">×</button>
+
       <div class="order-start-brand">
         <span class="mark order-logo-mark"><img src="image/coffee-spot-logo.png" alt="Coffee Spot logo"></span>
         <span>
@@ -130,6 +132,51 @@
           </div>
         </div>
       </form>
+
+                  <!-- ===== PAYMENT METHOD (inside the order-setup modal, scrolls with it) ===== -->
+      <section class="pay-section" id="paySection" aria-labelledby="paySectionTitle">
+        <h2 id="paySectionTitle">How would you like to pay?</h2>
+        <p>Pick your payment method now. You can still pay at the counter for pick-up orders.</p>
+
+        <div class="pay-options">
+          <label class="pay-option">
+            <input type="radio" name="payMethod" value="cash" checked>
+            <span class="pay-option-body">
+              <span class="pay-option-head">
+                <strong>Cash</strong>
+                <span class="pay-option-mark" aria-hidden="true">₱</span>
+              </span>
+              <small>Pay when your order arrives or at the counter.</small>
+            </span>
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="payMethod" value="gcash">
+            <span class="pay-option-body">
+              <span class="pay-option-head">
+                <strong>GCash</strong>
+                <img class="pay-option-logo"
+                     src="https://upload.wikimedia.org/wikipedia/commons/5/52/GCash_logo.svg"
+                     alt="GCash" loading="lazy" referrerpolicy="no-referrer">
+              </span>
+              <small>Send payment through GCash. Staff confirms it.</small>
+            </span>
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="payMethod" value="maya">
+            <span class="pay-option-body">
+              <span class="pay-option-head">
+                <strong>Maya</strong>
+                <img class="pay-option-logo"
+                     src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Maya_logo.svg"
+                     alt="Maya" loading="lazy" referrerpolicy="no-referrer">
+              </span>
+              <small>Send payment through Maya. Staff confirms it.</small>
+            </span>
+          </label>
+        </div>
+      </section>
 
       <div class="order-start-error" id="orderStartError" role="alert"></div>
       <button type="button" class="order-start-continue" id="orderStartContinue" disabled>Choose an option to continue</button>
@@ -430,6 +477,37 @@
     </div>
   </section>
 
+
+    <!-- ===== CHECKOUT MODAL ===== -->
+  <div class="checkout-overlay" id="checkoutOverlay"></div>
+  
+      <span>Total</span>
+      <strong id="payModalTotal">₱0</strong>
+    </div>
+
+    <div class="pay-methods" role="radiogroup" aria-label="Payment method">
+      <label class="pay-method">
+        <input type="radio" name="payMethod" value="cash" checked>
+        <span><strong>Cash</strong><small>Pay at the counter or to the rider.</small></span>
+      </label>
+      <label class="pay-method">
+        <input type="radio" name="payMethod" value="gcash">
+        <span><strong>GCash</strong><small>Pay via GCash and show your reference.</small></span>
+      </label>
+      <label class="pay-method">
+        <input type="radio" name="payMethod" value="maya">
+        <span><strong>Maya</strong><small>Pay via Maya and show your reference.</small></span>
+      </label>
+    </div>
+
+    <p class="pay-note" id="payModalNote">Pay in cash when your order is handed over.</p>
+    <div class="pay-error" id="payError" role="alert"></div>
+
+    <div class="pay-actions">
+      <button type="button" class="pay-cancel" id="payModalCancel">Cancel</button>
+      <button type="button" class="btn-primary" id="payModalConfirm">Place order</button>
+    </div>
+  </div>
 
   <!-- ===== CHECKOUT MODAL ===== -->
   <div class="checkout-overlay" id="checkoutOverlay"></div>

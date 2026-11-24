@@ -1144,6 +1144,95 @@ main,
   margin-bottom: 1.5rem;
 }
 
+/* ===== Payment modal ===== */
+.pay-modal {
+  width: min(430px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: left;
+  padding: 2rem 1.75rem;
+}
+
+.pay-modal h3 { margin-bottom: 0.25rem; }
+.pay-modal > p { margin-bottom: 1rem; }
+
+.pay-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: rgba(58, 23, 16, 0.06);
+  color: var(--espresso);
+}
+
+.pay-total-row strong { font-size: 1.15rem; }
+
+.pay-methods {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.pay-method {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: #fff;
+  border: 1px solid rgba(58, 23, 16, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.pay-method:has(input:checked) {
+  border-color: var(--caramel);
+  box-shadow: 0 0 0 2px rgba(198, 106, 44, 0.15);
+}
+
+.pay-method input {
+  margin-top: 0.2rem;
+  accent-color: var(--caramel);
+}
+
+.pay-method span { display: grid; gap: 0.15rem; }
+.pay-method small { color: var(--ink-muted); font-size: 0.8rem; }
+
+.pay-note {
+  font-size: 0.82rem !important;
+  color: var(--ink-muted);
+  margin-bottom: 1rem;
+}
+
+.pay-error {
+  display: none;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #b3261e;
+}
+
+.pay-error.show { display: block; }
+
+.pay-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 0.6rem;
+}
+
+.pay-cancel {
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(58, 23, 16, 0.2);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--espresso);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pay-actions .btn-primary { width: 100%; }
+.pay-actions .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
 .item {
   display: none;
 }
@@ -2191,6 +2280,7 @@ body.detail-modal-open { overflow: hidden; }
   pointer-events: none;
 }
 .order-start-card {
+  position: relative;
   width: min(680px, 94vw);
   max-height: min(820px, 92vh);
   overflow-y: auto;
@@ -2433,6 +2523,99 @@ body.detail-modal-open { overflow: hidden; }
   text-align: center;
 }
 body.order-setup-active { overflow: hidden; }
+
+/* ===== Order-setup modal: close affordance ===== */
+.order-start-close {
+  position: absolute;
+  top: .85rem;
+  right: .85rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(46,20,16,.12);
+  border-radius: 50%;
+  background: rgba(255,255,255,.75);
+  color: var(--ink-muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.order-start-close:hover,
+.order-start-close:focus-visible {
+  background: var(--white);
+  color: var(--espresso);
+  border-color: rgba(46,20,16,.26);
+}
+.order-start-close:focus-visible {
+  outline: 2px solid var(--caramel);
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .order-start-close { top: .7rem; right: .7rem; width: 40px; height: 40px; }
+}
+
+/* ===== PAYMENT METHOD (inside the order-start modal) ===== */
+.pay-section {
+  margin-top: 1.2rem;
+  padding: 1.15rem 1.25rem 1.25rem;
+  border: 1px solid rgba(46,20,16,.1);
+  border-radius: 18px;
+  background: rgba(255,255,255,.6);
+  text-align: left;
+}
+.pay-section h2 { margin-bottom: .35rem; color: var(--espresso); font-size: 1.15rem; }
+.pay-section > p { margin-bottom: 1rem; color: var(--ink-muted); font-size: .82rem; line-height: 1.45; }
+.pay-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+.pay-option { display: block; cursor: pointer; }
+.pay-option input { position: absolute; opacity: 0; pointer-events: none; }
+.pay-option-body {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  height: 100%;
+  padding: .85rem .9rem;
+  border: 1px solid rgba(46,20,16,.14);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.pay-option-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.pay-option-head strong { color: var(--espresso); font-size: .92rem; }
+.pay-option-logo {
+  height: 16px;
+  width: auto;
+  max-width: 62px;
+  object-fit: contain;
+}
+.pay-option-mark {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(46,20,16,.06);
+  color: var(--espresso);
+  font-size: .72rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.pay-option-body small { color: var(--ink-muted); font-size: .68rem; line-height: 1.35; }
+.pay-option input:checked + .pay-option-body {
+  border-color: var(--caramel);
+  background: #fff8f1;
+  box-shadow: inset 3px 0 0 var(--caramel), var(--shadow-sm);
+}
+.pay-option input:focus-visible + .pay-option-body { outline: 2px solid var(--caramel); outline-offset: 2px; }
+@media (max-width: 600px) { .pay-options { grid-template-columns: 1fr; } }
+
 @media (max-width: 600px) {
   .order-methods,
   .address-grid { grid-template-columns: 1fr; }
@@ -3996,7 +4179,7 @@ body.order-setup-active { overflow: hidden; }
   text-transform: uppercase;
 }
 .cx-table td { padding: .6rem .5rem; border-top: 1px dashed rgba(46, 20, 16, .14); vertical-align: middle; }
-.cx-num { text-align: right; white-space: nowrap; }
+.cx-num { text-align: left; white-space: nowrap; }
 
 /* JS-built quantity control inside a table row — copy of your .qty-stepper */
 .cx-stepper {
@@ -4047,6 +4230,21 @@ body.order-setup-active { overflow: hidden; }
   font: 500 .9rem var(--font-body);
 }
 .cx-textarea { resize: vertical; }
+
+.cx-ref-wrap { position: relative; display: block; }
+.cx-ref-wrap .cx-input { padding-right: 3.8rem; }
+.cx-ref-count {
+  position: absolute;
+  right: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  font: 700 .72rem var(--font-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+.cx-ref-count.is-ok { color: var(--caramel); }
 .cx-input:focus-visible,
 .cx-textarea:focus-visible {
   outline: none;

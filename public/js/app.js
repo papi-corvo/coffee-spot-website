@@ -207,11 +207,14 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
   }
 
   function finishOrderSetup() {
+    const payChoice = document.querySelector('input[name="payMethod"]:checked');
+    if (payChoice) sessionStorage.setItem('cs_pay_method', payChoice.value);
+
     orderStartOverlay.classList.add('is-hidden');
     document.body.classList.remove('order-setup-active');
     window.scrollTo(0, 0);
 
-    // This will automatically trigger the checkout after they enter their name
+    // If they already had items in the cart, reopen the cart so they can press Checkout themselves.
     setTimeout(() => {
       if (cart.length > 0) {
         document.getElementById('cartCheckout').click();
@@ -243,6 +246,36 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
     if (orderMethod === 'delivery' && !validateDeliveryAddress()) return;
 
     finishOrderSetup();
+  });
+
+  // Restore the payment method picked earlier in this session.
+  (() => {
+    const saved = sessionStorage.getItem('cs_pay_method');
+    if (!saved) return;
+    const radio = document.querySelector(`input[name="payMethod"][value="${saved}"]`);
+    if (radio) radio.checked = true;
+  })();
+
+   // ===== Close the order-setup modal: X button, backdrop click, or Escape =====
+  function closeOrderSetup() {
+    orderStartOverlay.classList.add('is-hidden');
+    document.body.classList.remove('order-setup-active');
+  }
+
+  const orderStartClose = document.getElementById('orderStartClose');
+  if (orderStartClose) {
+    orderStartClose.addEventListener('click', closeOrderSetup);
+  }
+
+  // Only a click on the overlay itself (the dimmed space around the card) closes it.
+  orderStartOverlay.addEventListener('click', (event) => {
+    if (event.target === orderStartOverlay) closeOrderSetup();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (orderStartOverlay.classList.contains('is-hidden')) return;
+    closeOrderSetup();
   });
 
   // Keep the selected order details available to the existing cart/checkout logic.
@@ -1154,9 +1187,18 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-cartCheckout.addEventListener('click', async () => {
-  if (cart.length === 0) return;
+// ===== Payment: the method is chosen inside the order-setup modal =====
+const PAY_METHODS = ['cash', 'gcash', 'maya'];
 
+function selectedPayMethod() {
+  const chosen = document.querySelector('input[name="payMethod"]:checked')?.value;
+  if (PAY_METHODS.includes(chosen)) return chosen;
+
+  const remembered = sessionStorage.getItem('cs_pay_method');
+  return PAY_METHODS.includes(remembered) ? remembered : 'cash';
+}
+
+async function submitOrder(payMethod) {
   const receiverName = sessionStorage.getItem('cs_receiver_name');
   if (!receiverName) {
     closeCart();
@@ -1165,28 +1207,26 @@ cartCheckout.addEventListener('click', async () => {
     return;
   }
 
-  // 1. Build the payload using YOUR actual user inputs
   const orderPayload = {
     receiverName: receiverName,
-    type: orderMethod === 'delivery' ? 'delivery' : 'pickup', 
-    payPref: 'cash', 
+    type: orderMethod === 'delivery' ? 'delivery' : 'pickup',
+    payPref: payMethod,                      // what the customer chose in the setup card
     note: deliveryAddress?.notes || '',
     address: orderMethod === 'delivery' ? deliveryAddress : null,
-    
-    // 2. Map the cart (WITH THE TEMPORARY HARDCODED ID)
-    items: cart.map((entry) => {
-      return {
-        menuItemId: Number(entry.id),
-        name: entry.name.split(' — ')[0].trim(),
-        size: entry.size,
-        qty: entry.qty,
-        options: [] // We will wire up add-on options later!
-      };
-    })
+    items: cart.map((entry) => ({
+      menuItemId: Number(entry.id),
+      name: entry.name.split(' — ')[0].trim(),
+      size: entry.size,
+      qty: entry.qty,
+      options: []
+    }))
   };
 
+  const label = cartCheckout.textContent;
+  cartCheckout.disabled = true;
+  cartCheckout.textContent = 'Placing order…';
+
   try {
-    // 3. Send to the Express server
     const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1194,23 +1234,27 @@ cartCheckout.addEventListener('click', async () => {
     });
 
     const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Failed to place order');
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Failed to place order');
-    }
-    
-    // 4. Success!
-    console.log("Order saved to SQLite:", data);
-    
+    sessionStorage.setItem('cs_pay_method', payMethod);
+    console.log('Order saved to SQLite:', data);
+
     cart.length = 0;
     renderCart();
     closeCart();
-    openCheckoutModal(); 
-
+    openCheckoutModal();
   } catch (err) {
-    alert("Order Failed: " + err.message);
+    alert('Order Failed: ' + err.message);
     console.error(err);
+  } finally {
+    cartCheckout.disabled = false;
+    cartCheckout.textContent = label;
   }
+}
+
+cartCheckout.addEventListener('click', () => {
+  if (cart.length === 0) return;
+  submitOrder(selectedPayMethod());
 });
 
     document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);

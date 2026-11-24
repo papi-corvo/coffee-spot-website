@@ -88,6 +88,7 @@
   function resetCheckout(o) {
     document.querySelector('input[name="cxDiscount"][value="regular"]').checked = true;
     ['cxDiscountId', 'cxDiscountName', 'cxCashIn', 'cxRefNo'].forEach((id) => { $(id).value = ''; });
+    updateRefCount();
     const r = document.querySelector(`input[name="cxPayment"][value="${String(o.payPref).toLowerCase()}"]`);
     if (r) { r.checked = true; r.dispatchEvent(new Event('change')); }
   }
@@ -179,6 +180,22 @@
     $('cxRefField').hidden = cash;
   }));
 
+  // ---------- PAYMENT REFERENCE (digits only, 13 digits) ----------
+  const REF_LEN = 13;
+
+  function updateRefCount() {
+    const n = $('cxRefNo').value.length;
+    const el = $('cxRefCount');
+    el.textContent = `${n}/${REF_LEN}`;
+    el.classList.toggle('is-ok', n === REF_LEN);
+  }
+
+  $('cxRefNo').addEventListener('input', () => {
+    const clean = $('cxRefNo').value.replace(/\D+/g, '').slice(0, REF_LEN);
+    if (clean !== $('cxRefNo').value) $('cxRefNo').value = clean;
+    updateRefCount();
+  });
+
   // ---------- ACTIONS (ACCEPT, VOID, PAY) ----------
   
   // ACCEPT
@@ -228,7 +245,11 @@
     
     if (d !== 'regular' && !$('cxDiscountId').value.trim()) return alert("Enter the customer's ID number for the discount.");
     if (method === 'cash' && (Number($('cxCashIn').value) || 0) < t.total) return alert('Cash received is less than the total.');
-    if (method !== 'cash' && !$('cxRefNo').value.trim()) return alert('Enter the payment reference number.');
+    if (method !== 'cash') {
+      const ref = $('cxRefNo').value.trim();
+      if (!ref) return alert('Enter the payment reference number.');
+      if (!/^\d{13}$/.test(ref)) return alert('The reference number must be exactly 13 digits.');
+    }
 
     try {
       const res = await fetch(`/api/orders/${current.id}/pay`, {
@@ -237,8 +258,10 @@
         body: JSON.stringify({
           method: method,
           tenderedCentavos: Math.round((Number($('cxCashIn').value) || 0) * 100), // convert to centavos
+          referenceNo: $('cxRefNo').value.trim(),
           discountType: d,
-          reference_no: $('cxRefNo').value.trim()
+          discountId: d === 'regular' ? '' : $('cxDiscountId').value.trim(),
+          discountName: d === 'regular' ? '' : $('cxDiscountName').value.trim()
         })
       });
       

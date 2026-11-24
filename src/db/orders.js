@@ -4,7 +4,7 @@ const { AppError } = require('./errors');
 const { resolveLine } = require('./menu');
 const settings = require('./settings');
 
-const MAX_QTY = 20, MAX_LINES = 50;
+const MAX_QTY = 20, MAX_LINES = 50, MAX_CASH_CENTAVOS = 100000000;  // 1 million pesos
 const NAME_RULE = /^\p{L}[\p{L}\p{M} .'-]{1,59}$/u;
 const PHONE_RULE = /^09\d{9}$/;
 const TYPES = { pickup: 'pickup', 'pick-up': 'pickup', 'pick up': 'pickup', delivery: 'delivery' };
@@ -206,20 +206,52 @@ function quoteTotals(code, discountType = 'regular') {
            sub: sub / 100, disc: disc / 100, total: (sub - disc) / 100 };
 }
 
-function payOrder(code, { method, tenderedCentavos, staffId, discountType = 'regular' } = {}) {
+function payOrder(code, { method, tenderedCentavos, referenceNo, reference_no, staffId, discountType = 'regular', discountId, discountName } = {}) {
   return db.transaction(() => {
     const o = rowByCode(code);
     if (o.status === 'done') throw new AppError('This order is already paid.', 409);
     if (o.status === 'voided' || o.status === 'rejected') throw new AppError('Cannot pay a voided or rejected order.', 409);
 
+    // 1. Validate the payment method and reference number before any money is recorded
+    const payMethod = clean(method, 10).toLowerCase();
+    if (!['cash', 'gcash', 'maya'].includes(payMethod)) throw new AppError('Payment must be cash, GCash or Maya.');
+
+    // An e-wallet reference is exactly 13 digits and nothing else. Cash payments carry no reference.
+    let referenceNoClean = null;
+    if (payMethod !== 'cash') {
+      const rawRef = String(referenceNo ?? reference_no ?? '').trim();
+      if (!rawRef) throw new AppError('Enter the payment reference number.');
+      if (!/^\d{13}$/.test(rawRef)) throw new AppError('An e-wallet reference number must be exactly 13 digits.');
+      referenceNoClean = rawRef;
+    }
+
+    // 2. Validate the discount ID before the discount is applied
     const totals = quoteTotals(o.code, discountType);
     const totalCentavos = totals.totalCentavos;
 
-    // 1. Validate Payment
-    if (method === 'cash' && tenderedCentavos < totalCentavos) {
-      throw new AppError('Cash tendered is less than the total amount.');
+    let discount = null;
+    if (discountType !== 'regular') {
+      const idNumber = clean(discountId, 40);
+      if (!idNumber) throw new AppError(`Enter the ${discountType === 'pwd' ? 'PWD' : 'senior citizen'} ID number for the discount.`);
+      discount = {
+        type: discountType,
+        rateBps: totals.rateBps,
+        amountCentavos: totals.discCentavos,
+        idNumber,
+        nameOnId: clean(discountName, 80) || null,
+      };
     }
-    const changeCentavos = method === 'cash' ? (tenderedCentavos - totalCentavos) : null;
+
+    // 3. Validate the cash received
+    let tendered = totalCentavos;
+    let changeCentavos = null;
+    if (payMethod === 'cash') {
+      tendered = Number(tenderedCentavos);
+      if (!Number.isSafeInteger(tendered) || tendered < 0) throw new AppError('Cash received must be a whole number of centavos.');
+      if (tendered > MAX_CASH_CENTAVOS) throw new AppError('Cash received is larger than this till can accept.');
+      if (tendered < totalCentavos) throw new AppError('Cash tendered is less than the total amount.');
+      changeCentavos = tendered - totalCentavos;
+    }
 
     // ==========================================
     // NEW: RECEIPT GENERATION LOGIC
@@ -245,6 +277,21 @@ function payOrder(code, { method, tenderedCentavos, staffId, discountType = 'reg
     const shopSettings = settings.all(); // Gets your store name, TIN, address from the settings table
     const items = db.prepare('SELECT name, size, unit_price_centavos, quantity FROM order_items WHERE order_id = ?').all(o.id);
     
+    // Record the PWD / Senior discount so the receipt, the order totals and BIR reporting agree
+    if (discount) {
+      db.prepare(`
+        INSERT INTO order_discounts (order_id, type, rate_bps, amount_centavos, id_number, name_on_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(
+        o.id,
+        discount.type,
+        discount.rateBps,
+        discount.amountCentavos,
+        discount.idNumber,
+        discount.nameOnId
+      );
+    }
+
     const snapshot = {
       shop: shopSettings,
       receipt_no: receiptNo,
@@ -253,7 +300,8 @@ function payOrder(code, { method, tenderedCentavos, staffId, discountType = 'reg
       cashier_id: staffId,
       items: items,
       totals: totals,
-      payment: { method, tenderedCentavos, change: changeCentavos }
+      discount: discount ? { type: discount.type, rate_bps: discount.rateBps, amount_centavos: discount.amountCentavos, id_number: discount.idNumber, name_on_id: discount.nameOnId } : null,
+      payment: { method: payMethod, tenderedCentavos: tendered, change: changeCentavos, referenceNo: referenceNoClean || null }
     };
 
     // Insert the receipt into the database
@@ -276,9 +324,17 @@ function payOrder(code, { method, tenderedCentavos, staffId, discountType = 'reg
 
     // 2. Insert into payments table
     db.prepare(`
-      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, staff_id)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(o.id, method, totalCentavos, tenderedCentavos || totalCentavos, changeCentavos, staffId || null);
+      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, staff_id, reference_no)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      o.id,
+      method,
+      totalCentavos,
+      tenderedCentavos || totalCentavos,
+      changeCentavos,
+      staffId || null,
+      referenceNoClean            // 13-digit GCash/Maya ref, or null for cash
+    );
 
     // 3. Update order status
     db.prepare(`UPDATE orders SET status = 'done', updated_at = ${NOW} WHERE id = ?`).run(o.id);

@@ -162,14 +162,20 @@
       const cashRow = document.getElementById('rcpCashRow');
       const changeRow = document.getElementById('rcpChangeRow');
 
+      const refRow = document.getElementById('rcpRefRow');
+
       if (methodUsed === 'cash') {
         document.getElementById('rcpCash').textContent = peso(o.payment.cash);
         document.getElementById('rcpChange').textContent = peso(Math.max(0, o.payment.cash - t.total));
         cashRow.style.display = 'flex';
         changeRow.style.display = 'flex';
+        refRow.style.display = 'none';
       } else {
         cashRow.style.display = 'none';
         changeRow.style.display = 'none';
+        const ref = String(o.payment.ref || '').trim();
+        document.getElementById('rcpRef').textContent = ref;
+        refRow.style.display = ref ? 'flex' : 'none';
       }
     }
 
