@@ -4230,6 +4230,21 @@ body.order-setup-active { overflow: hidden; }
   font: 500 .9rem var(--font-body);
 }
 .cx-textarea { resize: vertical; }
+
+.cx-ref-wrap { position: relative; display: block; }
+.cx-ref-wrap .cx-input { padding-right: 3.8rem; }
+.cx-ref-count {
+  position: absolute;
+  right: .75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  font: 700 .72rem var(--font-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+  pointer-events: none;
+}
+.cx-ref-count.is-ok { color: var(--caramel); }
 .cx-input:focus-visible,
 .cx-textarea:focus-visible {
   outline: none;

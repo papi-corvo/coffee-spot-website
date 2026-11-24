@@ -215,8 +215,15 @@ function payOrder(code, { method, tenderedCentavos, referenceNo, reference_no, s
     // 1. Validate the payment method and reference number before any money is recorded
     const payMethod = clean(method, 10).toLowerCase();
     if (!['cash', 'gcash', 'maya'].includes(payMethod)) throw new AppError('Payment must be cash, GCash or Maya.');
-    const referenceNoClean = clean(referenceNo ?? reference_no, 80);
-    if (payMethod !== 'cash' && !referenceNoClean) throw new AppError('Enter the payment reference number.');
+
+    // An e-wallet reference is exactly 13 digits and nothing else. Cash payments carry no reference.
+    let referenceNoClean = null;
+    if (payMethod !== 'cash') {
+      const rawRef = String(referenceNo ?? reference_no ?? '').trim();
+      if (!rawRef) throw new AppError('Enter the payment reference number.');
+      if (!/^\d{13}$/.test(rawRef)) throw new AppError('An e-wallet reference number must be exactly 13 digits.');
+      referenceNoClean = rawRef;
+    }
 
     // 2. Validate the discount ID before the discount is applied
     const totals = quoteTotals(o.code, discountType);
@@ -317,7 +324,7 @@ function payOrder(code, { method, tenderedCentavos, referenceNo, reference_no, s
 
     // 2. Insert into payments table (reference_no is required by the table for non-cash payments)
     db.prepare(`
-      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, reference_no, staff_id)
+      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, reference_no, staff_id, reference_no)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).run(o.id, payMethod, totalCentavos, tendered, changeCentavos, referenceNoClean || null, staffId || null);
 

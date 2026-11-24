@@ -134,7 +134,12 @@
           </div>
 
           <label class="cx-field" id="cxRefField" hidden>Reference no.
-            <input class="cx-input" type="text" id="cxRefNo" autocomplete="off">
+            <span class="cx-ref-wrap">
+              <input class="cx-input" type="text" id="cxRefNo" autocomplete="off"
+                     inputmode="numeric" maxlength="13" pattern="[0-9]{13}"
+                     placeholder="13-digit ref no.">
+              <span class="cx-ref-count" id="cxRefCount">0/13</span>
+            </span>
           </label>
         </fieldset>
 
