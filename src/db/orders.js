@@ -322,11 +322,19 @@ function payOrder(code, { method, tenderedCentavos, referenceNo, reference_no, s
     // END NEW RECEIPT LOGIC
     // ==========================================
 
-    // 2. Insert into payments table (reference_no is required by the table for non-cash payments)
+    // 2. Insert into payments table
     db.prepare(`
-      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, reference_no, staff_id, reference_no)
+      INSERT INTO payments (order_id, method, amount_centavos, tendered_centavos, change_centavos, staff_id, reference_no)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).run(o.id, payMethod, totalCentavos, tendered, changeCentavos, referenceNoClean || null, staffId || null);
+    `).run(
+      o.id,
+      method,
+      totalCentavos,
+      tenderedCentavos || totalCentavos,
+      changeCentavos,
+      staffId || null,
+      referenceNoClean            // 13-digit GCash/Maya ref, or null for cash
+    );
 
     // 3. Update order status
     db.prepare(`UPDATE orders SET status = 'done', updated_at = ${NOW} WHERE id = ?`).run(o.id);

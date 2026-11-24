@@ -4179,7 +4179,7 @@ body.order-setup-active { overflow: hidden; }
   text-transform: uppercase;
 }
 .cx-table td { padding: .6rem .5rem; border-top: 1px dashed rgba(46, 20, 16, .14); vertical-align: middle; }
-.cx-num { text-align: right; white-space: nowrap; }
+.cx-num { text-align: left; white-space: nowrap; }
 
 /* JS-built quantity control inside a table row — copy of your .qty-stepper */
 .cx-stepper {

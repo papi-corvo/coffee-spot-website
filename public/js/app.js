@@ -214,7 +214,7 @@ const orderStartOverlay = document.getElementById('orderStartOverlay');
     document.body.classList.remove('order-setup-active');
     window.scrollTo(0, 0);
 
-    // This will automatically trigger the checkout after they enter their name
+    // If they already had items in the cart, reopen the cart so they can press Checkout themselves.
     setTimeout(() => {
       if (cart.length > 0) {
         document.getElementById('cartCheckout').click();
@@ -1187,75 +1187,20 @@ featuredMenuButton.addEventListener('click', closeFeaturedTasteScreen);
     cartClose.addEventListener('click', closeCart);
     cartOverlay.addEventListener('click', closeCart);
 
-// ===== Payment step: choose Cash / GCash / Maya before the order is sent =====
-const payModal = document.getElementById('payModal');
-const payOverlay = document.getElementById('payOverlay');
-const payModalTotal = document.getElementById('payModalTotal');
-const payModalNote = document.getElementById('payModalNote');
-const payError = document.getElementById('payError');
-const payConfirmBtn = document.getElementById('payModalConfirm');
-const payCancelBtn = document.getElementById('payModalCancel');
-
+// ===== Payment: the method is chosen inside the order-setup modal =====
 const PAY_METHODS = ['cash', 'gcash', 'maya'];
-const PAY_NOTES = {
-  cash: 'Pay in cash when your order is handed over at the counter or on delivery.',
-  gcash: 'Pay via GCash at the counter or to the rider, then show your GCash reference number.',
-  maya: 'Pay via Maya at the counter or to the rider, then show your Maya reference number.'
-};
-
-function cartTotal() {
-  return cart.reduce((sum, entry) => sum + entry.price * entry.qty, 0);
-}
 
 function selectedPayMethod() {
-  return document.querySelector('input[name="payMethod"]:checked')?.value || 'cash';
-}
-
-function syncPayNote() {
-  payModalNote.textContent = PAY_NOTES[selectedPayMethod()] || '';
-}
-
-function showPayError(message) {
-  payError.textContent = message;
-  payError.classList.add('show');
-}
-
-function clearPayError() {
-  payError.textContent = '';
-  payError.classList.remove('show');
-}
-
-function openPayModal() {
-  clearPayError();
-  payModalTotal.textContent = formatPeso(cartTotal());
+  const chosen = document.querySelector('input[name="payMethod"]:checked')?.value;
+  if (PAY_METHODS.includes(chosen)) return chosen;
 
   const remembered = sessionStorage.getItem('cs_pay_method');
-  const choice = PAY_METHODS.includes(remembered) ? remembered : 'cash';
-  document.querySelector(`input[name="payMethod"][value="${choice}"]`).checked = true;
-  syncPayNote();
-
-  payModal.classList.add('open');
-  payOverlay.classList.add('open');
-  payModal.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
+  return PAY_METHODS.includes(remembered) ? remembered : 'cash';
 }
 
-function closePayModal() {
-  payModal.classList.remove('open');
-  payOverlay.classList.remove('open');
-  payModal.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-  document.body.style.paddingRight = '';
-
-  payConfirmBtn.disabled = false;
-  payConfirmBtn.textContent = 'Place order';
-  clearPayError();
-}
-
-async function placeOrder(payMethod) {
+async function submitOrder(payMethod) {
   const receiverName = sessionStorage.getItem('cs_receiver_name');
   if (!receiverName) {
-    closePayModal();
     closeCart();
     orderStartOverlay.classList.remove('is-hidden');
     document.body.classList.add('order-setup-active');
@@ -1265,7 +1210,7 @@ async function placeOrder(payMethod) {
   const orderPayload = {
     receiverName: receiverName,
     type: orderMethod === 'delivery' ? 'delivery' : 'pickup',
-    payPref: payMethod,                      // what the customer actually chose
+    payPref: payMethod,                      // what the customer chose in the setup card
     note: deliveryAddress?.notes || '',
     address: orderMethod === 'delivery' ? deliveryAddress : null,
     items: cart.map((entry) => ({
@@ -1277,9 +1222,9 @@ async function placeOrder(payMethod) {
     }))
   };
 
-  payConfirmBtn.disabled = true;
-  payConfirmBtn.textContent = 'Placing order…';
-  clearPayError();
+  const label = cartCheckout.textContent;
+  cartCheckout.disabled = true;
+  cartCheckout.textContent = 'Placing order…';
 
   try {
     const response = await fetch('/api/orders', {
@@ -1296,40 +1241,20 @@ async function placeOrder(payMethod) {
 
     cart.length = 0;
     renderCart();
-    closePayModal();
     closeCart();
     openCheckoutModal();
   } catch (err) {
-    showPayError(err.message);
+    alert('Order Failed: ' + err.message);
     console.error(err);
-    payConfirmBtn.disabled = false;
-    payConfirmBtn.textContent = 'Place order';
+  } finally {
+    cartCheckout.disabled = false;
+    cartCheckout.textContent = label;
   }
 }
 
 cartCheckout.addEventListener('click', () => {
   if (cart.length === 0) return;
-
-  const receiverName = sessionStorage.getItem('cs_receiver_name');
-  if (!receiverName) {
-    closeCart();
-    orderStartOverlay.classList.remove('is-hidden');
-    document.body.classList.add('order-setup-active');
-    return;
-  }
-
-  openPayModal();          // show the total + payment options, do not send yet
-});
-
-document.querySelectorAll('input[name="payMethod"]').forEach((radio) => {
-  radio.addEventListener('change', syncPayNote);
-});
-
-payConfirmBtn.addEventListener('click', () => placeOrder(selectedPayMethod()));
-payCancelBtn.addEventListener('click', closePayModal);
-payOverlay.addEventListener('click', closePayModal);
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && payModal.classList.contains('open')) closePayModal();
+  submitOrder(selectedPayMethod());
 });
 
     document.getElementById('checkoutModalClose').addEventListener('click', closeCheckoutModal);
