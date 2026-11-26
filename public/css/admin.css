@@ -488,6 +488,14 @@
   margin: 0;
 }
 
+    /* =========================================
+              EMPLOYEE TABLE ALIGNMENT
+    ========================================= */
+#adEmployees th:last-child,
+#adEmployees td:last-child {
+  text-align: right;
+}
+
 /* =========================================
    DIALOGS & MODALS
    ========================================= */
@@ -498,6 +506,9 @@
   border-radius: var(--radius-md);
   background: var(--linen);
   color: var(--ink);
+  margin: auto;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
   box-shadow: var(--shadow-lg);
 }
 
