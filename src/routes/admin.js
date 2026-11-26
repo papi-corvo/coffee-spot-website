@@ -233,7 +233,7 @@ router.get('/employees', (req, res) => {
       SELECT id, name, role, email, employee_code,
              CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status
       FROM staff
-      ORDER BY active DESC, name COLLATE NOCASE ASC
+      ORDER BY (role = 'admin') DESC, active DESC, name COLLATE NOCASE ASC
     `).all();
     res.json(employees);
   } catch (error) {
