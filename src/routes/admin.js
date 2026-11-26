@@ -4,6 +4,8 @@ const { db } = require('../db/db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const uploadDir = path.join(__dirname, '..', '..', 'public', 'image', 'uploads');
 
 // Create the folder if it doesn't exist
@@ -14,6 +16,58 @@ if (!fs.existsSync(uploadDir)) {
 const MAX_PRICE = 10000; // 10,000 PHP limit
 // Safe centavos conversion (avoids 19.99 * 100 = 1998.999999)
 const toCentavos = (amount) => Math.round(Number(amount) * 100);
+
+// ---------- Employee rules ----------
+const NAME_RULE = /^\p{L}[\p{L}\p{M} .'-]{1,59}$/u;
+const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const clean = (v, max = 120) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+
+// ---------- Employee code allocation ----------
+// The next code comes from a high-water mark kept in settings, not from MAX(staff),
+// so deleting an employee never makes their number available again. The seed value
+// folds in the highest code already in use, so existing data keeps working.
+const CODE_SEQ_KEY = 'employee_code_seq';
+
+function takeEmployeeCode() {
+  const row = db.prepare(`
+    INSERT INTO settings (key, value)
+    SELECT ?, MAX(
+             COALESCE((SELECT CAST(value AS INTEGER) FROM settings WHERE key = ?), 0),
+             COALESCE((SELECT MAX(CAST(substr(employee_code, 5) AS INTEGER))
+                       FROM staff WHERE employee_code LIKE 'EMP-%'), 0)
+           ) + 1
+    WHERE 1
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+    RETURNING value
+  `).get(CODE_SEQ_KEY, CODE_SEQ_KEY);
+  return `EMP-${String(Number(row.value)).padStart(3, '0')}`;
+}
+
+// Reserve a code and do the write in one transaction: if the insert fails, the
+// reservation rolls back with it; if two requests overlap, the unique index on
+// employee_code is the only arbiter and nothing is handed out twice.
+function withNewEmployeeCode(write) {
+  return db.transaction(() => {
+    const code = takeEmployeeCode();
+    return { code, result: write(code) };
+  })();
+}
+
+const newPin = () => String(crypto.randomInt(100000, 1000000));
+const newPassword = () => crypto.randomBytes(5).toString('hex'); // 10 characters
+
+function countActiveAdmins() {
+  return db.prepare("SELECT COUNT(*) AS n FROM staff WHERE role = 'admin' AND active = 1").get().n;
+}
+
+function employeeRow(id) {
+  return db.prepare(`
+    SELECT id, name, role, email, employee_code,
+           CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status
+    FROM staff WHERE id = ?
+  `).get(id);
+}
 
 // Configure Multer for image uploads
 const storage = multer.diskStorage({
@@ -176,13 +230,200 @@ router.get('/menu', (req, res) => {
 router.get('/employees', (req, res) => {
   try {
     const employees = db.prepare(`
-      SELECT id, name, COALESCE(email, employee_code) as email, role, 
-             CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END as status 
+      SELECT id, name, role, email, employee_code,
+             CASE WHEN active = 1 THEN 'active' ELSE 'inactive' END AS status
       FROM staff
+      ORDER BY (role = 'admin') DESC, active DESC, name COLLATE NOCASE ASC
     `).all();
     res.json(employees);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Employees fetch error:', error);
+    res.status(500).json({ error: 'Could not load employees.' });
+  }
+});
+
+// POST: Register an employee and hand back their first login, once
+router.post('/employees', (req, res) => {
+  try {
+    const name = clean(req.body.name, 60);
+    const role = req.body.role;
+
+    if (!NAME_RULE.test(name)) {
+      return res.status(400).json({ error: "Enter the employee's full name." });
+    }
+    if (role !== 'cashier' && role !== 'admin') {
+      return res.status(400).json({ error: 'Choose a role: cashier or admin.' });
+    }
+
+    const insertStaff = db.prepare(`
+      INSERT INTO staff (name, role, email, employee_code, pin_hash, password_hash)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    const credentials = {};
+
+    if (role === 'admin') {
+      const email = clean(req.body.email, 120).toLowerCase();
+      if (!EMAIL_RULE.test(email)) {
+        return res.status(400).json({ error: 'Admins need a valid email address to log in.' });
+      }
+      if (db.prepare('SELECT 1 FROM staff WHERE email = ?').get(email)) {
+        return res.status(409).json({ error: 'That email is already used by another employee.' });
+      }
+      const password = newPassword();
+      const passwordHash = bcrypt.hashSync(password, 10);
+      const info = insertStaff.run(name, role, email, null, null, passwordHash);
+
+      credentials.login = email;
+      credentials.password = password;
+      return res.status(201).json({ employee: employeeRow(info.lastInsertRowid), credentials });
+    }
+
+    const pin = newPin();
+    const pinHash = bcrypt.hashSync(pin, 10);
+    const { code, result: info } = withNewEmployeeCode((employeeCode) =>
+      insertStaff.run(name, role, null, employeeCode, pinHash, null)
+    );
+
+    credentials.login = code;
+    credentials.employeeCode = code;
+    credentials.pin = pin;
+    res.status(201).json({ employee: employeeRow(info.lastInsertRowid), credentials });
+
+  } catch (error) {
+    console.error('Employee create error:', error);
+    if (String(error.code || '').startsWith('SQLITE_CONSTRAINT')) {
+      return res.status(409).json({ error: 'That email or employee code is already taken.' });
+    }
+    res.status(500).json({ error: 'Could not register the employee.' });
+  }
+});
+
+// PATCH: Rename, change role, activate or deactivate an employee
+router.patch('/employees/:id', (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: 'Invalid employee.' });
+
+    const target = db.prepare('SELECT * FROM staff WHERE id = ?').get(id);
+    if (!target) return res.status(404).json({ error: 'Employee not found.' });
+
+    const sets = [];
+    const values = [];
+    const credentials = {};
+
+    if (req.body.name !== undefined) {
+      const name = clean(req.body.name, 60);
+      if (!NAME_RULE.test(name)) {
+        return res.status(400).json({ error: "Enter the employee's full name." });
+      }
+      sets.push('name = ?');
+      values.push(name);
+    }
+
+    if (req.body.role !== undefined && req.body.role !== target.role) {
+      const nextRole = req.body.role;
+      if (nextRole !== 'cashier' && nextRole !== 'admin') {
+        return res.status(400).json({ error: 'Choose a role: cashier or admin.' });
+      }
+      if (target.id === req.staff.id) {
+        return res.status(400).json({ error: 'You cannot change your own role.' });
+      }
+      if (target.role === 'admin' && target.active === 1 && countActiveAdmins() <= 1) {
+        return res.status(400).json({ error: 'At least one active admin must remain.' });
+      }
+
+      sets.push('role = ?');
+      values.push(nextRole);
+
+      if (nextRole === 'admin') {
+        // Promoting: an admin logs in with email + password, so we need an email now.
+        const email = clean(req.body.email ?? target.email ?? '', 120).toLowerCase();
+        if (!EMAIL_RULE.test(email)) {
+          return res.status(400).json({ error: 'Promoting to admin needs a valid email. Send it with this change.' });
+        }
+        if (db.prepare('SELECT 1 FROM staff WHERE email = ? AND id <> ?').get(email, id)) {
+          return res.status(409).json({ error: 'That email is already used by another employee.' });
+        }
+        const password = newPassword();
+        sets.push('email = ?');
+        values.push(email);
+        sets.push('password_hash = ?');
+        values.push(bcrypt.hashSync(password, 10));
+        credentials.login = email;
+        credentials.password = password;
+      } else {
+        // Demoting: a cashier logs in with employee code + PIN.
+        if (!target.employee_code) {
+          const code = takeEmployeeCode();
+          sets.push('employee_code = ?');
+          values.push(code);
+          credentials.login = code;
+          credentials.employeeCode = code;
+        } else {
+          credentials.login = target.employee_code;
+          credentials.employeeCode = target.employee_code;
+        }
+        const pin = newPin();
+        sets.push('pin_hash = ?');
+        values.push(bcrypt.hashSync(pin, 10));
+        credentials.pin = pin;
+      }
+    }
+
+    if (req.body.active !== undefined) {
+      const active = req.body.active ? 1 : 0;
+      if (!active && target.id === req.staff.id) {
+        return res.status(400).json({ error: 'You cannot deactivate your own account.' });
+      }
+      if (!active && target.role === 'admin' && target.active === 1 && countActiveAdmins() <= 1) {
+        return res.status(400).json({ error: 'At least one active admin must remain.' });
+      }
+      sets.push('active = ?');
+      values.push(active);
+    }
+
+    if (sets.length === 0) return res.status(400).json({ error: 'Nothing to change.' });
+
+    values.push(id);
+    db.prepare(`UPDATE staff SET ${sets.join(', ')} WHERE id = ?`).run(...values);
+
+    res.json({ employee: employeeRow(id), credentials });
+  } catch (error) {
+    console.error('Employee update error:', error);
+    if (String(error.code || '').startsWith('SQLITE_CONSTRAINT')) {
+      return res.status(409).json({ error: 'That email or employee code is already taken.' });
+    }
+    res.status(500).json({ error: 'Could not update the employee.' });
+  }
+});
+
+// POST: Issue a new PIN (cashier) or password (admin)
+router.post('/employees/:id/credentials', (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const target = db.prepare('SELECT * FROM staff WHERE id = ?').get(id);
+    if (!target) return res.status(404).json({ error: 'Employee not found.' });
+
+    if (target.role === 'admin') {
+      if (!target.email) {
+        return res.status(400).json({ error: 'Give this admin an email address first.' });
+      }
+      const password = newPassword();
+      db.prepare('UPDATE staff SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), id);
+      return res.json({ credentials: { login: target.email, password } });
+    }
+
+    let code = target.employee_code;
+    if (!code) {
+      code = takeEmployeeCode();
+      db.prepare('UPDATE staff SET employee_code = ? WHERE id = ?').run(code, id);
+    }
+    const pin = newPin();
+    db.prepare('UPDATE staff SET pin_hash = ? WHERE id = ?').run(bcrypt.hashSync(pin, 10), id);
+    res.json({ credentials: { login: code, employeeCode: code, pin } });
+  } catch (error) {
+    console.error('Credential reset error:', error);
+    res.status(500).json({ error: 'Could not reset the login.' });
   }
 });
 

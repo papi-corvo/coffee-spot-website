@@ -27,7 +27,7 @@
     <main class="ad-main">
       <header class="ad-top">
         <h1 id="adTitle">Overview</h1>
-        <span class="ad-user">Admin · Maria S.</span>
+        <span class="ad-user" id="adUser">Admin</span>
       </header>
 
       <!-- ===== OVERVIEW VIEW ===== -->
@@ -47,9 +47,10 @@
       <!-- ===== EMPLOYEES VIEW ===== -->
       <section class="ad-view" id="view-employees" hidden>
         <div class="ad-toolbar">
-          <input class="ad-input" type="search" id="empSearch" placeholder="Search name or email" aria-label="Search employees">
+          <input class="ad-input" type="search" id="empSearch" placeholder="Search name, code or email" aria-label="Search employees">
           <button class="ad-btn ad-btn--primary" type="button" id="empAdd">+ Register employee</button>
         </div>
+        <p class="emp-note">Cashiers log in with an employee code and a 6-digit PIN. Admins log in with an email and a password. A login is shown once when it is created, so copy it before closing the panel.</p>
         <article class="ad-card"><div class="ad-scroll"><table class="ad-table" id="adEmployees"></table></div></article>
       </section>
 
@@ -67,17 +68,18 @@
   <!-- ===== Register Employee Dialog ===== -->
   <dialog class="ad-dialog" id="empDialog">
     <form method="dialog" id="empForm" novalidate>
-      <h2>Register employee</h2>
-      <label class="ad-field">Full name <input class="ad-input" id="empName" autocomplete="off"></label>
-      <label class="ad-field">Email (their login) <input class="ad-input" id="empEmail" type="email" autocomplete="off"></label>
+      <h2 id="empDialogTitle">Register employee</h2>
+      <label class="ad-field">Full name <input class="ad-input" id="empName" autocomplete="off" maxlength="60"></label>
       <label class="ad-field">Role
         <select class="ad-input" id="empRole"><option value="cashier">Cashier</option><option value="admin">Admin</option></select>
       </label>
-      <p class="ad-hint">They receive an email invitation to set their own password. No passwords are stored in your database.</p>
+      <label class="ad-field" id="empEmailField" hidden>Email (admin login) <input class="ad-input" id="empEmail" type="email" autocomplete="off"></label>
+      <p class="ad-hint" id="empHint">Cashiers log in with an employee code and a 6-digit PIN. The code and PIN are shown once on the next screen.</p>
+      <p class="ad-hint" id="empRoleWarning" role="status" hidden style="color: var(--danger, #a6371d); font-weight: 700;"></p>
       <p class="ad-error" id="empError" role="alert"></p>
       <div class="ad-dialog-actions">
         <button class="ad-btn" type="submit" value="cancel">Cancel</button>
-        <button class="ad-btn ad-btn--primary" type="button" id="empSave">Send invitation</button>
+        <button class="ad-btn ad-btn--primary" type="button" id="empSave">Create employee</button>
       </div>
     </form>
   </dialog>
@@ -174,6 +176,32 @@
       
       <div class="ad-toast" id="addItemToast"></div>
     </form>
+  </dialog>
+
+  <!-- ===== Employee change confirmation ===== -->
+  <dialog class="ad-dialog confirm-dialog" id="empConfirmDialog">
+    <div class="confirm-icon">!</div>
+    <h2 class="confirm-title" id="empConfirmTitle">Confirm change</h2>
+    <p class="confirm-message" id="empConfirmMessage"></p>
+    <div class="confirm-actions">
+      <button type="button" class="ad-btn ad-btn--primary" id="empConfirmOk">Yes, save changes</button>
+      <button type="button" class="ad-btn" id="empConfirmCancel">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- ===== Credentials (shown once) ===== -->
+  <dialog class="ad-dialog" id="credDialog">
+    <h2 id="credTitle">Login created</h2>
+    <p class="ad-hint" id="credIntro">Hand these details over now.</p>
+    <div class="cred-card">
+      <div class="cred-row"><span>Login</span><b id="credLogin">—</b></div>
+      <div class="cred-row"><span id="credSecretLabel">PIN</span><b id="credSecret" class="cred-secret">—</b></div>
+    </div>
+    <p class="ad-hint">These details are not shown again. Only a hash is stored, so the only other option is to replace the login with a new one.</p>
+    <div class="ad-dialog-actions">
+      <button class="ad-btn" type="button" id="credCopy">Copy</button>
+      <button class="ad-btn ad-btn--primary" type="button" id="credDone">Done</button>
+    </div>
   </dialog>
 
   <div class="ad-toast" id="adToast" role="status" aria-live="polite"></div>

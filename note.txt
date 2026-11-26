@@ -64,8 +64,26 @@
       - node scripts/seed-menu.js
       - node scripts/import-descriptions.js
       - node scripts/seed-admin.js
-      - node scripts/seed-staff.js
       - node scripts/sync-descriptions.js
+
+   HOW ACCOUNTS WORK (every login after the seeded owner):
+      1. Sign in as the owner, open Employees, click "+ Register employee".
+      2. Choose the role:
+         - Cashier -> gets an employee code (EMP-001, EMP-002 ...) and a 6-digit PIN.
+         - Admin   -> gets an email login and a generated password.
+      3. The code/PIN or password is shown ONCE, right after saving. Copy it before closing
+         the panel; only a hash is stored, so it can never be shown again.
+      4. "New login" on a row replaces those details and shows the new ones once.
+         Use it when someone forgets their PIN, or when you changed their role
+         (a role change replaces the login too).
+      5. There is no "forgot password" for admins. Another admin resets you with
+         "New login"; if the only admin is locked out, use scripts/seed-admin.js logic
+         from the terminal.
+      6. Do NOT delete staff rows. Past payments, receipts and status history point at
+         them and SQLite will refuse the delete. Use the toggle on the row to deactivate
+         instead - they keep appearing in the table, greyed out as inactive.
+      7. Employee codes are never reused, even after a row is removed. The counter lives
+         in the settings table as employee_code_seq; leave it alone.
 
       EXTENSION YOU WILL NEED FOR VIEWING DATABASE:
       - 'SQlite Viewer' by Florian Klampfer

@@ -6,16 +6,28 @@
   const $ = (id) => document.getElementById(id);
   const peso = (n) => '₱' + Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const ME = 1;                                   
+  let ME = 0;
   const CATS = { coffee: 'Coffee', soda: 'Italian soda', tea: 'Tea', pastries: 'Pastries', food: 'Food' };
-  const STATUS = { active: 'Active', invited: 'Invited', inactive: 'Inactive' };
+  const STATUS = { active: 'Active', inactive: 'Inactive' };
+
+  async function send(url, method, body) {
+    const res = await fetch(url, {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
 
   const api = {
     stats: async () => { const res = await fetch('/api/admin/stats'); if (!res.ok) throw new Error('Failed'); return await res.json(); },
     employees: async () => { const res = await fetch('/api/admin/employees'); if (!res.ok) throw new Error('Failed'); return await res.json(); },
     menu: async () => { const res = await fetch('/api/admin/menu'); if (!res.ok) throw new Error('Failed'); return await res.json(); },
-    registerEmployee: async (e) => { console.log('TODO', e); }, 
-    updateEmployee: async (id, patch) => { console.log('TODO', id, patch); },
+    registerEmployee: (payload) => send('/api/admin/employees', 'POST', payload),
+    updateEmployee: (id, patch) => send(`/api/admin/employees/${id}`, 'PATCH', patch),
+    resetCredentials: (id) => send(`/api/admin/employees/${id}/credentials`, 'POST', {}),
     updateMenuItem: async (slug, patch) => {
       const res = await fetch(`/api/admin/menu/${slug}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patch) });
       if (!res.ok) throw new Error('Failed to update menu item');
@@ -88,71 +100,209 @@
         `<td class="ad-num">${peso(o.total)}</td><td><span class="ad-badge" data-s="${o.status}">${esc(o.status)}</span></td></tr>`).join('') + '</tbody>';
   }
 
-  let employees = [];
+    let employees = [];
+  const empActive = (e) => e.active !== false && e.status !== 'inactive';
+  const empLogin = (e) => (e.role === 'admin' ? (e.email || '—') : (e.employeeCode || e.employee_code || '—'));
+
   function renderEmployees() {
-    const q = $('empSearch').value.trim().toLowerCase();
-    const rows = employees.filter((e) => !q || e.name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q));
-    $('adEmployees').innerHTML = '<thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>' +
+    const q = ($('empSearch').value || '').trim().toLowerCase();
+    const rows = employees.filter((e) => !q || [e.name, e.email, e.employeeCode, e.employee_code]
+      .some((v) => String(v || '').toLowerCase().includes(q)));
+
+    $('adEmployees').innerHTML = '<thead><tr><th>Employee</th><th>Login</th><th>Role</th><th>Status</th><th class="ad-num">Actions</th></tr></thead><tbody>' +
       (rows.map((e) => {
         const me = e.id === ME;
+        const active = empActive(e);
         return `<tr>
-          <td><b>${esc(e.name)}</b>${me ? ' <small>(you)</small>' : ''}</td>
-          <td>${esc(e.email)}</td>
-          <td><select class="ad-input ad-sm" data-role="${e.id}" ${me ? 'disabled' : ''} aria-label="Role for ${esc(e.name)}">
-            <option value="cashier" ${e.role === 'cashier' ? 'selected' : ''}>Cashier</option>
-            <option value="admin" ${e.role === 'admin' ? 'selected' : ''}>Admin</option></select></td>
-          <td><span class="ad-badge" data-s="${e.status}">${STATUS[e.status]}</span></td>
-          <td class="ad-num">${me ? '' : `<button class="ad-btn ad-sm" type="button" data-toggle="${e.id}">${e.status === 'inactive' ? 'Reactivate' : 'Deactivate'}</button>`}</td>
+          <td><b>${esc(e.name)}</b>${me ? ' <span class="emp-tag">you</span>' : ''}</td>
+          <td><span class="emp-login" title="${esc(empLogin(e))}">${esc(empLogin(e))}</span></td>
+          <td><span class="ad-badge" data-role="${esc(e.role)}">${e.role === 'admin' ? 'Admin' : 'Cashier'}</span></td>
+          <td><span class="ad-badge" data-s="${active ? 'active' : 'inactive'}">${STATUS[active ? 'active' : 'inactive']}</span></td>
+          <td class="ad-num"><div class="emp-actions">
+            <button class="ad-btn ad-sm" type="button" data-edit="${e.id}">Edit</button>
+            <button class="ad-btn ad-sm" type="button" data-cred="${e.id}">New login</button>
+            <label class="ad-switch" title="${active ? 'Deactivate' : 'Reactivate'}">
+              <input type="checkbox" data-toggle="${e.id}" ${active ? 'checked' : ''} ${me ? 'disabled' : ''} aria-label="${active ? 'Deactivate' : 'Reactivate'} ${esc(e.name)}">
+              <span></span>
+            </label>
+          </div></td>
         </tr>`;
       }).join('') || '<tr><td colspan="5" class="ad-empty">No employees found.</td></tr>') + '</tbody>';
   }
 
+  function confirmEmployee(title, message, okLabel) {
+    $('empConfirmTitle').textContent = title;
+    $('empConfirmMessage').innerHTML = message;
+    $('empConfirmOk').textContent = okLabel;
+    $('empConfirmDialog').showModal();
+    return new Promise((resolve) => {
+      const done = (value) => {
+        $('empConfirmDialog').close();
+        $('empConfirmOk').onclick = null;
+        $('empConfirmCancel').onclick = null;
+        resolve(value);
+      };
+      $('empConfirmOk').onclick = () => done(true);
+      $('empConfirmCancel').onclick = () => done(false);
+      $('empConfirmDialog').addEventListener('cancel', () => done(false), { once: true });
+    });
+  }
+
   $('empSearch').addEventListener('input', renderEmployees);
+
   $('adEmployees').addEventListener('change', async (e) => {
-    const sel = e.target.closest('[data-role]');
-    if (!sel) return;
-    await api.updateEmployee(Number(sel.dataset.role), { role: sel.value });
-    toast('Role updated');
+    const box = e.target.closest('[data-toggle]');
+    if (!box) return;
+    const emp = employees.find((x) => x.id === Number(box.dataset.toggle));
+    if (!emp) return;
+    const next = box.checked;
+    box.checked = !next;
+    const ok = await confirmEmployee(
+      next ? 'Reactivate employee' : 'Deactivate employee',
+      next
+        ? `Let <strong>${esc(emp.name)}</strong> log in again?`
+        : `Block <strong>${esc(emp.name)}</strong> from logging in? Their past orders and records stay exactly as they are.`,
+      next ? 'Yes, reactivate' : 'Yes, deactivate'
+    );
+    if (!ok) return;
+    box.checked = next;
+    try {
+      await api.updateEmployee(emp.id, { active: next });
+      employees = await api.employees();
+      renderEmployees();
+      toast(next ? `${emp.name} can log in again` : `${emp.name} deactivated`);
+    } catch (err) {
+      toast(err.message || 'Could not update that employee');
+      renderEmployees();
+    }
   });
-  $('adEmployees').addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-toggle]');
-    if (!btn) return;
-    const emp = employees.find((x) => x.id === Number(btn.dataset.toggle));
-    const next = emp.status === 'inactive' ? 'active' : 'inactive';
-    await api.updateEmployee(emp.id, { status: next });
-    renderEmployees();
-    toast(next === 'active' ? `${emp.name} reactivated` : `${emp.name} deactivated`);
+
+  $('adEmployees').addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit]');
+    if (editBtn) return openEmployeeDialog(Number(editBtn.dataset.edit));
+    const credBtn = e.target.closest('[data-cred]');
+    if (credBtn) return replaceCredentials(Number(credBtn.dataset.cred));
   });
 
   const NAME_RULE = /^\p{L}[\p{L}\p{M} .'-]{1,59}$/u;
   const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  $('empAdd').addEventListener('click', () => {
+  let editingId = null;
+  let editingRole = null;
+
+  function syncEmployeeForm() {
+    const role = $('empRole').value;
+    const isAdmin = role === 'admin';
+    $('empEmailField').hidden = !isAdmin;
+
+    // Editing someone and changing their role replaces their login, so say so first.
+    const roleChanged = !!(editingId && editingRole && role !== editingRole);
+    $('empRoleWarning').hidden = !roleChanged;
+    if (roleChanged) {
+      $('empRoleWarning').textContent = isAdmin
+        ? 'Role change: this issues a new admin email login and password. The password is shown once, right after you save.'
+        : 'Role change: this issues a new employee code and PIN. They are shown once, right after you save.';
+    }
+    $('empHint').textContent = isAdmin
+      ? 'Admins log in with this email and a generated password. The password is shown once on the next screen.'
+      : 'Cashiers log in with an employee code and a 6-digit PIN. The code and PIN are shown once on the next screen.';
+  }
+
+  function openEmployeeDialog(id) {
+    editingId = id || null;
+    const emp = id ? employees.find((x) => x.id === id) : null;
     $('empForm').reset();
     $('empError').textContent = '';
+    $('empDialogTitle').textContent = emp ? 'Edit employee' : 'Register employee';
+    $('empSave').textContent = emp ? 'Save changes' : 'Create employee';
+    $('empName').value = emp ? emp.name : '';
+    $('empRole').value = emp ? emp.role : 'cashier';
+    $('empEmail').value = emp ? (emp.email || '') : '';
+    editingRole = emp ? emp.role : null;
+    syncEmployeeForm();
     $('empDialog').showModal();
     $('empName').focus();
-  });
+  }
+
+  $('empRole').addEventListener('change', syncEmployeeForm);
+  $('empAdd').addEventListener('click', () => openEmployeeDialog(null));
+
   $('empSave').addEventListener('click', async () => {
     const name = $('empName').value.replace(/\s+/g, ' ').trim();
-    const email = $('empEmail').value.trim().toLowerCase();
     const role = $('empRole').value;
+    const email = $('empEmail').value.trim().toLowerCase();
+    const btn = $('empSave');
     const fail = (m) => { $('empError').textContent = m; };
+
     if (!NAME_RULE.test(name)) return fail('Enter the employee’s full name.');
-    if (!EMAIL_RULE.test(email)) return fail('Enter a valid email address.');
-    if (employees.some((e) => e.email.toLowerCase() === email)) return fail('That email is already registered.');
-    $('empSave').disabled = true;
+    if (role === 'admin' && !EMAIL_RULE.test(email)) return fail('Enter a valid email address for the admin login.');
+
+    btn.disabled = true;
     try {
-      await api.registerEmployee({ name, email, role });
+      const payload = { name, role };
+      if (role === 'admin') payload.email = email;
+      const res = editingId
+        ? await api.updateEmployee(editingId, payload)
+        : await api.registerEmployee(payload);
       employees = await api.employees();
       renderEmployees();
       $('empDialog').close();
-      toast(`Invitation sent to ${email}`);
+      const wasEditing = !!editingId;
+      editingId = null;
+      editingRole = null;
+      if (res && res.credentials) showCredentials(res.credentials, name);
+      else toast(wasEditing ? `${name} updated` : `${name} added`);
     } catch (err) {
-      fail(err.message || 'Could not register the employee.');
+      fail(err.message || 'Could not save that employee.');
     } finally {
-      $('empSave').disabled = false;
+      btn.disabled = false;
     }
   });
+
+  let credText = '';
+  function showCredentials(credentials, name) {
+    const isPassword = !!credentials.password;
+    const login = credentials.login || credentials.email || credentials.employeeCode || '';
+    const secret = isPassword ? credentials.password : credentials.pin;
+    credText = `Login: ${login}\n${isPassword ? 'Password' : 'PIN'}: ${secret}`;
+    $('credTitle').textContent = isPassword ? 'Admin login created' : 'Cashier login created';
+    $('credIntro').textContent = name ? `${name} — hand these details over now.` : 'Hand these details over now.';
+    $('credLogin').textContent = login;
+    $('credSecretLabel').textContent = isPassword ? 'Password' : 'PIN';
+    $('credSecret').textContent = secret;
+    $('credCopy').textContent = 'Copy';
+    $('credDialog').showModal();
+  }
+
+  $('credCopy').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(credText);
+      $('credCopy').textContent = 'Copied';
+      setTimeout(() => { $('credCopy').textContent = 'Copy'; }, 2000);
+    } catch (err) {
+      toast('Copy failed — select the text and copy it by hand');
+    }
+  });
+  $('credDone').addEventListener('click', () => $('credDialog').close());
+
+  async function replaceCredentials(id) {
+    const emp = employees.find((x) => x.id === id);
+    if (!emp) return;
+    const ok = await confirmEmployee(
+      'Create a new login',
+      `Replace the login for <strong>${esc(emp.name)}</strong>? Their current ${emp.role === 'admin' ? 'password' : 'PIN'} stops working immediately.`,
+      'Yes, replace it'
+    );
+    if (!ok) return;
+    try {
+      const res = await api.resetCredentials(emp.id);
+      employees = await api.employees();
+      renderEmployees();
+      if (res && res.credentials) showCredentials(res.credentials, emp.name);
+      else toast('Login replaced');
+    } catch (err) {
+      toast(err.message || 'Could not replace that login');
+    }
+  }
 
   let menu = [];
   let currentMenuTab = 'all'; 
@@ -358,8 +508,11 @@
 
   (async () => {
     try {
-      const res = await fetch('/api/auth/me');
-      if (!res.ok) throw new Error('Not authorized');
+      const meRes = await fetch('/api/auth/me');
+      if (!meRes.ok) throw new Error('Not authorized');
+      const me = await meRes.json();
+      ME = Number(me.id) || 0;
+      if (me.name) $('adUser').textContent = `${me.role === 'admin' ? 'Admin' : 'Staff'} · ${me.name}`;
       renderOverview(await api.stats());
       employees = await api.employees(); renderEmployees();
       menu = await api.menu(); renderMenu();
