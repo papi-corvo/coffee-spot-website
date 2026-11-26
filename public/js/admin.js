@@ -187,10 +187,21 @@
   const NAME_RULE = /^\p{L}[\p{L}\p{M} .'-]{1,59}$/u;
   const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   let editingId = null;
+  let editingRole = null;
 
   function syncEmployeeForm() {
-    const isAdmin = $('empRole').value === 'admin';
+    const role = $('empRole').value;
+    const isAdmin = role === 'admin';
     $('empEmailField').hidden = !isAdmin;
+
+    // Editing someone and changing their role replaces their login, so say so first.
+    const roleChanged = !!(editingId && editingRole && role !== editingRole);
+    $('empRoleWarning').hidden = !roleChanged;
+    if (roleChanged) {
+      $('empRoleWarning').textContent = isAdmin
+        ? 'Role change: this issues a new admin email login and password. The password is shown once, right after you save.'
+        : 'Role change: this issues a new employee code and PIN. They are shown once, right after you save.';
+    }
     $('empHint').textContent = isAdmin
       ? 'Admins log in with this email and a generated password. The password is shown once on the next screen.'
       : 'Cashiers log in with an employee code and a 6-digit PIN. The code and PIN are shown once on the next screen.';
@@ -206,6 +217,7 @@
     $('empName').value = emp ? emp.name : '';
     $('empRole').value = emp ? emp.role : 'cashier';
     $('empEmail').value = emp ? (emp.email || '') : '';
+    editingRole = emp ? emp.role : null;
     syncEmployeeForm();
     $('empDialog').showModal();
     $('empName').focus();
@@ -236,6 +248,7 @@
       $('empDialog').close();
       const wasEditing = !!editingId;
       editingId = null;
+      editingRole = null;
       if (res && res.credentials) showCredentials(res.credentials, name);
       else toast(wasEditing ? `${name} updated` : `${name} added`);
     } catch (err) {

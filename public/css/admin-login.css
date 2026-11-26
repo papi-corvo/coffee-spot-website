@@ -19,7 +19,7 @@
 .lg-links {
   margin-top: 1.5rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   font-size: 0.8rem;
 }
 
