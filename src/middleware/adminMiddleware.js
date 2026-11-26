@@ -1,26 +1,39 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'coffee-spot-secret-key';
+const { db } = require('../db/db');
 
 function verifyAdmin(req, res, next) {
   const token = req.cookies.auth_token;
-  
   if (!token) {
     return res.status(401).json({ error: 'Access denied. Please log in.' });
   }
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    // The Bouncer Check: Are they an admin?
-    if (decoded.role !== 'admin') {
-      return res.status(403).json({ error: 'Forbidden. Admin access required.' });
-    }
-
-    req.staff = decoded; 
-    next(); 
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('JWT_SECRET is missing. Add it to .env and restart the server.');
+    return res.status(500).json({ error: 'Server is not configured for logins.' });
   }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, secret);
+  } catch {
+    return res.status(401).json({ error: 'Invalid or expired session. Please log in again.' });
+  }
+
+  // Trust the database, not the token: the role and active flag may have changed.
+  const staff = db.prepare('SELECT id, name, role, active FROM staff WHERE id = ?').get(decoded.id);
+  if (!staff) {
+    return res.status(401).json({ error: 'This account no longer exists. Please log in again.' });
+  }
+  if (staff.active !== 1) {
+    return res.status(403).json({ error: 'This account has been deactivated.' });
+  }
+  if (staff.role !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden. Admin access required.' });
+  }
+
+  req.staff = { id: staff.id, name: staff.name, role: staff.role };
+  next();
 }
 
 module.exports = { verifyAdmin };
