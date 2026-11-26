@@ -1,6 +1,6 @@
 /* ============================================================
    Coffee Spot | loginform.css
-   Covers BOTH the staff sign-in card and the staff registration card.
+   Covers the staff sign-in card.
    Colors and fonts come from css/style.css; the fallback values after
    each comma only apply if a variable is missing.
    All rules are scoped to .lg-* classes so .cx (cashier) and the

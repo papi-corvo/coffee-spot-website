@@ -504,6 +504,7 @@
   padding: 1.5rem;
   border: 0;
   border-radius: var(--radius-md);
+  align-items: center;
   background: var(--linen);
   color: var(--ink);
   margin: auto;
@@ -612,6 +613,25 @@
 }
 
 /* Confirmation Dialog */
+
+/* Any dialog built from the confirm parts (icon + title + message + actions)
+   gets the same centered card, whatever its id. */
+.ad-dialog:has(.confirm-icon) {
+  width: min(400px, 90vw);
+  margin: auto;
+  padding: 2.5rem 2rem;
+  border: none;
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.ad-dialog:has(.confirm-icon)::backdrop {
+  background: rgba(46, 20, 16, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
 #menuConfirmDialog::backdrop {
   background: rgba(46, 20, 16, 0.6);
   backdrop-filter: blur(4px);
