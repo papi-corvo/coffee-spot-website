@@ -23,21 +23,35 @@ const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const clean = (v, max = 120) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 
-// EMP-002, EMP-003 ... never reuses a code
-function nextEmployeeCode() {
-  const rows = db.prepare("SELECT employee_code FROM staff WHERE employee_code LIKE 'EMP-%'").all();
-  let highest = 0;
-  for (const row of rows) {
-    const n = Number(String(row.employee_code).slice(4));
-    if (Number.isFinite(n) && n > highest) highest = n;
-  }
-  let next = highest + 1;
-  let code = `EMP-${String(next).padStart(3, '0')}`;
-  while (db.prepare('SELECT 1 FROM staff WHERE employee_code = ?').get(code)) {
-    next += 1;
-    code = `EMP-${String(next).padStart(3, '0')}`;
-  }
-  return code;
+// ---------- Employee code allocation ----------
+// The next code comes from a high-water mark kept in settings, not from MAX(staff),
+// so deleting an employee never makes their number available again. The seed value
+// folds in the highest code already in use, so existing data keeps working.
+const CODE_SEQ_KEY = 'employee_code_seq';
+
+function takeEmployeeCode() {
+  const row = db.prepare(`
+    INSERT INTO settings (key, value)
+    SELECT ?, MAX(
+             COALESCE((SELECT CAST(value AS INTEGER) FROM settings WHERE key = ?), 0),
+             COALESCE((SELECT MAX(CAST(substr(employee_code, 5) AS INTEGER))
+                       FROM staff WHERE employee_code LIKE 'EMP-%'), 0)
+           ) + 1
+    WHERE 1
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+    RETURNING value
+  `).get(CODE_SEQ_KEY, CODE_SEQ_KEY);
+  return `EMP-${String(Number(row.value)).padStart(3, '0')}`;
+}
+
+// Reserve a code and do the write in one transaction: if the insert fails, the
+// reservation rolls back with it; if two requests overlap, the unique index on
+// employee_code is the only arbiter and nothing is handed out twice.
+function withNewEmployeeCode(write) {
+  return db.transaction(() => {
+    const code = takeEmployeeCode();
+    return { code, result: write(code) };
+  })();
 }
 
 const newPin = () => String(crypto.randomInt(100000, 1000000));
@@ -241,14 +255,14 @@ router.post('/employees', (req, res) => {
       return res.status(400).json({ error: 'Choose a role: cashier or admin.' });
     }
 
-    let email = null;
-    let employeeCode = null;
-    let pinHash = null;
-    let passwordHash = null;
+    const insertStaff = db.prepare(`
+      INSERT INTO staff (name, role, email, employee_code, pin_hash, password_hash)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
     const credentials = {};
 
     if (role === 'admin') {
-      email = clean(req.body.email, 120).toLowerCase();
+      const email = clean(req.body.email, 120).toLowerCase();
       if (!EMAIL_RULE.test(email)) {
         return res.status(400).json({ error: 'Admins need a valid email address to log in.' });
       }
@@ -256,24 +270,25 @@ router.post('/employees', (req, res) => {
         return res.status(409).json({ error: 'That email is already used by another employee.' });
       }
       const password = newPassword();
-      passwordHash = bcrypt.hashSync(password, 10);
+      const passwordHash = bcrypt.hashSync(password, 10);
+      const info = insertStaff.run(name, role, email, null, null, passwordHash);
+
       credentials.login = email;
       credentials.password = password;
-    } else {
-      employeeCode = nextEmployeeCode();
-      const pin = newPin();
-      pinHash = bcrypt.hashSync(pin, 10);
-      credentials.login = employeeCode;
-      credentials.employeeCode = employeeCode;
-      credentials.pin = pin;
+      return res.status(201).json({ employee: employeeRow(info.lastInsertRowid), credentials });
     }
 
-    const info = db.prepare(`
-      INSERT INTO staff (name, role, email, employee_code, pin_hash, password_hash)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(name, role, email, employeeCode, pinHash, passwordHash);
+    const pin = newPin();
+    const pinHash = bcrypt.hashSync(pin, 10);
+    const { code, result: info } = withNewEmployeeCode((employeeCode) =>
+      insertStaff.run(name, role, null, employeeCode, pinHash, null)
+    );
 
+    credentials.login = code;
+    credentials.employeeCode = code;
+    credentials.pin = pin;
     res.status(201).json({ employee: employeeRow(info.lastInsertRowid), credentials });
+
   } catch (error) {
     console.error('Employee create error:', error);
     if (String(error.code || '').startsWith('SQLITE_CONSTRAINT')) {
@@ -339,7 +354,7 @@ router.patch('/employees/:id', (req, res) => {
       } else {
         // Demoting: a cashier logs in with employee code + PIN.
         if (!target.employee_code) {
-          const code = nextEmployeeCode();
+          const code = takeEmployeeCode();
           sets.push('employee_code = ?');
           values.push(code);
           credentials.login = code;
@@ -400,7 +415,7 @@ router.post('/employees/:id/credentials', (req, res) => {
 
     let code = target.employee_code;
     if (!code) {
-      code = nextEmployeeCode();
+      code = takeEmployeeCode();
       db.prepare('UPDATE staff SET employee_code = ? WHERE id = ?').run(code, id);
     }
     const pin = newPin();
