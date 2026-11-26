@@ -870,3 +870,115 @@
 .size-pill:hover { border-color: var(--caramel); color: var(--caramel); }
 .size-pill.is-active { background: var(--caramel); color: var(--white); border-color: var(--caramel); }
 .custom-size-input { padding: 0.4rem !important; font-size: 0.85rem !important; }
+
+/* =========================================
+   EMPLOYEE MANAGEMENT
+   ========================================= */
+.emp-note {
+  max-width: 66ch;
+  margin: 0 0 1rem;
+  color: var(--ink-muted);
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+/* the dialog lives outside .ad, so [hidden] needs to win over .ad-field */
+#empDialog [hidden] { display: none !important; }
+
+#adEmployees { min-width: 640px; }
+#adEmployees th:nth-child(1) { width: 25%; }
+#adEmployees th:nth-child(2) { width: 26%; }
+#adEmployees th:nth-child(3),
+#adEmployees th:nth-child(4) { width: 15%; }
+#adEmployees th:nth-child(5) { width: 19%; }
+
+.emp-login {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .79rem;
+}
+
+.emp-tag {
+  padding: .1rem .45rem;
+  border-radius: var(--radius-pill);
+  background: rgba(227, 90, 31, .12);
+  color: var(--caramel);
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.emp-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .4rem;
+}
+
+/* status + role chips (also used by the overview order table) */
+.ad-badge {
+  display: inline-block;
+  padding: .18rem .6rem;
+  border-radius: var(--radius-pill);
+  background: rgba(46, 20, 16, .07);
+  color: var(--espresso);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.ad-badge[data-role="admin"] { background: rgba(46, 20, 16, .1); }
+.ad-badge[data-role="cashier"] { background: rgba(227, 90, 31, .1); color: #a04a14; }
+.ad-badge[data-s="active"],
+.ad-badge[data-s="ready"] { background: #e3f3e8; color: #2f7650; }
+.ad-badge[data-s="inactive"],
+.ad-badge[data-s="cancelled"] { background: #f6e3de; color: #a6371d; }
+.ad-badge[data-s="new"],
+.ad-badge[data-s="accepted"] { background: #e6eef8; color: #2b5b8a; }
+.ad-badge[data-s="completed"] { background: rgba(46, 20, 16, .08); color: var(--ink-muted); }
+
+/* credentials-once panel */
+#credDialog { width: min(460px, 92vw); }
+
+.cred-card {
+  display: grid;
+  margin: 1rem 0 .25rem;
+  padding: .2rem 1rem;
+  border: 1px dashed rgba(46, 20, 16, .2);
+  border-radius: var(--radius-md);
+  background: var(--cream);
+}
+
+.cred-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .65rem 0;
+}
+
+.cred-row + .cred-row { border-top: 1px dashed rgba(46, 20, 16, .14); }
+
+.cred-row span {
+  color: var(--ink-muted);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.cred-row b { color: var(--espresso); font-size: 1rem; word-break: break-all; text-align: right; }
+
+.cred-secret {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em;
+  user-select: all;
+}
